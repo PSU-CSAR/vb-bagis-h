@@ -68,14 +68,14 @@
     </Reference>
     <Reference Include="ESRI.ArcGIS.CartoUI, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="ESRI.ArcGIS.Catalog, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="ESRI.ArcGIS.CatalogUI, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="ESRI.ArcGIS.ConversionTools, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -110,7 +110,7 @@
     </Reference>
     <Reference Include="ESRI.ArcGIS.GeoDatabaseUI, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="ESRI.ArcGIS.Geometry, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -124,6 +124,9 @@
     </Reference>
     <Reference Include="ESRI.ArcGIS.Geoprocessor, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="ESRI.ArcGIS.GISClient, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="ESRI.ArcGIS.SpatialAnalyst, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -145,6 +148,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -180,6 +185,10 @@
     <Compile Include="HruZoneDelineation\FrmDataUnits.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Objects\BagisToken.vb" />
+    <Compile Include="Objects\FeatureService.vb" />
+    <Compile Include="Objects\FeatureServiceField.vb" />
+    <Compile Include="Objects\SecurityHelper.vb" />
     <Compile Include="RefineHru\BtnReclassZones.vb" />
     <Compile Include="RefineHru\BtnSequentialId.vb" />
     <Compile Include="RefineHru\FrmSequentialId.Designer.vb">
@@ -195,6 +204,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="RefineHru\IdentifyTool.vb" />
+    <Compile Include="Tools\BtnDownloadAoi.vb" />
     <Compile Include="Tools\BtnExportToGdb.vb" />
     <Compile Include="ContribAreaModule.vb" />
     <Compile Include="DAFlowModule.vb" />
@@ -265,9 +275,17 @@
     <Compile Include="Other\BtnViewLog.vb" />
     <Compile Include="Other\EditTemplates\BtnEditRule.vb" />
     <Compile Include="Tools\BtnFileLocator.vb" />
+    <Compile Include="Tools\BtnFileModify.vb" />
     <Compile Include="Tools\BtnSlopeConverter.vb" />
     <Compile Include="Tools\BtnSnodas.vb" />
     <Compile Include="Tools\BtnToolsDataUnits.vb" />
+    <Compile Include="Tools\BtnWebServices.vb" />
+    <Compile Include="Tools\FrmDownloadAoiMenu.Designer.vb">
+      <DependentUpon>FrmDownloadAoiMenu.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmDownloadAoiMenu.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Tools\FrmExportToGdb.Designer.vb">
       <DependentUpon>FrmExportToGdb.vb</DependentUpon>
     </Compile>
@@ -486,6 +504,19 @@
     <Compile Include="Tools\FrmToolsDataUnits.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Tools\FrmUploadAoi.Designer.vb">
+      <DependentUpon>FrmUploadAoi.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmUploadAoi.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tools\FrmWebservices.Designer.vb">
+      <DependentUpon>FrmWebservices.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmWebservices.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WebservicesModule.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Help\FrmHelp.resx">
@@ -593,6 +624,9 @@
     <EmbeddedResource Include="RefineHru\FrmReclassZones.resx">
       <DependentUpon>FrmReclassZones.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmDownloadAoiMenu.resx">
+      <DependentUpon>FrmDownloadAoiMenu.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmExportToGdb.resx">
       <DependentUpon>FrmExportToGdb.vb</DependentUpon>
     </EmbeddedResource>
@@ -623,8 +657,15 @@
     <EmbeddedResource Include="Tools\FrmToolsDataUnits.resx">
       <DependentUpon>FrmToolsDataUnits.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmUploadAoi.resx">
+      <DependentUpon>FrmUploadAoi.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmWebservices.resx">
+      <DependentUpon>FrmWebservices.vb</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -650,7 +691,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="ESRI.ArcGIS.ArcMapUI">
       <Private>False</Private>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -816,16 +857,19 @@
     <AddInContent Include="Images\BtnSequentialId.png" />
     <AddInContent Include="Images\BtnToolsDataUnits.png" />
     <AddInContent Include="Images\BtnSnodas.png" />
+    <AddInContent Include="Images\BtnFileModify.png" />
+    <AddInContent Include="Images\BtnWebServices.png" />
+    <AddInContent Include="Images\BtnDownloadAoi.png" />
     <Content Include="Other\LogTemplate.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BAGIS_ClassLibrary\BAGIS_ClassLibrary.vbproj">
       <Project>{DA894C59-5DA0-44DD-B8A6-89110BB0830B}</Project>
       <Name>BAGIS_ClassLibrary</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
@@ -852,6 +896,27 @@
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test1|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Test1\</OutputPath>
+    <DocumentationFile>BAGIS_H.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test1|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x86\Test1\</OutputPath>
+    <DocumentationFile>BAGIS_H.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="$(MSBuildExtensionsPath)\ESRI\ESRI.ArcGIS.AddIns.targets" Condition="Exists('$(MSBuildExtensionsPath)\ESRI\ESRI.ArcGIS.AddIns.targets')" />
