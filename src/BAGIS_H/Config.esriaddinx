@@ -47,7 +47,7 @@
         <Button id="Portland_State_University_BAGIS_H_BtnSnodas" class="BtnSnodas" message="Snodas Clip Tool (test mode)" caption="Snodas Clip Tool (test mode)" tip="Snodas Clip Tool (test mode)" category="BAGIS Tools" image="Images\BtnSnodas.png" />
         <Button id="Portland_State_University_BAGIS_H_BtnFileModify" class="BtnFileModify" message="Modify Date Test" caption="Modify Date Test" tip="Modify Date Test" category="BAGIS Tools" image="Images\BtnFileModify.png" />
         <Button id="Portland_State_University_BAGIS_H_BtnWebServices" class="BtnWebServices" message="Web Services Testing" caption="Web Services Testing" tip="Web Services Testing" category="BAGIS-H" image="Images\BtnWebServices.png" />
-        <Button id="Portland_State_University_BAGIS_H_BtnDownloadAoi" class="BtnDownloadAoi" message="Download AOI" caption="Download AOI" tip="Download AOI" category="BAGIS Tools" image="Images\BtnDownloadAoi.png" />
+        <Button id="Portland_State_University_BAGIS_H_BtnDownloadAoi" class="BtnDownloadAoi" message="Upload AOI" caption="Upload AOI" tip="Upload AOI" category="BAGIS Tools" image="Images\BtnDownloadAoi.png" />
       </Commands>
       <DockableWindows>
         <DockableWindow id="ClassLibraryAddin_frmHruZone" class="frmHruZone+AddinImpl" caption="Current AOI: (Not selected)" image="Images\frmHruZone.png">

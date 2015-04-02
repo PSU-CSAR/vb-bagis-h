@@ -50,7 +50,7 @@ Public Class SecurityHelper
         End Try
     End Function
 
-    Public Shared Function IsTokenValid(ByVal testUrl, ByVal strToken) As Boolean
+    Public Shared Function IsTokenValid(ByVal testUrl As String, ByVal strToken As String) As Boolean
         Dim reqT As HttpWebRequest
         Dim resT As HttpWebResponse
         'The end point for getting a token for the web service

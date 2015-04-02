@@ -1,6 +1,12 @@
 ﻿Imports System.Windows.Forms
+Imports System.IO
 
 Public Class FrmUploadAoi
+
+    Private m_token As BagisToken = New BagisToken
+    'In practice the user name/password will be provided by the user
+    Private m_userName As String = Nothing
+    Private m_password As String = Nothing
 
     Public Sub New()
 
@@ -56,6 +62,38 @@ Public Class FrmUploadAoi
         LayerGrid.Rows.Add(item4)
         LayerGrid.Rows.Add(item5)
         LayerGrid.Sort(LayerGrid.Columns(2), System.ComponentModel.ListSortDirection.Descending)
+
+        'Set the user name and password from a text file that is NOT in source countrol
+        'Note: Developers will have to change this to a path valid on their machine
+        Dim filePath As String = "C:\Docs\Lesley\Repository\vb\BAGIS_H\branches\lbross\src\BAGIS_H\GoldenTicket.txt"
+        '@ToDo: In the future, this comes from user input
+        Try
+            ' Create an instance of StreamReader to read from a file.
+            ' The using statement also closes the StreamReader.
+            Using sr As New StreamReader(filePath)
+                m_userName = sr.ReadLine()
+                m_password = sr.ReadLine()
+            End Using
+        Catch e As Exception
+            ' Let the user know what went wrong.
+            Console.WriteLine("The file could not be read:")
+            Console.WriteLine(e.Message)
+        End Try
+
     End Sub
 
+    Private Sub BtnUploadAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnUploadAoi.Click
+        If String.IsNullOrEmpty(m_token.token) Then
+            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, "https://webservices.geog.pdx.edu/api/rest/api-token-auth/")
+            m_token.token = strToken
+            If String.IsNullOrEmpty(strToken) Then
+                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Exit Sub
+            End If
+        End If
+
+        Dim uploadUrl = "https://webservices.geog.pdx.edu/api/rest/aois/"
+        BA_UploadAoi(uploadUrl, m_token.token)
+        'BA_PostRequest(uploadUrl, m_token.token)
+    End Sub
 End Class
