@@ -93,7 +93,14 @@ Public Class FrmUploadAoi
         End If
 
         Dim uploadUrl = "https://webservices.geog.pdx.edu/api/rest/aois/"
-        BA_UploadAoi(uploadUrl, m_token.token)
-        'BA_PostRequest(uploadUrl, m_token.token)
+        'Dim fileName As String = "aoi_text3"
+        'Dim filePath As String = "C:\Docs\Lesley\Landis\data\TRY2\Landis-log.txt"
+        Dim fileName As String = "zip2"
+        Dim filePath As String = "C:\Docs\Lesley\aoi1_05222013.zip"
+        BA_UploadMultiPart(uploadUrl, m_token.token, fileName, filePath)
+    End Sub
+
+    Private Sub BtnCancel_Click(sender As System.Object, e As System.EventArgs) Handles BtnCancel.Click
+        Me.Close()
     End Sub
 End Class

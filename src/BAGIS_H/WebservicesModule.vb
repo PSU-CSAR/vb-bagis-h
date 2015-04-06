@@ -282,7 +282,7 @@ Module WebservicesModule
         'This is a POST request
         reqT.Method = "POST"
         'We are sending a form
-        reqT.ContentType = "application/x-www-form-urlencoded"
+        reqT.ContentType = "multipart/form-data"
 
         'Retrieve the token and format it for the header; Token comes from caller
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
@@ -290,8 +290,9 @@ Module WebservicesModule
         reqT.Headers(HttpRequestHeader.Authorization) = cred
 
         'These are the field/value pairs that would be on an html form
-        Dim Data As String = "filename=aoi1_05242013&md5=9832eb48462ba306f6d952558faeb4b9&file="
-        Dim filePath As String = "C:\Docs\Lesley\aoi1_05222013.zip"
+        Dim Data As String = "filename=aoi_text&md5=eae7186b59e33aa610ac29a4dc952caa&file="
+        'Dim filePath As String = "C:\Docs\Lesley\aoi1_05222013.zip"
+        Dim filePath As String = "C:\Docs\Lesley\Landis\data\TRY2\Landis-log.txt"
         Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath)
         'Encode them to Byte format to include with the request
         Dim dataArray As Byte() = Encoding.UTF8.GetBytes(Data)
@@ -340,6 +341,58 @@ Module WebservicesModule
 
     End Function
 
+    Public Function BA_UploadMultiPart(ByVal webserviceUrl As String, ByVal strToken As String, _
+                                       ByVal fileName As String, ByVal filePath As String) As BA_ReturnCode
+        Dim reqT As HttpWebRequest
+        Dim resT As HttpWebResponse
+        'The end point for getting a token for the web service
+        reqT = WebRequest.Create(webserviceUrl)
+        'This is a POST request
+        reqT.Method = "POST"
+        'We are sending a form
+        Dim boundary As String = MultipartFormHelper.CreateFormDataBoundary()
+        reqT.ContentType = "multipart/form-data; boundary=" & boundary
+        reqT.KeepAlive = True
+
+        'Retrieve the token and format it for the header; Token comes from caller
+        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+        'Put token in header
+        reqT.Headers(HttpRequestHeader.Authorization) = cred
+
+        Try
+            Dim requestStream As System.IO.Stream = reqT.GetRequestStream
+            Dim postData As Dictionary(Of String, String) = New Dictionary(Of String, String)
+            postData.Add("filename", fileName)
+
+            Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath)
+            postData.Add("md5", MultipartFormHelper.GenerateMD5Hash(fileInfo))
+            MultipartFormHelper.WriteMultipartFormData(postData, requestStream, boundary)
+
+            If fileInfo IsNot Nothing Then
+                '@ToDo: Remove hard-coding; write a dynamic function to determine mime type
+                'Dim fileMimeType As String = "text/plain"
+                Dim fileMimeType As String = "application/zip"
+                Dim fileFormKey As String = "file"
+                MultipartFormHelper.WriteMultipartFormData(fileInfo, requestStream, boundary, fileMimeType, fileFormKey)
+            End If
+            Dim endBytes() As Byte = Encoding.UTF8.GetBytes("--" + boundary + "--")
+            requestStream.Write(endBytes, 0, endBytes.Length)
+            requestStream.Close()
+
+            resT = CType(reqT.GetResponse(), HttpWebResponse)
+            'Printing the response to the Console for testing
+            Using SReader As System.IO.StreamReader = New System.IO.StreamReader(resT.GetResponseStream)
+                Debug.Print(SReader.ReadToEnd())
+            End Using
+            'If we didn't get an exception, the upload was successful
+            Return BA_ReturnCode.Success
+        Catch ex As Exception
+            Debug.Print("BA_UploadMultiPart: " & ex.Message)
+            Return BA_ReturnCode.UnknownError
+        End Try
+
+    End Function
+
     Private Sub DebugPropertySet(ByVal propertySet As IPropertySet)
         Dim names(propertySet.Count - 1) As Object
         Dim values(propertySet.Count - 1) As Object
@@ -349,5 +402,6 @@ Module WebservicesModule
             Debug.Print(values(i).ToString & vbCrLf)
         Next
     End Sub
+
 
 End Module
