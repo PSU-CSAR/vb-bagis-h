@@ -403,5 +403,36 @@ Module WebservicesModule
         Next
     End Sub
 
+    Public Function BA_List_Aoi(ByVal url As String, ByVal strToken As String) As Dictionary(Of String, StoredAoi)
+        Dim aoiDictionary As Dictionary(Of String, StoredAoi) = New Dictionary(Of String, StoredAoi)
 
+        Dim reqT As HttpWebRequest
+        Dim resT As HttpWebResponse
+        'The end point for getting a token for the web service
+        url = url & "aois/"
+        reqT = WebRequest.Create(url)
+        'This is a GET request
+        reqT.Method = "GET"
+
+        'Retrieve the token and format it for the header; Token comes from caller
+        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+        'Put token in header
+        reqT.Headers(HttpRequestHeader.Authorization) = cred
+
+        Try
+            resT = CType(reqT.GetResponse(), HttpWebResponse)
+
+            'Convert the JSON response to StoredAoiArray object
+            Dim storedAois As StoredAoiArray = New StoredAoiArray
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(storedAois.[GetType]())
+            storedAois = CType(ser.ReadObject(resT.GetResponseStream), StoredAoiArray)
+            'Populate Dictionary from storedAois array
+            For Each sAoi As StoredAoi In storedAois.results
+                aoiDictionary.Add(sAoi.name, sAoi)
+            Next
+        Catch ex As WebException
+            Debug.Print("BA_List_Aoi Exception: " & ex.Message)
+        End Try
+        Return aoiDictionary
+    End Function
 End Module

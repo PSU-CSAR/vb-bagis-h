@@ -117,4 +117,16 @@ Public Class FrmDownloadAoiMenu
         End Try
     End Sub
 
+    Private Sub BtnList_Click(sender As System.Object, e As System.EventArgs) Handles BtnList.Click
+        If String.IsNullOrEmpty(m_token.token) Then
+            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, TxtBasinsDb.Text & "api-token-auth/")
+            m_token.token = strToken
+            If String.IsNullOrEmpty(strToken) Then
+                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Exit Sub
+            End If
+        End If
+        Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, m_token.token)
+        MessageBox.Show("Done!")
+    End Sub
 End Class

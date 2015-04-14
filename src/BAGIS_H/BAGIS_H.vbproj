@@ -190,6 +190,8 @@
     <Compile Include="Objects\FeatureService.vb" />
     <Compile Include="Objects\FeatureServiceField.vb" />
     <Compile Include="Objects\SecurityHelper.vb" />
+    <Compile Include="Objects\StoredAoi.vb" />
+    <Compile Include="Objects\StoredAoiArray.vb" />
     <Compile Include="RefineHru\BtnReclassZones.vb" />
     <Compile Include="RefineHru\BtnSequentialId.vb" />
     <Compile Include="RefineHru\FrmSequentialId.Designer.vb">
