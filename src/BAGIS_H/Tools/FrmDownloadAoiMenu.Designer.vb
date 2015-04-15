@@ -22,18 +22,13 @@ Partial Class FrmDownloadAoiMenu
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.AoiGrid = New System.Windows.Forms.DataGridView()
-        Me.AoiName = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Uploaded = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Author = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Download = New System.Windows.Forms.DataGridViewCheckBoxColumn()
-        Me.Remarks = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.BtnDownloadAoi = New System.Windows.Forms.Button()
         Me.BtnList = New System.Windows.Forms.Button()
@@ -46,6 +41,11 @@ Partial Class FrmDownloadAoiMenu
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.BtnSelectAoi = New System.Windows.Forms.Button()
         Me.BtnUpload = New System.Windows.Forms.Button()
+        Me.AoiName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Uploaded = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Author = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Download = New System.Windows.Forms.DataGridViewCheckBoxColumn()
+        Me.Remarks = New System.Windows.Forms.DataGridViewTextBoxColumn()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -53,66 +53,21 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.AoiGrid.AllowUserToAddRows = False
         Me.AoiGrid.AllowUserToDeleteRows = False
-        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.AoiGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle7
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.AoiGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
         Me.AoiGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.AoiGrid.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.AoiName, Me.Uploaded, Me.Author, Me.Download, Me.Remarks})
         Me.AoiGrid.Location = New System.Drawing.Point(11, 51)
         Me.AoiGrid.Name = "AoiGrid"
-        Me.AoiGrid.ReadOnly = True
         Me.AoiGrid.Size = New System.Drawing.Size(896, 208)
         Me.AoiGrid.TabIndex = 0
         Me.AoiGrid.TabStop = False
-        '
-        'AoiName
-        '
-        DataGridViewCellStyle8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AoiName.DefaultCellStyle = DataGridViewCellStyle8
-        Me.AoiName.HeaderText = "AOI Name"
-        Me.AoiName.Name = "AoiName"
-        Me.AoiName.ReadOnly = True
-        Me.AoiName.Width = 250
-        '
-        'Uploaded
-        '
-        DataGridViewCellStyle9.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Uploaded.DefaultCellStyle = DataGridViewCellStyle9
-        Me.Uploaded.HeaderText = "Uploaded"
-        Me.Uploaded.Name = "Uploaded"
-        Me.Uploaded.ReadOnly = True
-        '
-        'Author
-        '
-        DataGridViewCellStyle10.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Author.DefaultCellStyle = DataGridViewCellStyle10
-        Me.Author.HeaderText = "Author"
-        Me.Author.Name = "Author"
-        Me.Author.ReadOnly = True
-        '
-        'Download
-        '
-        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle11.NullValue = False
-        Me.Download.DefaultCellStyle = DataGridViewCellStyle11
-        Me.Download.HeaderText = "Download ?"
-        Me.Download.Name = "Download"
-        Me.Download.ReadOnly = True
-        '
-        'Remarks
-        '
-        DataGridViewCellStyle12.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Remarks.DefaultCellStyle = DataGridViewCellStyle12
-        Me.Remarks.HeaderText = "Remarks"
-        Me.Remarks.Name = "Remarks"
-        Me.Remarks.ReadOnly = True
-        Me.Remarks.Width = 250
         '
         'BtnCancel
         '
@@ -238,6 +193,49 @@ Partial Class FrmDownloadAoiMenu
         Me.BtnUpload.Text = "Upload"
         Me.BtnUpload.UseVisualStyleBackColor = True
         '
+        'AoiName
+        '
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AoiName.DefaultCellStyle = DataGridViewCellStyle2
+        Me.AoiName.HeaderText = "AOI Name"
+        Me.AoiName.Name = "AoiName"
+        Me.AoiName.ReadOnly = True
+        Me.AoiName.Width = 250
+        '
+        'Uploaded
+        '
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Uploaded.DefaultCellStyle = DataGridViewCellStyle3
+        Me.Uploaded.HeaderText = "Uploaded"
+        Me.Uploaded.Name = "Uploaded"
+        Me.Uploaded.ReadOnly = True
+        '
+        'Author
+        '
+        DataGridViewCellStyle4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Author.DefaultCellStyle = DataGridViewCellStyle4
+        Me.Author.HeaderText = "Author"
+        Me.Author.Name = "Author"
+        Me.Author.ReadOnly = True
+        '
+        'Download
+        '
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle5.NullValue = False
+        Me.Download.DefaultCellStyle = DataGridViewCellStyle5
+        Me.Download.HeaderText = "Download ?"
+        Me.Download.Name = "Download"
+        '
+        'Remarks
+        '
+        DataGridViewCellStyle6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Remarks.DefaultCellStyle = DataGridViewCellStyle6
+        Me.Remarks.HeaderText = "Remarks"
+        Me.Remarks.Name = "Remarks"
+        Me.Remarks.ReadOnly = True
+        Me.Remarks.Width = 250
+        '
         'FrmDownloadAoiMenu
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -267,11 +265,6 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents AoiGrid As System.Windows.Forms.DataGridView
     Friend WithEvents BtnCancel As System.Windows.Forms.Button
     Friend WithEvents BtnDownloadAoi As System.Windows.Forms.Button
-    Friend WithEvents AoiName As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Uploaded As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Author As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Download As System.Windows.Forms.DataGridViewCheckBoxColumn
-    Friend WithEvents Remarks As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents BtnList As System.Windows.Forms.Button
     Friend WithEvents TxtBasinsDb As System.Windows.Forms.TextBox
     Friend WithEvents Label7 As System.Windows.Forms.Label
@@ -282,4 +275,9 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
     Friend WithEvents BtnSelectAoi As System.Windows.Forms.Button
     Friend WithEvents BtnUpload As System.Windows.Forms.Button
+    Friend WithEvents AoiName As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Uploaded As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Author As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Download As System.Windows.Forms.DataGridViewCheckBoxColumn
+    Friend WithEvents Remarks As System.Windows.Forms.DataGridViewTextBoxColumn
 End Class

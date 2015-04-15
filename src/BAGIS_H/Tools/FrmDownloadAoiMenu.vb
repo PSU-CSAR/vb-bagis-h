@@ -9,6 +9,10 @@ Public Class FrmDownloadAoiMenu
     'In practice the user name/password will be provided by the user
     Private m_userName As String = Nothing
     Private m_password As String = Nothing
+    Dim idxAoiName As Integer = 0
+    Dim idxDateUploaded As Integer = 1
+    Dim idxAuthor As Integer = 2
+    Dim idxDownload As Integer = 3
 
     Public Sub New()
 
@@ -118,6 +122,7 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnList_Click(sender As System.Object, e As System.EventArgs) Handles BtnList.Click
+        BtnList.Enabled = False
         If String.IsNullOrEmpty(m_token.token) Then
             Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, TxtBasinsDb.Text & "api-token-auth/")
             m_token.token = strToken
@@ -127,6 +132,27 @@ Public Class FrmDownloadAoiMenu
             End If
         End If
         Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, m_token.token)
-        MessageBox.Show("Done!")
+        RefreshGrid(storedAois)
+        BtnList.Enabled = True
+    End Sub
+
+    Private Sub RefreshGrid(ByVal storedAois)
+        AoiGrid.Rows.Clear()
+        For Each kvp As KeyValuePair(Of String, StoredAoi) In storedAois
+            '---create a row---
+            Dim item As New DataGridViewRow
+            item.CreateCells(AoiGrid)
+            With item
+                .Cells(idxAoiName).Value = kvp.Value.name
+                .Cells(idxDateUploaded).Value = kvp.Value.DateCreated.ToString("MM-dd-yyyy")
+                .Cells(idxAuthor).Value = kvp.Value.Author
+                '.Cells(3).Value = False
+                '.Cells(4).Value = "Updated AOI with new gauge station"
+            End With
+            AoiGrid.Rows.Add(item)
+        Next kvp
+        AoiGrid.Sort(AoiGrid.Columns(idxAoiName), System.ComponentModel.ListSortDirection.Descending)
+        AoiGrid.ClearSelection()
+        AoiGrid.CurrentCell = Nothing
     End Sub
 End Class

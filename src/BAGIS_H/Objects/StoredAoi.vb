@@ -40,4 +40,19 @@
             m_created_by = value
         End Set
     End Property
+
+    ReadOnly Property DateCreated As Date
+        Get
+            Dim aDate As DateTime
+            DateTime.TryParse(m_created_at, aDate)
+            Return aDate
+        End Get
+    End Property
+
+    ReadOnly Property Author As String
+        Get
+            Dim results As String() = m_created_by.Split("/")
+            Return results(results.Length - 2)
+        End Get
+    End Property
 End Class
