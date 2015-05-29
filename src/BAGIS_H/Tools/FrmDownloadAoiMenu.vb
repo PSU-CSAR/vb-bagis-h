@@ -155,4 +155,21 @@ Public Class FrmDownloadAoiMenu
         AoiGrid.ClearSelection()
         AoiGrid.CurrentCell = Nothing
     End Sub
+
+    Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
+        If String.IsNullOrEmpty(m_token.token) Then
+            Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
+            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
+            m_token.token = strToken
+            If String.IsNullOrEmpty(strToken) Then
+                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Exit Sub
+            End If
+        End If
+
+
+        Dim uploadUrl = TxtBasinsDb.Text & "aois/"
+        Dim fileName As String = "aoi3_20150529"
+        BA_UploadMultiPart(uploadUrl, m_token.token, fileName, TxtUploadPath.Text)
+    End Sub
 End Class

@@ -37,7 +37,7 @@ Public Class SecurityHelper
             dataStreamT.Close()
             'Send the request and wait for response
             resT = CType(reqT.GetResponse(), HttpWebResponse)
-            'Convert the JSON response to a BagisTokenn object
+            'Convert the JSON response to a BagisToken object
             Dim aToken As BagisToken = New BagisToken
             Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aToken.[GetType]())
             'Store token in user settings

@@ -97,7 +97,7 @@ Public Class FrmUploadAoi
         'Dim filePath As String = "C:\Docs\Lesley\Landis\data\TRY2\Landis-log.txt"
         Dim fileName As String = "zip2"
         Dim filePath As String = "C:\Docs\Lesley\aoi1_05222013.zip"
-        BA_UploadMultiPart(uploadUrl, m_token.token, fileName, filePath)
+        'BA_UploadMultiPart(uploadUrl, m_token.token, fileName, filePath)
     End Sub
 
     Private Sub BtnCancel_Click(sender As System.Object, e As System.EventArgs) Handles BtnCancel.Click

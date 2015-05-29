@@ -274,72 +274,72 @@ Module WebservicesModule
         Return fieldList
     End Function
 
-    Public Function BA_UploadAoi(ByVal webserviceUrl As String, ByVal strToken As String) As BA_ReturnCode
-        Dim reqT As HttpWebRequest
-        Dim resT As HttpWebResponse
-        'The end point for getting a token for the web service
-        reqT = WebRequest.Create(webserviceUrl)
-        'This is a POST request
-        reqT.Method = "POST"
-        'We are sending a form
-        reqT.ContentType = "multipart/form-data"
+    'Public Function BA_UploadAoi(ByVal webserviceUrl As String, ByVal strToken As String) As BA_ReturnCode
+    '    Dim reqT As HttpWebRequest
+    '    Dim resT As HttpWebResponse
+    '    'The end point for getting a token for the web service
+    '    reqT = WebRequest.Create(webserviceUrl)
+    '    'This is a POST request
+    '    reqT.Method = "POST"
+    '    'We are sending a form
+    '    reqT.ContentType = "multipart/form-data"
 
-        'Retrieve the token and format it for the header; Token comes from caller
-        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
-        'Put token in header
-        reqT.Headers(HttpRequestHeader.Authorization) = cred
+    '    'Retrieve the token and format it for the header; Token comes from caller
+    '    Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+    '    'Put token in header
+    '    reqT.Headers(HttpRequestHeader.Authorization) = cred
 
-        'These are the field/value pairs that would be on an html form
-        Dim Data As String = "filename=aoi_text&md5=eae7186b59e33aa610ac29a4dc952caa&file="
-        'Dim filePath As String = "C:\Docs\Lesley\aoi1_05222013.zip"
-        Dim filePath As String = "C:\Docs\Lesley\Landis\data\TRY2\Landis-log.txt"
-        Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath)
-        'Encode them to Byte format to include with the request
-        Dim dataArray As Byte() = Encoding.UTF8.GetBytes(Data)
-        reqT.ContentLength = dataArray.Length + fileInfo.Length
+    '    'These are the field/value pairs that would be on an html form
+    '    Dim Data As String = "filename=aoi_text&md5=eae7186b59e33aa610ac29a4dc952caa&file="
+    '    'Dim filePath As String = "C:\Docs\Lesley\aoi1_05222013.zip"
+    '    Dim filePath As String = "C:\Docs\Lesley\Landis\data\TRY2\Landis-log.txt"
+    '    Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath)
+    '    'Encode them to Byte format to include with the request
+    '    Dim dataArray As Byte() = Encoding.UTF8.GetBytes(Data)
+    '    reqT.ContentLength = dataArray.Length + fileInfo.Length
 
-        Try
-            'Intercept the httpRequest so we can add the request fields
-            Dim dataStreamT As System.IO.Stream = reqT.GetRequestStream()
-            dataStreamT.Write(dataArray, 0, dataArray.Length)
+    '    Try
+    '        'Intercept the httpRequest so we can add the request fields
+    '        Dim dataStreamT As System.IO.Stream = reqT.GetRequestStream()
+    '        dataStreamT.Write(dataArray, 0, dataArray.Length)
 
-            ' Read the source file into a byte array.
-            Dim bytes() As Byte = New Byte((fileInfo.Length) - 1) {}
-            Dim numBytesToRead As Integer = CType(fileInfo.Length, Integer)
-            Dim numBytesRead As Integer = 0
+    '        ' Read the source file into a byte array.
+    '        Dim bytes() As Byte = New Byte((fileInfo.Length) - 1) {}
+    '        Dim numBytesToRead As Integer = CType(fileInfo.Length, Integer)
+    '        Dim numBytesRead As Integer = 0
 
-            Using fsSource As System.IO.FileStream = New System.IO.FileStream(filePath, System.IO.FileMode.Open, _
-                                                                              System.IO.FileAccess.Read)
-                While (numBytesToRead > 0)
-                    ' Read may return anything from 0 to numBytesToRead.
-                    Dim n As Integer = fsSource.Read(bytes, numBytesRead, numBytesToRead)
-                    ' Break when the end of the file is reached.
-                    If (n = 0) Then
-                        Exit While
-                    End If
-                    numBytesRead = (numBytesRead + n)
-                    numBytesToRead = (numBytesToRead - n)
-                End While
-                numBytesToRead = bytes.Length
+    '        Using fsSource As System.IO.FileStream = New System.IO.FileStream(filePath, System.IO.FileMode.Open, _
+    '                                                                          System.IO.FileAccess.Read)
+    '            While (numBytesToRead > 0)
+    '                ' Read may return anything from 0 to numBytesToRead.
+    '                Dim n As Integer = fsSource.Read(bytes, numBytesRead, numBytesToRead)
+    '                ' Break when the end of the file is reached.
+    '                If (n = 0) Then
+    '                    Exit While
+    '                End If
+    '                numBytesRead = (numBytesRead + n)
+    '                numBytesToRead = (numBytesToRead - n)
+    '            End While
+    '            numBytesToRead = bytes.Length
 
-                'write data to request
-                dataStreamT.Write(bytes, 0, numBytesToRead)
-            End Using
-            dataStreamT.Close()
+    '            'write data to request
+    '            dataStreamT.Write(bytes, 0, numBytesToRead)
+    '        End Using
+    '        dataStreamT.Close()
 
-            resT = CType(reqT.GetResponse(), HttpWebResponse)
-            'Printing the response to the Console for testing
-            Using SReader As System.IO.StreamReader = New System.IO.StreamReader(resT.GetResponseStream)
-                Debug.Print(SReader.ReadToEnd())
-            End Using
-            'If we didn't get an exception, the upload was successful
-            Return BA_ReturnCode.Success
-        Catch ex As WebException
-            Debug.Print("BA_UploadAoi Exception: " & ex.Message)
-            Return BA_ReturnCode.UnknownError
-        End Try
+    '        resT = CType(reqT.GetResponse(), HttpWebResponse)
+    '        'Printing the response to the Console for testing
+    '        Using SReader As System.IO.StreamReader = New System.IO.StreamReader(resT.GetResponseStream)
+    '            Debug.Print(SReader.ReadToEnd())
+    '        End Using
+    '        'If we didn't get an exception, the upload was successful
+    '        Return BA_ReturnCode.Success
+    '    Catch ex As WebException
+    '        Debug.Print("BA_UploadAoi Exception: " & ex.Message)
+    '        Return BA_ReturnCode.UnknownError
+    '    End Try
 
-    End Function
+    'End Function
 
     Public Function BA_UploadMultiPart(ByVal webserviceUrl As String, ByVal strToken As String, _
                                        ByVal fileName As String, ByVal filePath As String) As BA_ReturnCode
@@ -380,10 +380,14 @@ Module WebservicesModule
             requestStream.Close()
 
             resT = CType(reqT.GetResponse(), HttpWebResponse)
-            'Printing the response to the Console for testing
-            Using SReader As System.IO.StreamReader = New System.IO.StreamReader(resT.GetResponseStream)
-                Debug.Print(SReader.ReadToEnd())
-            End Using
+            'Convert the JSON response to a Task object
+            Dim aoiUpload As AoiUpload = New AoiUpload
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
+            'Put JSON payload into AOI object
+            aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
+
+            'Check the status again
+            WaitForResponse(aoiUpload, strToken)
             'If we didn't get an exception, the upload was successful
             Return BA_ReturnCode.Success
         Catch ex As Exception
@@ -435,4 +439,29 @@ Module WebservicesModule
         End Try
         Return aoiDictionary
     End Function
+
+    Private Function WaitForResponse(ByVal aoiUpload As AoiUpload, ByVal strToken As String) As BA_ReturnCode
+        Dim reqT As HttpWebRequest
+        Dim resT As HttpWebResponse
+        reqT = WebRequest.Create(aoiUpload.url)
+        'This is a GET request
+        reqT.Method = "GET"
+
+        'Retrieve the token and format it for the header; Token comes from caller
+        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+        'Put token in header
+        reqT.Headers(HttpRequestHeader.Authorization) = cred
+        Try
+            resT = CType(reqT.GetResponse(), HttpWebResponse)
+
+            'Serialize the response so we can check the status
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
+            aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
+            MsgBox(aoiUpload.task.status)
+        Catch ex As WebException
+            Debug.Print(" WaitForResponse: " & ex.Message)
+        End Try
+
+    End Function
+
 End Module
