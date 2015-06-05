@@ -169,7 +169,12 @@ Public Class FrmDownloadAoiMenu
 
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
-        Dim fileName As String = "aoi3_20150529"
-        BA_UploadMultiPart(uploadUrl, m_token.token, fileName, TxtUploadPath.Text)
+        Dim fileName As String = "aoi2_20150605"
+        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, fileName, TxtUploadPath.Text)
+        If anUpload.task IsNot Nothing Then
+            Dim interval As UInteger = 10000
+            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval)
+            aTimer.EnableTimer(True)
+        End If
     End Sub
 End Class

@@ -8,6 +8,7 @@ Imports ESRI.ArcGIS.DataSourcesGDB
 Imports ESRI.ArcGIS.Carto
 Imports ESRI.ArcGIS.DataSourcesRaster
 Imports System.Net
+Imports System.Timers
 
 Module WebservicesModule
 
@@ -342,9 +343,10 @@ Module WebservicesModule
     'End Function
 
     Public Function BA_UploadMultiPart(ByVal webserviceUrl As String, ByVal strToken As String, _
-                                       ByVal fileName As String, ByVal filePath As String) As BA_ReturnCode
+                                       ByVal fileName As String, ByVal filePath As String) As AoiUpload
         Dim reqT As HttpWebRequest
         Dim resT As HttpWebResponse
+        Dim anUpload As AoiUpload = New AoiUpload
         'The end point for getting a token for the web service
         reqT = WebRequest.Create(webserviceUrl)
         'This is a POST request
@@ -381,18 +383,15 @@ Module WebservicesModule
 
             resT = CType(reqT.GetResponse(), HttpWebResponse)
             'Convert the JSON response to a Task object
-            Dim aoiUpload As AoiUpload = New AoiUpload
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
             'Put JSON payload into AOI object
-            aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
+            anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
 
-            'Check the status again
-            WaitForResponse(aoiUpload, strToken)
             'If we didn't get an exception, the upload was successful
-            Return BA_ReturnCode.Success
+            Return anUpload
         Catch ex As Exception
             Debug.Print("BA_UploadMultiPart: " & ex.Message)
-            Return BA_ReturnCode.UnknownError
+            Return anUpload
         End Try
 
     End Function
@@ -440,28 +439,5 @@ Module WebservicesModule
         Return aoiDictionary
     End Function
 
-    Private Function WaitForResponse(ByVal aoiUpload As AoiUpload, ByVal strToken As String) As BA_ReturnCode
-        Dim reqT As HttpWebRequest
-        Dim resT As HttpWebResponse
-        reqT = WebRequest.Create(aoiUpload.url)
-        'This is a GET request
-        reqT.Method = "GET"
-
-        'Retrieve the token and format it for the header; Token comes from caller
-        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
-        'Put token in header
-        reqT.Headers(HttpRequestHeader.Authorization) = cred
-        Try
-            resT = CType(reqT.GetResponse(), HttpWebResponse)
-
-            'Serialize the response so we can check the status
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
-            aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
-            MsgBox(aoiUpload.task.status)
-        Catch ex As WebException
-            Debug.Print(" WaitForResponse: " & ex.Message)
-        End Try
-
-    End Function
 
 End Module

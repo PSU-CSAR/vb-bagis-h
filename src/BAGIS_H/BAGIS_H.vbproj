@@ -185,6 +185,7 @@
     <Compile Include="HruZoneDelineation\FrmDataUnits.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Objects\AoiUploadTimer.vb" />
     <Compile Include="Objects\BagisToken.vb" />
     <Compile Include="Objects\MultipartFormHelper.vb" />
     <Compile Include="Objects\FeatureService.vb" />
