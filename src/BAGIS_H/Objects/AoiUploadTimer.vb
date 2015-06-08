@@ -1,5 +1,6 @@
 ﻿Imports System.Timers
 Imports System.Net
+Imports BAGIS_ClassLibrary
 
 Public Class AoiUploadTimer
 
@@ -7,10 +8,13 @@ Public Class AoiUploadTimer
     Private Shared m_aoiUpload As AoiUpload
     Private Shared m_token As String
     Private Shared m_parent As FrmDownloadAoiMenu
+    Private Shared beginTime As DateTime
 
-    Public Sub New(ByRef aoiUpload As AoiUpload, ByVal strToken As String, interval As UInteger)
+    Public Sub New(ByRef aoiUpload As AoiUpload, ByVal strToken As String, ByVal interval As UInteger, _
+                   ByRef parentForm As FrmDownloadAoiMenu)
         m_aoiUpload = aoiUpload
         m_token = strToken
+        m_parent = parentForm
 
         'Instantiate timer
         aTimer = New Timer
@@ -21,6 +25,7 @@ Public Class AoiUploadTimer
     End Sub
 
     Public Sub EnableTimer(ByVal enable As Boolean)
+        beginTime = Now
         aTimer.Enabled = enable
     End Sub
 
@@ -45,12 +50,21 @@ Public Class AoiUploadTimer
             Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(m_aoiUpload.[GetType]())
             m_aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
 
-            Dim uploadStatus As String = m_aoiUpload.task.status
-            MsgBox(uploadStatus)
-            If Trim(uploadStatus).ToUpper <> "PENDING" Then
-                aTimer.Stop()
-                MsgBox("Timer stopped")
-            End If
+            Dim uploadStatus As String = Trim(m_aoiUpload.task.status).ToUpper
+            Dim strStatus As String = Nothing
+            Select Case uploadStatus
+                Case BA_Task_Pending
+                    strStatus = m_parent.TxtStatus.Text & "+"
+                Case BA_Task_Failed
+                    strStatus = "AOI upload failed. Error: " & m_aoiUpload.task.traceback
+                    aTimer.Stop()
+                Case BA_Task_Success
+                    Dim stopTime As DateTime = Now
+                    Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
+                    strStatus = "AOI upload succeeded in " & elapsedTime.TotalSeconds.ToString("0") & " seconds"
+                    aTimer.Stop()
+            End Select
+            m_parent.UpdateStatus(m_parent.TxtStatus, strStatus)
         Catch ex As WebException
             Debug.Print(" WaitForResponse: " & ex.Message)
         End Try

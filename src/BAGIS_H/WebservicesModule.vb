@@ -389,6 +389,18 @@ Module WebservicesModule
 
             'If we didn't get an exception, the upload was successful
             Return anUpload
+        Catch w As WebException
+            Dim exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)
+            Dim sb As StringBuilder = New StringBuilder
+            'The response is a long html page
+            'The exception is indicated with this line: <pre class="exception_value">An AOI of the same name already exists.</pre>
+            '@ToDo: Figure out how to parse the response and pull out this exception_value
+            If exceptResp IsNot Nothing Then
+                Using SReader As System.IO.StreamReader = New System.IO.StreamReader(exceptResp.GetResponseStream)
+                    sb.Append(SReader.ReadToEnd)
+                End Using
+            End If
+            Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
         Catch ex As Exception
             Debug.Print("BA_UploadMultiPart: " & ex.Message)
             Return anUpload

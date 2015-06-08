@@ -157,24 +157,42 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
+        TxtStatus.Text = ""
         If String.IsNullOrEmpty(m_token.token) Then
             Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
             Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
             m_token.token = strToken
             If String.IsNullOrEmpty(strToken) Then
-                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                TxtStatus.Text = "Invalid user name or password. Failed to connect to database"
+                'MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Exit Sub
             End If
         End If
 
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
-        Dim fileName As String = "aoi2_20150605"
+        Dim fileName As String = "aoi6_20150608"
+        TxtStatus.Text = "AOI upload started"
+        Application.DoEvents()
         Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, fileName, TxtUploadPath.Text)
         If anUpload.task IsNot Nothing Then
             Dim interval As UInteger = 10000
-            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval)
+            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval, Me)
+            Me.UpdateStatus(Me.TxtStatus, "AOI upload in progress ")
             aTimer.EnableTimer(True)
+        Else
+            Me.UpdateStatus(Me.TxtStatus, "An error occurred while trying to upload the AOI")
         End If
     End Sub
+
+    'Work around cross-threading exception to update form status field
+    Public Sub UpdateStatus(ByVal ctl As Control, ByVal strStatus As String)
+        If ctl.InvokeRequired Then
+            ctl.BeginInvoke(New Action(Of Control, String)(AddressOf UpdateStatus), ctl, strStatus)
+        Else
+            ctl.Text = strStatus
+        End If
+        Application.DoEvents()
+    End Sub
+
 End Class
