@@ -2,6 +2,7 @@
 Imports System.Net
 Imports System.Text
 Imports System.IO
+Imports BAGIS_ClassLibrary
 
 Public Class FrmDownloadAoiMenu
 
@@ -9,10 +10,18 @@ Public Class FrmDownloadAoiMenu
     'In practice the user name/password will be provided by the user
     Private m_userName As String = Nothing
     Private m_password As String = Nothing
-    Dim idxAoiName As Integer = 0
-    Dim idxDateUploaded As Integer = 1
-    Dim idxAuthor As Integer = 2
-    Dim idxDownload As Integer = 3
+    Private idxAoiName As Integer = 0
+    Private idxDateUploaded As Integer = 1
+    Private idxAuthor As Integer = 2
+    Private idxDownload As Integer = 3
+    Private idxTaskAoi As Integer = 0
+    Private idxTaskType As Integer = 1
+    Private idxTaskStatus As Integer = 2
+    Private idxTaskTime As Integer = 3
+    Private idxTaskMessage As Integer = 4
+    Private idxTaskUrl As Integer = 5
+    Private Const UPLOAD_TYPE As String = "Upload"
+    Private Const DOWNLOAD_TYPE As String = "Download"
 
     Public Sub New()
 
@@ -156,14 +165,15 @@ Public Class FrmDownloadAoiMenu
         AoiGrid.CurrentCell = Nothing
     End Sub
 
+    '@ToDo: Need to resolve reference to TxtStatus so we update the grid instead
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
-        TxtStatus.Text = ""
+        'TxtStatus.Text = ""
         If String.IsNullOrEmpty(m_token.token) Then
             Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
             Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
             m_token.token = strToken
             If String.IsNullOrEmpty(strToken) Then
-                TxtStatus.Text = "Invalid user name or password. Failed to connect to database"
+                'TxtStatus.Text = "Invalid user name or password. Failed to connect to database"
                 'MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Exit Sub
             End If
@@ -171,28 +181,63 @@ Public Class FrmDownloadAoiMenu
 
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
-        Dim fileName As String = "aoi6_20150608"
-        TxtStatus.Text = "AOI upload started"
+        Dim fileName As String = Path.GetFileNameWithoutExtension(TxtUploadPath.Text)
+
+        '---create a row---
+        Dim item As New DataGridViewRow
+        item.CreateCells(GrdTasks)
+        With item
+            .Cells(idxTaskAoi).Value = fileName
+            .Cells(idxTaskType).Value = UPLOAD_TYPE
+            .Cells(idxTaskStatus).Value = BA_Task_Started
+            .Cells(idxTaskTime).Value = "N/A"
+        End With
+        GrdTasks.Rows.Add(item)
         Application.DoEvents()
+
         Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, fileName, TxtUploadPath.Text)
         If anUpload.task IsNot Nothing Then
             Dim interval As UInteger = 10000
             Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval, Me)
-            Me.UpdateStatus(Me.TxtStatus, "AOI upload in progress ")
+            With item
+                .Cells(idxTaskStatus).Value = anUpload.task.status
+                .Cells(idxTaskUrl).Value = anUpload.url
+                .Cells(idxTaskTime).Value = "0"
+            End With
             aTimer.EnableTimer(True)
         Else
-            Me.UpdateStatus(Me.TxtStatus, "An error occurred while trying to upload the AOI")
+            With item
+                .Cells(idxTaskStatus).Value = BA_Task_Failure
+                .Cells(idxTaskTime).Value = "N/A"
+                .Cells(idxTaskMessage).Value = "An error occurred while trying to upload the AOI"
+            End With
         End If
     End Sub
 
-    'Work around cross-threading exception to update form status field
-    Public Sub UpdateStatus(ByVal ctl As Control, ByVal strStatus As String)
+    'Work around cross-threading exception to update task table
+    Public Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiUpload, ByVal elapsedTime As Integer, ByVal strMessage As String)
         If ctl.InvokeRequired Then
-            ctl.BeginInvoke(New Action(Of Control, String)(AddressOf UpdateStatus), ctl, strStatus)
+            ctl.BeginInvoke(New Action(Of Control, AoiUpload, Integer, String)(AddressOf UpdateStatus), ctl, aoiUpload, elapsedTime, strMessage)
         Else
-            ctl.Text = strStatus
+            For Each row As DataGridViewRow In GrdTasks.Rows
+                Dim url As String = row.Cells(idxTaskUrl).Value
+                If url = aoiUpload.url Then
+                    row.Cells(idxTaskStatus).Value = aoiUpload.task.status
+                    row.Cells(idxTaskTime).Value = CStr(elapsedTime)
+                    row.Cells(idxTaskMessage).Value = strMessage
+                End If
+            Next
         End If
         Application.DoEvents()
     End Sub
 
+    Private Sub BtnSelectAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectAoi.Click
+        Dim openFileDialog1 As New OpenFileDialog()
+
+        openFileDialog1.Filter = "zip files (*.zip)|*.zip"
+        openFileDialog1.FilterIndex = 1
+        If openFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            TxtUploadPath.Text = openFileDialog1.FileName
+        End If
+    End Sub
 End Class

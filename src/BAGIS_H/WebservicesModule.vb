@@ -401,6 +401,7 @@ Module WebservicesModule
                 End Using
             End If
             Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
+            Return anUpload
         Catch ex As Exception
             Debug.Print("BA_UploadMultiPart: " & ex.Message)
             Return anUpload

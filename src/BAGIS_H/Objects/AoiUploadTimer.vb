@@ -51,22 +51,19 @@ Public Class AoiUploadTimer
             m_aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
 
             Dim uploadStatus As String = Trim(m_aoiUpload.task.status).ToUpper
-            Dim strStatus As String = Nothing
+            Dim strMessage As String = Nothing
             Select Case uploadStatus
-                Case BA_Task_Pending
-                    strStatus = m_parent.TxtStatus.Text & "+"
-                Case BA_Task_Failed
-                    strStatus = "AOI upload failed. Error: " & m_aoiUpload.task.traceback
+                Case BA_Task_Failure
+                    strMessage = m_aoiUpload.task.traceback
                     aTimer.Stop()
                 Case BA_Task_Success
-                    Dim stopTime As DateTime = Now
-                    Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
-                    strStatus = "AOI upload succeeded in " & elapsedTime.TotalSeconds.ToString("0") & " seconds"
                     aTimer.Stop()
             End Select
-            m_parent.UpdateStatus(m_parent.TxtStatus, strStatus)
+            Dim stopTime As DateTime = Now
+            Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
+            m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiUpload, CInt(elapsedTime.TotalSeconds), strMessage)
         Catch ex As WebException
-            Debug.Print(" WaitForResponse: " & ex.Message)
+            Debug.Print("WaitForResponse: " & ex.Message)
         End Try
     End Sub
 
