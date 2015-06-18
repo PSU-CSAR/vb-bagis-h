@@ -3,7 +3,7 @@
     Dim m_name As String
     Dim m_url As String
     Dim m_created_at As String
-    Dim m_created_by As String
+    Public created_by As created_by
 
     Property name As String
         Get
@@ -32,15 +32,6 @@
         End Set
     End Property
 
-    Property created_by As String
-        Get
-            Return m_created_by
-        End Get
-        Set(value As String)
-            m_created_by = value
-        End Set
-    End Property
-
     ReadOnly Property DateCreated As Date
         Get
             Dim aDate As DateTime
@@ -49,10 +40,9 @@
         End Get
     End Property
 
-    ReadOnly Property Author As String
-        Get
-            Dim results As String() = m_created_by.Split("/")
-            Return results(results.Length - 2)
-        End Get
-    End Property
+End Class
+
+Public Class Created_By
+    Public url As String
+    Public username As String
 End Class

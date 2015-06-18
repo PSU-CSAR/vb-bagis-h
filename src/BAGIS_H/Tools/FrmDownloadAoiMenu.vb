@@ -154,7 +154,7 @@ Public Class FrmDownloadAoiMenu
             With item
                 .Cells(idxAoiName).Value = kvp.Value.name
                 .Cells(idxDateUploaded).Value = kvp.Value.DateCreated.ToString("MM-dd-yyyy")
-                .Cells(idxAuthor).Value = kvp.Value.Author
+                .Cells(idxAuthor).Value = kvp.Value.created_by.username
                 '.Cells(3).Value = False
                 '.Cells(4).Value = "Updated AOI with new gauge station"
             End With
