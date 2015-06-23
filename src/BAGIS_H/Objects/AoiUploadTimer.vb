@@ -4,17 +4,19 @@ Imports BAGIS_ClassLibrary
 
 Public Class AoiUploadTimer
 
-    Private Shared aTimer As Timer
-    Private Shared m_aoiUpload As AoiUpload
-    Private Shared m_token As String
-    Private Shared m_parent As FrmDownloadAoiMenu
-    Private Shared beginTime As DateTime
+    Private aTimer As Timer = New Timer
+    Private m_aoiUpload As AoiUpload
+    Private m_token As String
+    Private m_parent As FrmDownloadAoiMenu
+    Private beginTime As DateTime
+    Private m_uploadTimeout As Double  'Units are seconds
 
     Public Sub New(ByRef aoiUpload As AoiUpload, ByVal strToken As String, ByVal interval As UInteger, _
-                   ByRef parentForm As FrmDownloadAoiMenu)
+                   ByVal uploadTimeout As Double, ByRef parentForm As FrmDownloadAoiMenu)
         m_aoiUpload = aoiUpload
         m_token = strToken
         m_parent = parentForm
+        m_uploadTimeout = uploadTimeout
 
         'Instantiate timer
         aTimer = New Timer
@@ -29,10 +31,17 @@ Public Class AoiUploadTimer
         aTimer.Enabled = enable
     End Sub
 
+    'Use to cancel timer from form
+    Public Sub CloseTimer()
+        If aTimer IsNot Nothing Then
+            aTimer.Close()
+        End If
+    End Sub
+
     ' Specify what you want to happen when the Elapsed event is 
     ' raised.
-    Private Shared Sub OnTimedEvent(source As Object, e As ElapsedEventArgs)
-        Debug.Print("The Elapsed event was raised at {0}", e.SignalTime)
+    Private Sub OnTimedEvent(source As Object, e As ElapsedEventArgs)
+        'Debug.Print("The Elapsed event was raised at {0}", e.SignalTime)
         Dim reqT As HttpWebRequest
         Dim resT As HttpWebResponse
         Try
@@ -52,18 +61,25 @@ Public Class AoiUploadTimer
 
             Dim uploadStatus As String = Trim(m_aoiUpload.task.status).ToUpper
             Dim strMessage As String = Nothing
+            Dim stopTime As DateTime = Now
+            Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
             Select Case uploadStatus
                 Case BA_Task_Failure
                     strMessage = m_aoiUpload.task.traceback
-                    aTimer.Stop()
+                    aTimer.Close()
                 Case BA_Task_Success
-                    aTimer.Stop()
+                    aTimer.Close()
+                Case BA_Task_Pending
+                    If elapsedTime.TotalSeconds > m_uploadTimeout Then
+                        m_aoiUpload.task.status = BA_Task_Timed_Out
+                        strMessage = "Upload timed out"
+                        aTimer.Close()
+                    End If
             End Select
-            Dim stopTime As DateTime = Now
-            Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
             m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiUpload, CInt(elapsedTime.TotalSeconds), strMessage)
         Catch ex As WebException
-            Debug.Print("WaitForResponse: " & ex.Message)
+            Debug.Print("OnTimedEvent: " & ex.Message)
+            aTimer.Close()
         End Try
     End Sub
 

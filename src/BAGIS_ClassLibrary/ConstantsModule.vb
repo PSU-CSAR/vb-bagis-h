@@ -182,6 +182,7 @@
     Public Const BA_Task_Pending = "PENDING"
     Public Const BA_Task_Failure = "FAILURE"
     Public Const BA_Task_Success = "SUCCESS"
+    Public Const BA_Task_Timed_Out = "TIMED OUT"
 End Module
 
 

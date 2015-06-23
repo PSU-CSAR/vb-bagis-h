@@ -22,6 +22,7 @@ Public Class FrmDownloadAoiMenu
     Private idxTaskUrl As Integer = 5
     Private Const UPLOAD_TYPE As String = "Upload"
     Private Const DOWNLOAD_TYPE As String = "Download"
+    Private m_timersList As IList(Of AoiUploadTimer)
 
     Public Sub New()
 
@@ -74,6 +75,7 @@ Public Class FrmDownloadAoiMenu
 
         'Check for token
         'm_token.token = SecurityHelper.GetStoredToken
+        m_timersList = New List(Of AoiUploadTimer)
     End Sub
 
     Private Sub BtnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnCancel.Click
@@ -165,7 +167,6 @@ Public Class FrmDownloadAoiMenu
         AoiGrid.CurrentCell = Nothing
     End Sub
 
-    '@ToDo: Need to resolve reference to TxtStatus so we update the grid instead
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
         'TxtStatus.Text = ""
         If String.IsNullOrEmpty(m_token.token) Then
@@ -173,8 +174,7 @@ Public Class FrmDownloadAoiMenu
             Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
             m_token.token = strToken
             If String.IsNullOrEmpty(strToken) Then
-                'TxtStatus.Text = "Invalid user name or password. Failed to connect to database"
-                'MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Exit Sub
             End If
         End If
@@ -182,6 +182,10 @@ Public Class FrmDownloadAoiMenu
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         Dim fileName As String = Path.GetFileNameWithoutExtension(TxtUploadPath.Text)
+        If String.IsNullOrEmpty(fileName) Then
+            MessageBox.Show("No file selected to upload", "No file selected", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
 
         '---create a row---
         Dim item As New DataGridViewRow
@@ -197,14 +201,18 @@ Public Class FrmDownloadAoiMenu
 
         Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, fileName, TxtUploadPath.Text)
         If anUpload.task IsNot Nothing Then
-            Dim interval As UInteger = 10000
-            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval, Me)
+            Dim interval As UInteger = 10000    'Value in milleseconds
+            Dim uploadTimeout As Double = 120   'Value in seconds
+            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval, uploadTimeout, Me)
+            m_timersList.Add(aTimer)
             With item
                 .Cells(idxTaskStatus).Value = anUpload.task.status
                 .Cells(idxTaskUrl).Value = anUpload.url
                 .Cells(idxTaskTime).Value = "0"
             End With
             aTimer.EnableTimer(True)
+            'Clear out upload file name
+            TxtUploadPath.Text = Nothing
         Else
             With item
                 .Cells(idxTaskStatus).Value = BA_Task_Failure
@@ -239,5 +247,19 @@ Public Class FrmDownloadAoiMenu
         If openFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
             TxtUploadPath.Text = openFileDialog1.FileName
         End If
+    End Sub
+
+    Private Sub TxtUploadPath_TextChanged(sender As System.Object, e As System.EventArgs) Handles TxtUploadPath.TextChanged
+        If Not String.IsNullOrEmpty(TxtUploadPath.Text) Then
+            BtnUpload.Enabled = True
+        End If
+    End Sub
+
+    Private Sub BtnClear_Click(sender As System.Object, e As System.EventArgs) Handles BtnClear.Click
+        GrdTasks.Rows.Clear()
+        For Each aTimer As AoiUploadTimer In m_timersList
+            aTimer.CloseTimer()
+        Next
+        m_timersList.Clear()
     End Sub
 End Class
