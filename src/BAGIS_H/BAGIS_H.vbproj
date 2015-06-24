@@ -150,6 +150,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -187,6 +188,7 @@
     </Compile>
     <Compile Include="Objects\AoiUploadTimer.vb" />
     <Compile Include="Objects\BagisToken.vb" />
+    <Compile Include="Objects\AoiDownloadTimer.vb" />
     <Compile Include="Objects\MultipartFormHelper.vb" />
     <Compile Include="Objects\FeatureService.vb" />
     <Compile Include="Objects\FeatureServiceField.vb" />

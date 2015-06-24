@@ -1,5 +1,6 @@
 ﻿Imports System.Net
 Imports System.Text
+Imports System.IO
 
 Public Class SecurityHelper
 
@@ -82,5 +83,20 @@ Public Class SecurityHelper
 
     Protected Shared Function AcceptAllCertifications(ByVal sender As Object, ByVal certification As System.Security.Cryptography.X509Certificates.X509Certificate, ByVal chain As System.Security.Cryptography.X509Certificates.X509Chain, ByVal sslPolicyErrors As System.Net.Security.SslPolicyErrors) As Boolean
         Return True
+    End Function
+
+    Public Shared Function IsPathWritable(ByVal strPath) As Boolean
+        'http://www.vbdotnetforums.com/vb-net-general-discussion/57111-how-get-simple-yes-no-if-user-has-read-write-permission-directory.html
+        IsPathWritable = True
+        If Not Directory.Exists(strPath) Then
+            IsPathWritable = False
+        Else
+            Try
+                Dim fs As FileStream = File.Create(strPath & "\WriteTest.txt", 5, FileOptions.DeleteOnClose)
+                fs.Close()
+            Catch ex As IOException
+                IsPathWritable = False
+            End Try
+        End If
     End Function
 End Class

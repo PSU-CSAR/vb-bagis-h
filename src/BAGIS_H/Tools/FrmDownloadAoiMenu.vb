@@ -3,6 +3,8 @@ Imports System.Net
 Imports System.Text
 Imports System.IO
 Imports BAGIS_ClassLibrary
+Imports ESRI.ArcGIS.CatalogUI
+Imports ESRI.ArcGIS.Catalog
 
 Public Class FrmDownloadAoiMenu
 
@@ -14,6 +16,7 @@ Public Class FrmDownloadAoiMenu
     Private idxDateUploaded As Integer = 1
     Private idxAuthor As Integer = 2
     Private idxDownload As Integer = 3
+    Private idxDownloadUrl As Integer = 4
     Private idxTaskAoi As Integer = 0
     Private idxTaskType As Integer = 1
     Private idxTaskStatus As Integer = 2
@@ -23,6 +26,7 @@ Public Class FrmDownloadAoiMenu
     Private Const UPLOAD_TYPE As String = "Upload"
     Private Const DOWNLOAD_TYPE As String = "Download"
     Private m_timersList As IList(Of AoiUploadTimer)
+    Private m_downTimersList As IList(Of AoiDownloadTimer)
 
     Public Sub New()
 
@@ -76,6 +80,7 @@ Public Class FrmDownloadAoiMenu
         'Check for token
         'm_token.token = SecurityHelper.GetStoredToken
         m_timersList = New List(Of AoiUploadTimer)
+        m_downTimersList = New List(Of AoiDownloadTimer)
     End Sub
 
     Private Sub BtnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnCancel.Click
@@ -83,35 +88,81 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnDownloadAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnDownloadAoi.Click
-        If String.IsNullOrEmpty(m_token.token) Then
-            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, TxtBasinsDb.Text & "api-token-auth/")
-            m_token.token = strToken
-            If String.IsNullOrEmpty(strToken) Then
-                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Try
+            'Is a destination folder selected
+            If String.IsNullOrEmpty(TxtDownloadPath.Text) Then
+                MessageBox.Show("You must select a destination folder to download an AOI", "No folder selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Exit Sub
             End If
-        End If
+            'Can the user write to the destination folder
+            If Not SecurityHelper.IsPathWritable(TxtDownloadPath.Text) Then
+                MessageBox.Show("You do not have permission to save to the folder you selected", "No permission", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Exit Sub
+            End If
+            'Is at least one aoi selected
+            Dim downloadCount As UInt16 = 0
+            For Each pRow As DataGridViewRow In AoiGrid.Rows
+                Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
+                If ckDownload = True Then
+                    downloadCount += 1
+                    Exit For
+                End If
+            Next
+            If downloadCount < 1 Then
+                MessageBox.Show("You must select at least one AOI to download", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Exit Sub
+            End If
 
-        Dim reqT As HttpWebRequest
-        Dim resT As HttpWebResponse
-        'The end point for getting a token for the web service
-        reqT = WebRequest.Create(TxtBasinsDb.Text & "aoi/")
-        'This is a GET request
-        reqT.Method = "GET"
+            'Check token
+            If String.IsNullOrEmpty(m_token.token) Then
+                Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
+                Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
+                m_token.token = strToken
+                If String.IsNullOrEmpty(strToken) Then
+                    MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Exit Sub
+                End If
+            End If
 
-        'Retrieve the token and format it for the header; Token comes from caller
-        Dim cred As String = String.Format("{0} {1}", "Token", m_token.token)
-        'Put token in header
-        reqT.Headers(HttpRequestHeader.Authorization) = cred
-
-        Try
-            resT = CType(reqT.GetResponse(), HttpWebResponse)
-            'Printing the response to the Console for testing
-            Using SReader As System.IO.StreamReader = New System.IO.StreamReader(resT.GetResponseStream)
-                Debug.Print(SReader.ReadToEnd())
-            End Using
+            For Each pRow As DataGridViewRow In AoiGrid.Rows
+                Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
+                If ckDownload = True Then
+                    Dim downloadUrl As String = Convert.ToString(pRow.Cells(idxDownloadUrl).Value)
+                    downloadUrl = downloadUrl & "download/"
+                    '---create a row---
+                    Dim item As New DataGridViewRow
+                    item.CreateCells(GrdTasks)
+                    With item
+                        .Cells(idxTaskAoi).Value = Convert.ToString(pRow.Cells(idxAoiName).Value)
+                        .Cells(idxTaskType).Value = DOWNLOAD_TYPE
+                        .Cells(idxTaskStatus).Value = BA_Task_Started
+                        .Cells(idxTaskTime).Value = "N/A"
+                    End With
+                    GrdTasks.Rows.Add(item)
+                    Application.DoEvents()
+                    Dim aDownload As AoiUpload = BA_Download_Aoi(downloadUrl, m_token.token)
+                    If aDownload.task IsNot Nothing Then
+                        Dim interval As UInteger = 10000    'Value in milleseconds
+                        Dim downloadTimeout As Double = 160   'Value in seconds
+                        Dim aTimer As AoiDownloadTimer = New AoiDownloadTimer(aDownload, m_token.token, interval, downloadTimeout, Me)
+                        m_downTimersList.Add(aTimer)
+                        With item
+                            .Cells(idxTaskStatus).Value = aDownload.task.status
+                            .Cells(idxTaskUrl).Value = aDownload.url
+                            .Cells(idxTaskTime).Value = "0"
+                        End With
+                        aTimer.EnableTimer(True)
+                    Else
+                        With item
+                            .Cells(idxTaskStatus).Value = BA_Task_Failure
+                            .Cells(idxTaskTime).Value = "N/A"
+                            .Cells(idxTaskMessage).Value = "An error occurred while trying to download the AOI"
+                        End With
+                    End If
+                End If
+            Next
         Catch ex As WebException
-            Debug.Print("Exception: " & ex.Message)
+            Debug.Print("BtnDownloadAoi_Click Exception: " & ex.Message)
         End Try
     End Sub
 
@@ -159,6 +210,7 @@ Public Class FrmDownloadAoiMenu
                 .Cells(idxAuthor).Value = kvp.Value.created_by.username
                 '.Cells(3).Value = False
                 '.Cells(4).Value = "Updated AOI with new gauge station"
+                .Cells(idxDownloadUrl).Value = kvp.Value.url
             End With
             AoiGrid.Rows.Add(item)
         Next kvp
@@ -168,7 +220,6 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
-        'TxtStatus.Text = ""
         If String.IsNullOrEmpty(m_token.token) Then
             Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
             Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
@@ -178,7 +229,6 @@ Public Class FrmDownloadAoiMenu
                 Exit Sub
             End If
         End If
-
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         Dim fileName As String = Path.GetFileNameWithoutExtension(TxtUploadPath.Text)
@@ -261,5 +311,34 @@ Public Class FrmDownloadAoiMenu
             aTimer.CloseTimer()
         Next
         m_timersList.Clear()
+    End Sub
+
+    Private Sub BtnSelectDownloadFolder_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectDownloadFolder.Click
+        Dim bObjectSelected As Boolean
+        Dim pGxDialog As IGxDialog = New GxDialog
+        Dim pGxObject As IEnumGxObject = Nothing
+        Dim pFilter As IGxObjectFilter = New GxFilterContainers
+
+        'initialize and open mini browser
+        With pGxDialog
+            .AllowMultiSelect = False
+            .ButtonCaption = "Select"
+            .Title = "Select folder for download"
+            .ObjectFilter = pFilter
+            bObjectSelected = .DoModalOpen(My.ArcMap.Application.hWnd, pGxObject)
+        End With
+
+        If bObjectSelected = False Then Exit Sub
+
+        'get the name of the selected folder
+        Dim pGxDataFolder As IGxFile
+        pGxDataFolder = pGxObject.Next
+        TxtDownloadPath.Text = pGxDataFolder.Path
+    End Sub
+
+    Private Sub TxtDownloadPath_TextChanged(sender As System.Object, e As System.EventArgs) Handles TxtDownloadPath.TextChanged
+        If Not String.IsNullOrEmpty(TxtDownloadPath.Text) Then
+            BtnDownloadAoi.Enabled = True
+        End If
     End Sub
 End Class

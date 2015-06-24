@@ -452,5 +452,40 @@ Module WebservicesModule
         Return aoiDictionary
     End Function
 
+    Public Function BA_Download_Aoi(ByVal url As String, ByVal strToken As String) As AoiUpload
+        Dim reqT As HttpWebRequest
+        Dim resT As HttpWebResponse
+        Dim aDownload As AoiUpload = New AoiUpload
+        'The end point for getting a token for the web service
+        reqT = WebRequest.Create(url)
+        'This is a GET request
+        reqT.Method = "GET"
 
+        'Retrieve the token and format it for the header; Token comes from caller
+        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+        'Put token in header
+        reqT.Headers(HttpRequestHeader.Authorization) = cred
+        Try
+            resT = CType(reqT.GetResponse(), HttpWebResponse)
+            'Convert the JSON response to a Task object
+            Dim mStream As System.IO.MemoryStream = New System.IO.MemoryStream
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aDownload.[GetType]())
+            'Put JSON payload into AOI object
+            aDownload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
+
+            'Using stream As System.IO.Stream = resT.GetResponseStream
+            '    Using streamReader As System.IO.StreamReader = New System.IO.StreamReader(stream)
+            '        Debug.Print("JSON response -->" & streamReader.ReadToEnd)
+            '    End Using
+            'End Using
+
+
+            'If we didn't get an exception, the upload was successful
+            Return aDownload
+        Catch ex As WebException
+            Debug.Print("BA_Download_Aoi Exception: " & ex.Message)
+            Return aDownload
+        End Try
+
+    End Function
 End Module
