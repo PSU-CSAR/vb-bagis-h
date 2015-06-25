@@ -1,7 +1,6 @@
 ﻿Imports System.Timers
 Imports System.Net
 Imports BAGIS_ClassLibrary
-Imports System.Web.Script.Serialization
 
 Public Class AoiDownloadTimer
 
@@ -10,14 +9,16 @@ Public Class AoiDownloadTimer
     Private m_token As String
     Private m_parent As FrmDownloadAoiMenu
     Private beginTime As DateTime
-    Private m_uploadTimeout As Double  'Units are seconds
+    Private m_downloadTimeout As Double  'Units are seconds
+    Private m_downloadFilePath As String
 
     Public Sub New(ByRef aoiDownload As AoiUpload, ByVal strToken As String, ByVal interval As UInteger, _
-                   ByVal uploadTimeout As Double, ByRef parentForm As FrmDownloadAoiMenu)
+                   ByVal downloadTimeout As Double, ByVal downloadFilePath As String, ByRef parentForm As FrmDownloadAoiMenu)
         m_aoiDownload = aoiDownload
         m_token = strToken
         m_parent = parentForm
-        m_uploadTimeout = uploadTimeout
+        m_downloadTimeout = downloadTimeout
+        m_downloadFilePath = downloadFilePath
 
         'Instantiate timer
         aTimer = New Timer
@@ -43,26 +44,21 @@ Public Class AoiDownloadTimer
     ' raised.
     Private Sub OnTimedEvent(source As Object, e As ElapsedEventArgs)
         Try
-            ' Create a new WebClient instance.
-            ' Using WebClient for built-in file download functionality
-            Dim myWebClient As New WebClient()
+            'Dim testUrl = "https://webservices.geog.pdx.edu/api/rest/downloads/JxVFr/"
+            'Check to see if we have a zip file
+            Dim contentType As String = WebservicesModule.BA_GetResponseContentType(m_aoiDownload.url, m_token)
 
-            'Retrieve the token and format it for the header; Token comes from caller
-            Dim cred As String = String.Format("{0} {1}", "Token", m_token)
-            'Put token in header
-            myWebClient.Headers(HttpRequestHeader.Authorization) = cred
-            Dim strResponse As String = myWebClient.DownloadString(m_aoiDownload.url)
-
-            'Serialize the response so we can check the status
-            'Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(m_aoiDownload.[GetType]())
-            'm_aoiDownload = CType(ser.ReadObject(strResponse), AoiUpload)
-            Dim ser As System.Web.Script.Serialization.JavaScriptSerializer = New System.Web.Script.Serialization.JavaScriptSerializer
-            m_aoiDownload = ser.Deserialize(Of AoiUpload)(strResponse)
+            Dim strMessage As String = Nothing
+            Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
+            If contentType = "application/zip" Then
+                aTimer.Close()
+                Dim success As BA_ReturnCode = m_parent.DownloadFile(m_aoiDownload, m_downloadFilePath)
+                Exit Sub
+            Else
+                m_aoiDownload = BA_Download_Aoi(m_aoiDownload.url, m_token)
+            End If
 
             Dim uploadStatus As String = Trim(m_aoiDownload.task.status).ToUpper
-            Dim strMessage As String = Nothing
-            Dim stopTime As DateTime = Now
-            Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
             Select Case uploadStatus
                 Case BA_Task_Failure
                     strMessage = m_aoiDownload.task.traceback
@@ -70,7 +66,7 @@ Public Class AoiDownloadTimer
                 Case BA_Task_Success
                     aTimer.Close()
                 Case BA_Task_Pending
-                    If elapsedTime.TotalSeconds > m_uploadTimeout Then
+                    If elapsedTime.TotalSeconds > m_downloadTimeout Then
                         m_aoiDownload.task.status = BA_Task_Timed_Out
                         strMessage = "Download timed out"
                         aTimer.Close()
@@ -78,10 +74,9 @@ Public Class AoiDownloadTimer
             End Select
             m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiDownload, CInt(elapsedTime.TotalSeconds), strMessage)
         Catch ex As WebException
-            Debug.Print("OnTimedEvent: " & ex.Message)
+            Debug.Print("AoiDownloadTimer.OnTimedEvent: " & ex.Message)
             aTimer.Close()
         End Try
     End Sub
-
 
 End Class

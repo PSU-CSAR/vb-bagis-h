@@ -89,7 +89,7 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnDownloadAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnDownloadAoi.Click
         Try
-            'Is a destination folder selected
+             'Is a destination folder selected
             If String.IsNullOrEmpty(TxtDownloadPath.Text) Then
                 MessageBox.Show("You must select a destination folder to download an AOI", "No folder selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Exit Sub
@@ -114,26 +114,19 @@ Public Class FrmDownloadAoiMenu
             End If
 
             'Check token
-            If String.IsNullOrEmpty(m_token.token) Then
-                Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
-                Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
-                m_token.token = strToken
-                If String.IsNullOrEmpty(strToken) Then
-                    MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Sub
-                End If
-            End If
+            If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
             For Each pRow As DataGridViewRow In AoiGrid.Rows
                 Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
                 If ckDownload = True Then
                     Dim downloadUrl As String = Convert.ToString(pRow.Cells(idxDownloadUrl).Value)
                     downloadUrl = downloadUrl & "download/"
+                    Dim aoiName As String = Convert.ToString(pRow.Cells(idxAoiName).Value)
                     '---create a row---
                     Dim item As New DataGridViewRow
                     item.CreateCells(GrdTasks)
                     With item
-                        .Cells(idxTaskAoi).Value = Convert.ToString(pRow.Cells(idxAoiName).Value)
+                        .Cells(idxTaskAoi).Value = aoiName
                         .Cells(idxTaskType).Value = DOWNLOAD_TYPE
                         .Cells(idxTaskStatus).Value = BA_Task_Started
                         .Cells(idxTaskTime).Value = "N/A"
@@ -143,8 +136,9 @@ Public Class FrmDownloadAoiMenu
                     Dim aDownload As AoiUpload = BA_Download_Aoi(downloadUrl, m_token.token)
                     If aDownload.task IsNot Nothing Then
                         Dim interval As UInteger = 10000    'Value in milleseconds
-                        Dim downloadTimeout As Double = 160   'Value in seconds
-                        Dim aTimer As AoiDownloadTimer = New AoiDownloadTimer(aDownload, m_token.token, interval, downloadTimeout, Me)
+                        Dim downloadTimeout As Double = 300   'Value in seconds
+                        Dim downloadFilePath As String = TxtDownloadPath.Text & "\" & aoiName & ".zip"
+                        Dim aTimer As AoiDownloadTimer = New AoiDownloadTimer(aDownload, m_token.token, interval, downloadTimeout, downloadFilePath, Me)
                         m_downTimersList.Add(aTimer)
                         With item
                             .Cells(idxTaskStatus).Value = aDownload.task.status
@@ -220,15 +214,7 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
-        If String.IsNullOrEmpty(m_token.token) Then
-            Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
-            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
-            m_token.token = strToken
-            If String.IsNullOrEmpty(strToken) Then
-                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Exit Sub
-            End If
-        End If
+        If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         Dim fileName As String = Path.GetFileNameWithoutExtension(TxtUploadPath.Text)
@@ -273,7 +259,7 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     'Work around cross-threading exception to update task table
-    Public Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiUpload, ByVal elapsedTime As Integer, ByVal strMessage As String)
+    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiUpload, ByVal elapsedTime As Integer, ByVal strMessage As String)
         If ctl.InvokeRequired Then
             ctl.BeginInvoke(New Action(Of Control, AoiUpload, Integer, String)(AddressOf UpdateStatus), ctl, aoiUpload, elapsedTime, strMessage)
         Else
@@ -341,4 +327,50 @@ Public Class FrmDownloadAoiMenu
             BtnDownloadAoi.Enabled = True
         End If
     End Sub
+
+    Private Function GenerateToken() As BA_ReturnCode
+        If String.IsNullOrEmpty(m_token.token) Then
+            Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
+            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
+            m_token.token = strToken
+            If String.IsNullOrEmpty(strToken) Then
+                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return BA_ReturnCode.OtherError
+            End If
+        End If
+        Return BA_ReturnCode.Success
+    End Function
+
+    Friend Function DownloadFile(ByVal aoiDownload As AoiUpload, ByVal downloadFilePath As String) As BA_ReturnCode
+        ' Using WebClient for built-in file download functionality
+        Dim myWebClient As New WebClient()
+        Try
+            'Retrieve the token and format it for the header; Token comes from caller
+            Dim cred As String = String.Format("{0} {1}", "Token", m_token.token)
+            'Put token in header
+            myWebClient.Headers(HttpRequestHeader.Authorization) = cred
+            AddHandler myWebClient.DownloadFileCompleted, AddressOf DownloadFileCompleted
+            Dim downloadUri As Uri = New Uri(aoiDownload.url)
+            '@ToDo: come up with an object to pass in the userstate
+            myWebClient.DownloadFileAsync(downloadUri, downloadFilePath, downloadFilePath)
+            Return BA_ReturnCode.Success
+        Catch ex As Exception
+            Debug.Print("DownloadFile: " & ex.Message)
+            Return BA_ReturnCode.UnknownError
+        End Try
+
+    End Function
+
+    Private Sub DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
+        ' File download completed
+        Dim messageBoxVB As New System.Text.StringBuilder()
+        messageBoxVB.AppendFormat("{0} = {1}", "Cancelled", e.Cancelled)
+        messageBoxVB.AppendLine()
+        messageBoxVB.AppendFormat("{0} = {1}", "Error", e.Error)
+        messageBoxVB.AppendLine()
+        messageBoxVB.AppendFormat("{0} = {1}", "UserState", e.UserState)
+        messageBoxVB.AppendLine()
+        MessageBox.Show(messageBoxVB.ToString(), "DownloadFileCompleted Event")
+    End Sub
+
 End Class
