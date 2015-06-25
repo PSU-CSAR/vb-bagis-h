@@ -373,7 +373,7 @@ Module WebservicesModule
             If fileInfo IsNot Nothing Then
                 '@ToDo: Remove hard-coding; write a dynamic function to determine mime type
                 'Dim fileMimeType As String = "text/plain"
-                Dim fileMimeType As String = "application/zip"
+                Dim fileMimeType As String = BA_Mime_Zip
                 Dim fileFormKey As String = "file"
                 MultipartFormHelper.WriteMultipartFormData(fileInfo, requestStream, boundary, fileMimeType, fileFormKey)
             End If

@@ -50,9 +50,12 @@ Public Class AoiDownloadTimer
 
             Dim strMessage As String = Nothing
             Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
-            If contentType = "application/zip" Then
+            Debug.Print("beginTime 1: " & beginTime)
+            'Debug.Print("contentType: " & contentType)
+            If contentType = BA_Mime_Zip Then
                 aTimer.Close()
-                Dim success As BA_ReturnCode = m_parent.DownloadFile(m_aoiDownload, m_downloadFilePath)
+                Dim aoiDownload As AoiDownload = New AoiDownload(m_aoiDownload.url, m_aoiDownload.task.status, beginTime, m_downloadFilePath)
+                Dim success As BA_ReturnCode = m_parent.DownloadFile(aoiDownload)
                 Exit Sub
             Else
                 m_aoiDownload = BA_Download_Aoi(m_aoiDownload.url, m_token)
@@ -62,6 +65,7 @@ Public Class AoiDownloadTimer
             Select Case uploadStatus
                 Case BA_Task_Failure
                     strMessage = m_aoiDownload.task.traceback
+                    Debug.Print("Download failure from server: " & m_aoiDownload.task.traceback)
                     aTimer.Close()
                 Case BA_Task_Success
                     aTimer.Close()
@@ -71,6 +75,7 @@ Public Class AoiDownloadTimer
                         strMessage = "Download timed out"
                         aTimer.Close()
                     End If
+                    strMessage = "Assembling download"
             End Select
             m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiDownload, CInt(elapsedTime.TotalSeconds), strMessage)
         Catch ex As WebException

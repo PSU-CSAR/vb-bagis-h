@@ -100,22 +100,36 @@ Public Class FrmDownloadAoiMenu
                 Exit Sub
             End If
             'Is at least one aoi selected
-            Dim downloadCount As UInt16 = 0
+            Dim dList As IList(Of String) = New List(Of String)
+            Dim dCount As UInt16 = 0
             For Each pRow As DataGridViewRow In AoiGrid.Rows
                 Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
                 If ckDownload = True Then
-                    downloadCount += 1
-                    Exit For
+                    dCount += 1
+                    Dim downloadFilePath As String = TxtDownloadPath.Text & "\" & Convert.ToString(pRow.Cells(idxAoiName).Value) & ".zip"
+                    If File.Exists(downloadFilePath) Then dList.Add(Convert.ToString(pRow.Cells(idxAoiName).Value))
                 End If
             Next
-            If downloadCount < 1 Then
+            If dCount < 1 Then
                 MessageBox.Show("You must select at least one AOI to download", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Exit Sub
+            End If
+            If dList.Count > 0 Then
+                Dim messageBoxVB As New System.Text.StringBuilder()
+                messageBoxVB.AppendLine("The following AOI's already exist in")
+                messageBoxVB.AppendLine("the selected download folder:")
+                For Each dName As String In dList
+                    messageBoxVB.AppendLine(dName)
+                Next
+                messageBoxVB.AppendLine("")
+                messageBoxVB.AppendLine("Click 'Yes' to overwrite or 'No' to cancel.")
+                MessageBox.Show(messageBoxVB.ToString, "Existing AOI's", MessageBoxButtons.YesNo)
             End If
 
             'Check token
             If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
+            BtnDownloadAoi.Enabled = False
             For Each pRow As DataGridViewRow In AoiGrid.Rows
                 Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
                 If ckDownload = True Then
@@ -144,6 +158,7 @@ Public Class FrmDownloadAoiMenu
                             .Cells(idxTaskStatus).Value = aDownload.task.status
                             .Cells(idxTaskUrl).Value = aDownload.url
                             .Cells(idxTaskTime).Value = "0"
+                            .Cells(idxTaskMessage).Value = "Assembling download"
                         End With
                         aTimer.EnableTimer(True)
                     Else
@@ -269,9 +284,24 @@ Public Class FrmDownloadAoiMenu
                     row.Cells(idxTaskStatus).Value = aoiUpload.task.status
                     row.Cells(idxTaskTime).Value = CStr(elapsedTime)
                     row.Cells(idxTaskMessage).Value = strMessage
+                    Exit Sub
                 End If
             Next
         End If
+        Application.DoEvents()
+    End Sub
+
+    Private Sub UpdateDownloadStatus(ByVal aoiDownload As AoiDownload, _
+                                     ByVal elapsedTime As Integer, ByVal strMessage As String)
+        For Each row As DataGridViewRow In GrdTasks.Rows
+            Dim url As String = row.Cells(idxTaskUrl).Value
+            If url = aoiDownload.Url Then
+                row.Cells(idxTaskStatus).Value = aoiDownload.Status
+                row.Cells(idxTaskTime).Value = CStr(elapsedTime)
+                row.Cells(idxTaskMessage).Value = strMessage
+                Exit Sub
+            End If
+        Next
         Application.DoEvents()
     End Sub
 
@@ -297,6 +327,11 @@ Public Class FrmDownloadAoiMenu
             aTimer.CloseTimer()
         Next
         m_timersList.Clear()
+        For Each aTimer As AoiDownloadTimer In m_downTimersList
+            aTimer.CloseTimer()
+        Next
+        m_downTimersList.Clear()
+        BtnDownloadAoi.Enabled = True
     End Sub
 
     Private Sub BtnSelectDownloadFolder_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectDownloadFolder.Click
@@ -341,7 +376,7 @@ Public Class FrmDownloadAoiMenu
         Return BA_ReturnCode.Success
     End Function
 
-    Friend Function DownloadFile(ByVal aoiDownload As AoiUpload, ByVal downloadFilePath As String) As BA_ReturnCode
+    Friend Function DownloadFile(ByVal aoiDownload As AoiDownload) As BA_ReturnCode
         ' Using WebClient for built-in file download functionality
         Dim myWebClient As New WebClient()
         Try
@@ -350,9 +385,11 @@ Public Class FrmDownloadAoiMenu
             'Put token in header
             myWebClient.Headers(HttpRequestHeader.Authorization) = cred
             AddHandler myWebClient.DownloadFileCompleted, AddressOf DownloadFileCompleted
-            Dim downloadUri As Uri = New Uri(aoiDownload.url)
-            '@ToDo: come up with an object to pass in the userstate
-            myWebClient.DownloadFileAsync(downloadUri, downloadFilePath, downloadFilePath)
+            AddHandler myWebClient.DownloadProgressChanged, AddressOf DownloadProgressCallback
+            Dim downloadUri As Uri = New Uri(aoiDownload.Url)
+            myWebClient.DownloadFileAsync(downloadUri, aoiDownload.FilePath, aoiDownload)
+            Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
+            UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "Downloading file")
             Return BA_ReturnCode.Success
         Catch ex As Exception
             Debug.Print("DownloadFile: " & ex.Message)
@@ -362,15 +399,50 @@ Public Class FrmDownloadAoiMenu
     End Function
 
     Private Sub DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
-        ' File download completed
-        Dim messageBoxVB As New System.Text.StringBuilder()
-        messageBoxVB.AppendFormat("{0} = {1}", "Cancelled", e.Cancelled)
-        messageBoxVB.AppendLine()
-        messageBoxVB.AppendFormat("{0} = {1}", "Error", e.Error)
-        messageBoxVB.AppendLine()
-        messageBoxVB.AppendFormat("{0} = {1}", "UserState", e.UserState)
-        messageBoxVB.AppendLine()
-        MessageBox.Show(messageBoxVB.ToString(), "DownloadFileCompleted Event")
+        Try
+            BtnDownloadAoi.Enabled = True
+            ' File download completed
+            Dim aoiDownload As AoiDownload = CType(e.UserState, AoiDownload)
+            Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
+            If e.Error IsNot Nothing Then
+                aoiDownload.Status = BA_Task_Failure
+                UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, e.Error.Message)
+                Exit Sub
+            End If
+            If e.Cancelled = True Then
+                aoiDownload.Status = BA_Task_Failure
+                UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "Download cancelled")
+                Exit Sub
+            End If
+            If e.Cancelled = False And e.Error Is Nothing Then
+                aoiDownload.Status = BA_Task_Success
+                UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "Download complete")
+            End If
+            'Dim messageBoxVB As New System.Text.StringBuilder()
+            'messageBoxVB.AppendFormat("{0} = {1}", "AoiName", aoiDownload.AoiName)
+            'messageBoxVB.AppendLine()
+            'MessageBox.Show(messageBoxVB.ToString(), "DownloadFileCompleted Event")
+        Catch ex As Exception
+            Debug.Print("DownloadFileCompleted: " & ex.Message)
+            MessageBox.Show(ex.Message, "DownloadFileCompleted Event Error")
+        End Try
+    End Sub
+
+    Private Sub DownloadProgressCallback(ByVal sender As Object, ByVal e As DownloadProgressChangedEventArgs)
+
+        '  Displays the operation identifier, and the transfer progress.
+        'Console.WriteLine("0}    downloaded 1} of 2} bytes. 3} % complete...", _
+        'CStr(e.UserState), e.BytesReceived, e.TotalBytesToReceive, e.ProgressPercentage)
+        Try
+            ' File download completed
+            Dim aoiDownload As AoiDownload = CType(e.UserState, AoiDownload)
+            Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
+            Dim strMessage As String = "Download " & CStr(e.ProgressPercentage) & "% complete)"
+            UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, strMessage)
+        Catch ex As Exception
+            Debug.Print("DownloadProgressCallback: " & ex.Message)
+            MessageBox.Show(ex.Message, "DownloadProgressCallback Event Error")
+        End Try
     End Sub
 
 End Class
