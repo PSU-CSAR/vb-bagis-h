@@ -67,13 +67,13 @@ Public Class AoiDownloadTimer
                     strMessage = m_aoiDownload.task.traceback
                     Debug.Print("Download failure from server: " & m_aoiDownload.task.traceback)
                     aTimer.Close()
-                Case BA_Task_Success
-                    aTimer.Close()
-                Case BA_Task_Pending
+                    m_parent.EnableDownloadBtn(m_parent.BtnDownloadAoi, True)
+                 Case BA_Task_Pending
                     If elapsedTime.TotalSeconds > m_downloadTimeout Then
                         m_aoiDownload.task.status = BA_Task_Timed_Out
                         strMessage = "Download timed out"
                         aTimer.Close()
+                        m_parent.EnableDownloadBtn(m_parent.BtnDownloadAoi, True)
                     End If
                     strMessage = "Assembling download"
             End Select

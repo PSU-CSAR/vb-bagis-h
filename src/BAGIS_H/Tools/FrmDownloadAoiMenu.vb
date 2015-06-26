@@ -291,6 +291,16 @@ Public Class FrmDownloadAoiMenu
         Application.DoEvents()
     End Sub
 
+    'Work around cross-threading exception to enable download button
+    Friend Sub EnableDownloadBtn(ByVal ctl As Control, ByVal Enabled As Boolean)
+        If ctl.InvokeRequired Then
+            ctl.BeginInvoke(New Action(Of Control, Boolean)(AddressOf EnableDownloadBtn), ctl, Enabled)
+        Else
+            BtnDownloadAoi.Enabled = Enabled
+        End If
+        Application.DoEvents()
+    End Sub
+
     Private Sub UpdateDownloadStatus(ByVal aoiDownload As AoiDownload, _
                                      ByVal elapsedTime As Integer, ByVal strMessage As String)
         For Each row As DataGridViewRow In GrdTasks.Rows
@@ -400,7 +410,7 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
         Try
-            BtnDownloadAoi.Enabled = True
+            Me.EnableDownloadBtn(BtnDownloadAoi, True)
             ' File download completed
             Dim aoiDownload As AoiDownload = CType(e.UserState, AoiDownload)
             Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
@@ -437,8 +447,7 @@ Public Class FrmDownloadAoiMenu
             ' File download completed
             Dim aoiDownload As AoiDownload = CType(e.UserState, AoiDownload)
             Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
-            Dim strMessage As String = "Download " & CStr(e.ProgressPercentage) & "% complete)"
-            UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, strMessage)
+            UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "Downloading file")
         Catch ex As Exception
             Debug.Print("DownloadProgressCallback: " & ex.Message)
             MessageBox.Show(ex.Message, "DownloadProgressCallback Event Error")
