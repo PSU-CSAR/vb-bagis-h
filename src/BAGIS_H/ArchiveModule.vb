@@ -2,6 +2,7 @@
 Imports ESRI.ArcGIS.Geodatabase
 Imports ESRI.ArcGIS.DataSourcesGDB
 Imports System.ComponentModel
+Imports System.IO
 Imports ESRI.ArcGIS.DataSourcesFile
 Imports ESRI.ArcGIS.DataManagementTools
 
@@ -9,9 +10,6 @@ Module ArchiveModule
 
     Public Function BA_CopyAOIForExport(ByVal aoiFolder As String) As BA_ReturnCode
 
-        '5. Check for aoi_streams.shp; Copy if it exists
-        '6. Create maps, param, zones folders (if they exist on source) under aoi root
-        '7. Copy analysis.xml and map_parameters.txt to maps folder
         '8. Create param/methods folder
         '9. Copy param/methods/*.xml to new param/methods folder
         '10. Create folder for each valid hru under zones folder 
@@ -88,6 +86,28 @@ Module ArchiveModule
             pResult = Nothing
             tool = Nothing
         End Try
+    End Function
+
+    Public Function BA_CopyMiscFiles(ByVal sourceFolder As String, ByVal targetFolder As String) As BA_ReturnCode
+        'aoi_streams.shp
+        Dim streamLinks As String = sourceFolder & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
+        If BA_Shapefile_Exists(streamLinks) Then
+            Dim targetLinks As String = targetFolder & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
+            BA_CopyFeatures(streamLinks, targetLinks)
+        End If
+        Dim mapsDir As String = sourceFolder & BA_EnumDescription(PublicPath.Maps)
+        If System.IO.Directory.Exists(mapsDir) Then
+            Dim parentPath As String = "Please return"
+            Dim newMapsDir As String = BA_CreateFolder(targetFolder, BA_EnumDescription(PublicPath.Maps))
+            If Not String.IsNullOrEmpty(newMapsDir) Then
+                If System.IO.File.Exists(mapsDir & BA_EnumDescription(PublicPath.AnalysisXml)) Then
+                    File.Copy(mapsDir & BA_EnumDescription(PublicPath.AnalysisXml), newMapsDir & BA_EnumDescription(PublicPath.AnalysisXml))
+                End If
+                If System.IO.File.Exists(mapsDir & BA_EnumDescription(PublicPath.MapParameters)) Then
+                    File.Copy(mapsDir & BA_EnumDescription(PublicPath.MapParameters), newMapsDir & BA_EnumDescription(PublicPath.MapParameters))
+                End If
+            End If
+        End If
     End Function
 
 End Module

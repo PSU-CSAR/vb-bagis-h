@@ -466,11 +466,8 @@ Public Class FrmDownloadAoiMenu
                 Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
                 Dim targetFolder As String = parentFolder & zipFolder
                 If BA_CopyGeodatabases(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
-                    'aoi_streams.shp
-                    Dim streamLinks As String = TxtUploadPath.Text & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
-                    If BA_Shapefile_Exists(streamLinks) Then
-                        Dim targetLinks As String = parentFolder & zipFolder & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
-                        BA_CopyFeatures(streamLinks, targetLinks)
+                    If BA_CopyMiscFiles(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
+
                     End If
                 End If
             End If
