@@ -228,7 +228,15 @@ Public Class FrmDownloadAoiMenu
         AoiGrid.CurrentCell = Nothing
     End Sub
 
-    Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
+    Private Sub BtnUploadZip_Click(sender As System.Object, e As System.EventArgs) Handles BtnUploadZip.Click
+        Dim openFileDialog1 As New OpenFileDialog()
+
+        openFileDialog1.Filter = "zip files (*.zip)|*.zip"
+        openFileDialog1.FilterIndex = 1
+        If openFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            TxtUploadPath.Text = openFileDialog1.FileName
+        End If
+
         If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
@@ -315,19 +323,14 @@ Public Class FrmDownloadAoiMenu
         Application.DoEvents()
     End Sub
 
+    '@ToDo: Check server to see if there is existing aoi under this name
     Private Sub BtnSelectAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectAoi.Click
-        Dim openFileDialog1 As New OpenFileDialog()
 
-        openFileDialog1.Filter = "zip files (*.zip)|*.zip"
-        openFileDialog1.FilterIndex = 1
-        If openFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-            TxtUploadPath.Text = openFileDialog1.FileName
-        End If
     End Sub
 
     Private Sub TxtUploadPath_TextChanged(sender As System.Object, e As System.EventArgs) Handles TxtUploadPath.TextChanged
         If Not String.IsNullOrEmpty(TxtUploadPath.Text) Then
-            BtnUpload.Enabled = True
+            BtnUploadZip.Enabled = True
         End If
     End Sub
 
@@ -453,5 +456,61 @@ Public Class FrmDownloadAoiMenu
             MessageBox.Show(ex.Message, "DownloadProgressCallback Event Error")
         End Try
     End Sub
+
+    Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
+        If SelectAoi() = BA_ReturnCode.Success Then     'Move to BtnSelect
+            Dim aoiName As String = BA_GetBareName(TxtUploadPath.Text)
+            Dim zipFolder As String = aoiName & "_zip"
+            If BA_CreateTempZipFolder(TxtUploadPath.Text, zipFolder) = BA_ReturnCode.Success Then
+                Dim parentFolder As String = "PleaseReturn"
+                Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
+                Dim targetFolder As String = parentFolder & zipFolder
+                If BA_CopyGeodatabases(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
+                    'aoi_streams.shp
+                    Dim streamLinks As String = TxtUploadPath.Text & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
+                    If BA_Shapefile_Exists(streamLinks) Then
+                        Dim targetLinks As String = parentFolder & zipFolder & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
+                        BA_CopyFeatures(streamLinks, targetLinks)
+                    End If
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Function SelectAoi() As BA_ReturnCode
+        Dim bObjectSelected As Boolean
+        Dim pGxDialog As IGxDialog = New GxDialog
+        Dim pGxObject As IEnumGxObject = Nothing
+        Dim DataPath As String
+        Dim pFilter As IGxObjectFilter = New GxFilterContainers
+
+        Try
+            'initialize and open mini browser
+            With pGxDialog
+                .AllowMultiSelect = False
+                .ButtonCaption = "Select"
+                .Title = "Select AOI Folder"
+                .ObjectFilter = pFilter
+                bObjectSelected = .DoModalOpen(My.ArcMap.Application.hWnd, pGxObject)
+            End With
+
+            If bObjectSelected = False Then Exit Function
+
+            'get the name of the selected folder
+            Dim pGxDataFolder As IGxFile
+            pGxDataFolder = pGxObject.Next
+            DataPath = pGxDataFolder.Path
+            If String.IsNullOrEmpty(DataPath) Then Exit Function 'user cancelled the action
+
+            'check AOI/BASIN status
+            Dim success As BA_ReturnCode = BA_CheckAoiStatus(DataPath, My.ArcMap.Application.hWnd, My.ArcMap.Document)
+            If success = BA_ReturnCode.Success Then
+                TxtUploadPath.Text = DataPath
+            End If
+        Catch ex As Exception
+            Debug.Print("SelectAoi Exception: " & ex.Message)
+            Return BA_ReturnCode.OtherError
+        End Try
+    End Function
 
 End Class
