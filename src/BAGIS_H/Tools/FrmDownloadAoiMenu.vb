@@ -467,7 +467,9 @@ Public Class FrmDownloadAoiMenu
                 Dim targetFolder As String = parentFolder & zipFolder
                 If BA_CopyGeodatabases(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
                     If BA_CopyMiscFiles(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
+                        If BA_CopyHrus(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
 
+                        End If
                     End If
                 End If
             End If

@@ -9,7 +9,7 @@ Imports ESRI.ArcGIS.DataManagementTools
 Module ArchiveModule
 
     Public Function BA_CopyAOIForExport(ByVal aoiFolder As String) As BA_ReturnCode
-
+        '// Do we need to archive params folder? methods?
         '8. Create param/methods folder
         '9. Copy param/methods/*.xml to new param/methods folder
         '10. Create folder for each valid hru under zones folder 
@@ -18,24 +18,7 @@ Module ArchiveModule
         '13. Copy log.xml
         '14. Copy entire param.gdb
 
-        'Dim dirZones As New DirectoryInfo(zonesDirectory)
-        'Dim dirZonesArr As DirectoryInfo() = Nothing
-        'Dim zoneCount As Integer
-        'If dirZones.Exists Then
-        '    dirZonesArr = dirZones.GetDirectories
-        '    If dirZonesArr IsNot Nothing Then zoneCount = dirZonesArr.Length
-        'End If
-        'If dirZonesArr IsNot Nothing Then
-        '    Dim item As LayerListItem
-        '    For Each dri In dirZonesArr
-        '        Dim hruFilePath As String = BA_GetHruPathGDB(m_aoi.FilePath, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruGrid)
-        '        Dim hruXmlFilePath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruXml)
-        '        ' Add hru to the list if the grid exists
-        '        If BA_File_Exists(hruFilePath, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) And _
-        '           BA_File_ExistsWindowsIO(hruXmlFilePath) Then
-        '        End If
-        '    Next dri
-        'End If
+ 
 
         '15. BA_ZipFile
     End Function
@@ -101,13 +84,61 @@ Module ArchiveModule
             Dim newMapsDir As String = BA_CreateFolder(targetFolder, BA_EnumDescription(PublicPath.Maps))
             If Not String.IsNullOrEmpty(newMapsDir) Then
                 If System.IO.File.Exists(mapsDir & BA_EnumDescription(PublicPath.AnalysisXml)) Then
-                    File.Copy(mapsDir & BA_EnumDescription(PublicPath.AnalysisXml), newMapsDir & BA_EnumDescription(PublicPath.AnalysisXml))
+                    File.Copy(mapsDir & BA_EnumDescription(PublicPath.AnalysisXml), newMapsDir & BA_EnumDescription(PublicPath.AnalysisXml), True)
                 End If
                 If System.IO.File.Exists(mapsDir & BA_EnumDescription(PublicPath.MapParameters)) Then
-                    File.Copy(mapsDir & BA_EnumDescription(PublicPath.MapParameters), newMapsDir & BA_EnumDescription(PublicPath.MapParameters))
+                    File.Copy(mapsDir & BA_EnumDescription(PublicPath.MapParameters), newMapsDir & BA_EnumDescription(PublicPath.MapParameters), True)
                 End If
             End If
         End If
+        '@ToDo: We may or may not need to create the /aoi/param folder depending on if we archive the methods folder
+    End Function
+
+    Public Function BA_CopyHrus(ByVal aoiFolder As String, ByVal targetFolder As String) As BA_ReturnCode
+        Dim zonesDirectory As String = aoiFolder & BA_EnumDescription(PublicPath.HruDirectory)
+        Dim dirZones As New DirectoryInfo(zonesDirectory)
+        Dim dirZonesArr As DirectoryInfo() = Nothing
+        Dim zoneCount As Integer
+        If dirZones.Exists Then
+            dirZonesArr = dirZones.GetDirectories
+            If dirZonesArr IsNot Nothing Then zoneCount = dirZonesArr.Length
+        End If
+        Dim gridGds As IGeoDataset
+        Dim copyFc As IFeatureClass
+        Try
+            If dirZonesArr IsNot Nothing Then
+                'Create zones folder
+                Directory.CreateDirectory(targetFolder & BA_EnumDescription(PublicPath.HruDirectory))
+                For Each dri In dirZonesArr
+                    Dim hruFilePath As String = BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruGrid)
+                    Dim hruXmlFilePath As String = BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruXml)
+                    ' Add hru to the list if the grid exists
+                    If BA_File_Exists(hruFilePath, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) And _
+                       BA_File_ExistsWindowsIO(hruXmlFilePath) Then
+                        Dim newHruDir As String = targetFolder & BA_EnumDescription(PublicPath.HruDirectory) & "\" & dri.Name
+                        Directory.CreateDirectory(newHruDir)
+                        'create gdb in hru-name folder
+                        Dim success As BA_ReturnCode = BA_CreateFileGdb(newHruDir, dri.Name & ".gdb")
+                        If success = BA_ReturnCode.Success Then
+                            'grid
+                            gridGds = BA_OpenRasterFromGDB(BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name), BA_GetBareName(BA_EnumDescription(PublicPath.HruGrid)))
+                            BA_SaveRasterDatasetGDB(gridGds, BA_GetHruPathGDB(targetFolder, PublicPath.HruDirectory, dri.Name), BA_RASTER_FORMAT, BA_GetBareName(BA_EnumDescription(PublicPath.HruGrid)))
+                            'grid_v
+                            copyFc = BA_OpenFeatureClassFromGDB(BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name), BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False))
+                            If copyFc IsNot Nothing Then
+                                BA_SaveFeatureClassToGDB(copyFc, BA_GetHruPathGDB(targetFolder, PublicPath.HruDirectory, dri.Name), BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False))
+                            End If
+                        End If
+                    End If
+                Next dri
+            End If
+            Return BA_ReturnCode.Success
+        Catch ex As Exception
+             Debug.Print("BA_CopyHrus Exception: " + ex.Message)
+            Return BA_ReturnCode.UnknownError
+        Finally
+            gridGds = Nothing
+        End Try
     End Function
 
 End Module
