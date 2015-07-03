@@ -5,6 +5,7 @@ Imports System.ComponentModel
 Imports System.IO
 Imports ESRI.ArcGIS.DataSourcesFile
 Imports ESRI.ArcGIS.DataManagementTools
+Imports System.IO.Packaging
 
 Module ArchiveModule
 
@@ -12,13 +13,6 @@ Module ArchiveModule
         '// Do we need to archive params folder? methods?
         '8. Create param/methods folder
         '9. Copy param/methods/*.xml to new param/methods folder
-        '10. Create folder for each valid hru under zones folder 
-        '11. Create hru_name.gdb in each folder
-        '12. Copy grid, grid_v and grid_zones_v (if present) to destination
-        '13. Copy log.xml
-        '14. Copy entire param.gdb
-
- 
 
         '15. BA_ZipFile
     End Function
@@ -103,30 +97,39 @@ Module ArchiveModule
             dirZonesArr = dirZones.GetDirectories
             If dirZonesArr IsNot Nothing Then zoneCount = dirZonesArr.Length
         End If
-        Dim gridGds As IGeoDataset
-        Dim copyFc As IFeatureClass
+        Dim wsf As IWorkspaceFactory2 = New FileGDBWorkspaceFactory
         Try
             If dirZonesArr IsNot Nothing Then
                 'Create zones folder
                 Directory.CreateDirectory(targetFolder & BA_EnumDescription(PublicPath.HruDirectory))
                 For Each dri In dirZonesArr
-                    Dim hruFilePath As String = BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruGrid)
+                    Dim sourceGDB As String = BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name)
+                    Dim hruFilePath As String = sourceGDB & BA_EnumDescription(PublicPath.HruGrid)
                     Dim hruXmlFilePath As String = BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruXml)
                     ' Add hru to the list if the grid exists
                     If BA_File_Exists(hruFilePath, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) And _
                        BA_File_ExistsWindowsIO(hruXmlFilePath) Then
-                        Dim newHruDir As String = targetFolder & BA_EnumDescription(PublicPath.HruDirectory) & "\" & dri.Name
-                        Directory.CreateDirectory(newHruDir)
+                        Dim targetHruDir As String = targetFolder & BA_EnumDescription(PublicPath.HruDirectory) & "\" & dri.Name
+                        Directory.CreateDirectory(targetHruDir)
                         'create gdb in hru-name folder
-                        Dim success As BA_ReturnCode = BA_CreateFileGdb(newHruDir, dri.Name & ".gdb")
+                        Dim success As BA_ReturnCode = BA_CreateFileGdb(targetHruDir, dri.Name & ".gdb")
                         If success = BA_ReturnCode.Success Then
+                            Dim targetGDB As String = BA_GetHruPathGDB(targetFolder, PublicPath.HruDirectory, dri.Name)
                             'grid
-                            gridGds = BA_OpenRasterFromGDB(BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name), BA_GetBareName(BA_EnumDescription(PublicPath.HruGrid)))
-                            BA_SaveRasterDatasetGDB(gridGds, BA_GetHruPathGDB(targetFolder, PublicPath.HruDirectory, dri.Name), BA_RASTER_FORMAT, BA_GetBareName(BA_EnumDescription(PublicPath.HruGrid)))
+                            success = BA_Copy(sourceGDB & BA_EnumDescription(PublicPath.HruGrid), targetGDB & BA_EnumDescription(PublicPath.HruGrid))
                             'grid_v
-                            copyFc = BA_OpenFeatureClassFromGDB(BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name), BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False))
-                            If copyFc IsNot Nothing Then
-                                BA_SaveFeatureClassToGDB(copyFc, BA_GetHruPathGDB(targetFolder, PublicPath.HruDirectory, dri.Name), BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False))
+                            If BA_File_Exists(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True), WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                                success = BA_CopyFeatures(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True), targetGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True))
+                            End If
+                            'grid_zones_v
+                            If BA_File_Exists(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True), WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                                success = BA_CopyFeatures(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True), targetGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True))
+                            End If
+                            'log.xml
+                            File.Copy(hruXmlFilePath, BA_GetHruPath(targetFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruXml))
+                            'Checks first to see if param.gdb exists
+                            If wsf.IsWorkspace(BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.BagisParamGdb)) Then
+                                success = BA_Copy(BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.BagisParamGdb), BA_GetHruPath(targetFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.BagisParamGdb))
                             End If
                         End If
                     End If
@@ -134,10 +137,51 @@ Module ArchiveModule
             End If
             Return BA_ReturnCode.Success
         Catch ex As Exception
-             Debug.Print("BA_CopyHrus Exception: " + ex.Message)
+            Debug.Print("BA_CopyHrus Exception: " + ex.Message)
             Return BA_ReturnCode.UnknownError
         Finally
-            gridGds = Nothing
+
+        End Try
+    End Function
+
+    Public Function BA_ZipGeodatabases(ByVal sourceFolder As String, ByVal zipFileName As String) As BA_ReturnCode
+        Try
+            For Each pName In [Enum].GetValues(GetType(GeodatabaseNames))
+                Dim EnumConstant As [Enum] = pName
+                Dim fi As Reflection.FieldInfo = EnumConstant.GetType().GetField(EnumConstant.ToString())
+                Dim aattr() As DescriptionAttribute = DirectCast(fi.GetCustomAttributes(GetType(DescriptionAttribute), False), DescriptionAttribute())
+                Dim gdbName As String = aattr(0).Description
+                'Dim files As String() = Directory.GetFiles(sourceFolder & "\" & gdbName)
+                'For Each nFile As String In files
+                '    'Debug.Print("Adding file " & nFile)
+                '    Dim fileName As String = BA_GetBareName(nFile)
+                '    archive.AddFile(gdbName & "\" & fileName)
+                'Next
+                'Get list of files in directory tree from FolderPath (Does not capture an empty folder)
+                Directory.SetCurrentDirectory(sourceFolder)
+                Dim FolderPath As String = sourceFolder & "\" & gdbName
+                Dim files() = Directory.GetFiles(FolderPath, "*.*", SearchOption.AllDirectories)
+                If FolderPath.EndsWith("\") Then FolderPath = FolderPath.Substring(0, FolderPath.Length - 1)
+                Using Zip As Package = ZipPackage.Open(zipFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite)
+                    For Each item In files
+                        Dim myUri As Uri = New Uri(item)
+                        Dim relFile = item.Substring(FolderPath.Length)
+                        relFile = gdbName & relFile
+                        relFile = relFile.Replace(" "c, "_"c).Replace("\", "/")
+                        If relFile.StartsWith("/") = False Then relFile = "/" & relFile
+                        Dim uri As Uri = New Uri(relFile)
+                        Dim filePart As PackagePart = Zip.CreatePart(New Uri(relFile), _
+                                  Net.Mime.MediaTypeNames.Application.Zip, CompressionOption.Normal)
+                        'Read the file into a byte array that can be written to Zip stream
+                        Dim arrBuffer As Byte() = File.ReadAllBytes(item)
+                        filePart.GetStream().Write(arrBuffer, 0, arrBuffer.Length)
+                    Next
+                End Using
+            Next
+            Return BA_ReturnCode.Success
+        Catch ex As Exception
+            Debug.Print("BA_ZipGeodatabases exception" & ex.Message)
+            Return BA_ReturnCode.UnknownError
         End Try
     End Function
 

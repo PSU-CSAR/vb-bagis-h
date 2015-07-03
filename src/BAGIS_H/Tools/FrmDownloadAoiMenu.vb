@@ -460,19 +460,27 @@ Public Class FrmDownloadAoiMenu
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
         If SelectAoi() = BA_ReturnCode.Success Then     'Move to BtnSelect
             Dim aoiName As String = BA_GetBareName(TxtUploadPath.Text)
-            Dim zipFolder As String = aoiName & "_zip"
-            If BA_CreateTempZipFolder(TxtUploadPath.Text, zipFolder) = BA_ReturnCode.Success Then
-                Dim parentFolder As String = "PleaseReturn"
-                Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
-                Dim targetFolder As String = parentFolder & zipFolder
-                If BA_CopyGeodatabases(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
-                    If BA_CopyMiscFiles(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
-                        If BA_CopyHrus(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
+            'Dim zipFolder As String = aoiName & "_zip"
+            Dim zipName As String = aoiName & ".zip"
+            'If BA_CreateTempZipFolder(TxtUploadPath.Text, zipFolder) = BA_ReturnCode.Success Then
+            Dim parentFolder As String = "PleaseReturn"
+            Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
+            'Create the archive
+            'Dim archive As ESRI.ArcGIS.esriSystem.IZipArchive = New ESRI.ArcGIS.esriSystem.ZipArchive
+            'archive.CreateArchive(parentFolder & zipName)
+            'Dim targetFolder As String = parentFolder & zipFolder
+            If BA_ZipGeodatabases(TxtUploadPath.Text, parentFolder & zipName) = BA_ReturnCode.Success Then
+                'If BA_CopyMiscFiles(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
+                '    If BA_CopyHrus(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
+                '        If BA_ZipFolder(targetFolder, aoiName & ".zip") = BA_ReturnCode.Success Then
 
-                        End If
-                    End If
-                End If
+                '        End If
+                '    End If
             End If
+            'Close the archive
+            'archive.CloseArchive()
+            'End If
+            'End If
         End If
     End Sub
 
