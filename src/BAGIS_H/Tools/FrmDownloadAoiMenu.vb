@@ -5,6 +5,7 @@ Imports System.IO
 Imports BAGIS_ClassLibrary
 Imports ESRI.ArcGIS.CatalogUI
 Imports ESRI.ArcGIS.Catalog
+Imports ESRI.ArcGIS.esriSystem
 
 Public Class FrmDownloadAoiMenu
 
@@ -458,30 +459,40 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
-        If SelectAoi() = BA_ReturnCode.Success Then     'Move to BtnSelect
-            Dim aoiName As String = BA_GetBareName(TxtUploadPath.Text)
-            'Dim zipFolder As String = aoiName & "_zip"
-            Dim zipName As String = aoiName & ".zip"
-            'If BA_CreateTempZipFolder(TxtUploadPath.Text, zipFolder) = BA_ReturnCode.Success Then
-            Dim parentFolder As String = "PleaseReturn"
-            Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
-            'Create the archive
-            'Dim archive As ESRI.ArcGIS.esriSystem.IZipArchive = New ESRI.ArcGIS.esriSystem.ZipArchive
-            'archive.CreateArchive(parentFolder & zipName)
-            'Dim targetFolder As String = parentFolder & zipFolder
-            If BA_ZipGeodatabases(TxtUploadPath.Text, parentFolder & zipName) = BA_ReturnCode.Success Then
-                'If BA_CopyMiscFiles(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
-                '    If BA_CopyHrus(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
-                '        If BA_ZipFolder(targetFolder, aoiName & ".zip") = BA_ReturnCode.Success Then
+        Dim archive As IZipArchive = New ZipArchive
+        Dim tempFile As String = "\tempZip.txt"
+        Try
+            If SelectAoi() = BA_ReturnCode.Success Then     'Move to BtnSelect
+                Dim aoiName As String = BA_GetBareName(TxtUploadPath.Text)
+                Dim zipName As String = aoiName & ".zip"
+                Dim parentFolder As String = "PleaseReturn"
+                Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
+                archive.CreateArchive(parentFolder & zipName)
+                If File.Exists(TxtUploadPath.Text & tempFile) = False Then
+                    ' Create a file to write to.
+                    Dim sw As StreamWriter = File.CreateText(TxtUploadPath.Text & tempFile)
+                    sw.WriteLine("Temporary file for uploading an aoi")
+                    sw.Flush()
+                    sw.Close()
+                End If
+                'archive api requires file at the root to correctly set relative paths within archive
+                archive.AddFile(TxtUploadPath.Text & tempFile)
+                If BA_ZipGeodatabases(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
+                    If BA_ZipMiscFiles(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
+                        '    If BA_CopyHrus(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
+                        '        If BA_ZipFolder(targetFolder, aoiName & ".zip") = BA_ReturnCode.Success Then
 
-                '        End If
-                '    End If
+                        '        End If
+                    End If
+                End If
+                '@ToDo: delete temp text file
             End If
-            'Close the archive
-            'archive.CloseArchive()
-            'End If
-            'End If
-        End If
+        Catch ex As Exception
+            Debug.Print("BtnUpload_Click exception: " & ex.Message)
+        Finally
+            'Always close the archive
+            archive.CloseArchive()
+        End Try
     End Sub
 
     Private Function SelectAoi() As BA_ReturnCode

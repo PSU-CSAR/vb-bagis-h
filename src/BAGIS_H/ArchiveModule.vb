@@ -5,7 +5,8 @@ Imports System.ComponentModel
 Imports System.IO
 Imports ESRI.ArcGIS.DataSourcesFile
 Imports ESRI.ArcGIS.DataManagementTools
-Imports System.IO.Packaging
+Imports ESRI.ArcGIS.esriSystem
+'Imports System.IO.Packaging
 
 Module ArchiveModule
 
@@ -144,45 +145,44 @@ Module ArchiveModule
         End Try
     End Function
 
-    Public Function BA_ZipGeodatabases(ByVal sourceFolder As String, ByVal zipFileName As String) As BA_ReturnCode
+    Public Function BA_ZipGeodatabases(ByVal sourceFolder As String, ByVal archive As IZipArchive) As BA_ReturnCode
+ 
         Try
             For Each pName In [Enum].GetValues(GetType(GeodatabaseNames))
                 Dim EnumConstant As [Enum] = pName
                 Dim fi As Reflection.FieldInfo = EnumConstant.GetType().GetField(EnumConstant.ToString())
                 Dim aattr() As DescriptionAttribute = DirectCast(fi.GetCustomAttributes(GetType(DescriptionAttribute), False), DescriptionAttribute())
                 Dim gdbName As String = aattr(0).Description
-                'Dim files As String() = Directory.GetFiles(sourceFolder & "\" & gdbName)
-                'For Each nFile As String In files
-                '    'Debug.Print("Adding file " & nFile)
-                '    Dim fileName As String = BA_GetBareName(nFile)
-                '    archive.AddFile(gdbName & "\" & fileName)
-                'Next
-                'Get list of files in directory tree from FolderPath (Does not capture an empty folder)
-                Directory.SetCurrentDirectory(sourceFolder)
-                Dim FolderPath As String = sourceFolder & "\" & gdbName
-                Dim files() = Directory.GetFiles(FolderPath, "*.*", SearchOption.AllDirectories)
-                If FolderPath.EndsWith("\") Then FolderPath = FolderPath.Substring(0, FolderPath.Length - 1)
-                Using Zip As Package = ZipPackage.Open(zipFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite)
-                    For Each item In files
-                        Dim myUri As Uri = New Uri(item)
-                        Dim relFile = item.Substring(FolderPath.Length)
-                        relFile = gdbName & relFile
-                        relFile = relFile.Replace(" "c, "_"c).Replace("\", "/")
-                        If relFile.StartsWith("/") = False Then relFile = "/" & relFile
-                        Dim uri As Uri = New Uri(relFile)
-                        Dim filePart As PackagePart = Zip.CreatePart(New Uri(relFile), _
-                                  Net.Mime.MediaTypeNames.Application.Zip, CompressionOption.Normal)
-                        'Read the file into a byte array that can be written to Zip stream
-                        Dim arrBuffer As Byte() = File.ReadAllBytes(item)
-                        filePart.GetStream().Write(arrBuffer, 0, arrBuffer.Length)
-                    Next
-                End Using
+                Dim files As String() = Directory.GetFiles(sourceFolder & "\" & gdbName)
+                For Each nFile As String In files
+                    'Debug.Print("Adding file " & nFile)
+                    archive.AddFile(nFile)
+                Next
             Next
             Return BA_ReturnCode.Success
         Catch ex As Exception
             Debug.Print("BA_ZipGeodatabases exception" & ex.Message)
             Return BA_ReturnCode.UnknownError
         End Try
+    End Function
+
+    Public Function BA_ZipMiscFiles(ByVal sourceFolder As String, ByVal archive As IZipArchive) As BA_ReturnCode
+        'aoi_streams.shp
+        'Dim streamLinks As String = sourceFolder & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
+        'If BA_Shapefile_Exists(streamLinks) Then
+        '    Dim targetLinks As String = targetFolder & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.AoiStreamsVector), True, True)
+        '    BA_CopyFeatures(streamLinks, targetLinks)
+        'End If
+        Dim mapsDir As String = sourceFolder & BA_EnumDescription(PublicPath.Maps)
+        If System.IO.Directory.Exists(mapsDir) Then
+            If System.IO.File.Exists(mapsDir & BA_EnumDescription(PublicPath.AnalysisXml)) Then
+                'File.Copy(mapsDir & BA_EnumDescription(PublicPath.AnalysisXml), newMapsDir & BA_EnumDescription(PublicPath.AnalysisXml), True)
+            End If
+            If System.IO.File.Exists(mapsDir & BA_EnumDescription(PublicPath.MapParameters)) Then
+                archive.AddFile(mapsDir & BA_EnumDescription(PublicPath.MapParameters))
+            End If
+        End If
+        '@ToDo: We may or may not need to create the /aoi/param folder depending on if we archive the methods folder
     End Function
 
 End Module
