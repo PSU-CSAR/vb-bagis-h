@@ -479,13 +479,10 @@ Public Class FrmDownloadAoiMenu
                 archive.AddFile(TxtUploadPath.Text & tempFile)
                 If BA_ZipGeodatabases(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
                     If BA_ZipMiscFiles(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
-                        '    If BA_CopyHrus(TxtUploadPath.Text, targetFolder) = BA_ReturnCode.Success Then
-                        '        If BA_ZipFolder(targetFolder, aoiName & ".zip") = BA_ReturnCode.Success Then
-
-                        '        End If
-                    End If
+                        BA_ZipHrus(TxtUploadPath.Text, archive)
                 End If
-                '@ToDo: delete temp text file
+            End If
+            '@ToDo: delete temp text file
             End If
         Catch ex As Exception
             Debug.Print("BtnUpload_Click exception: " & ex.Message)
