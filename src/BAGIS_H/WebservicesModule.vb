@@ -520,4 +520,15 @@ Module WebservicesModule
             Return BA_ReturnCode.UnknownError
         End Try
     End Function
+
+    Public Function BA_AoiInArchive(ByVal url As String, ByVal strToken As String, _
+                                    ByVal aoiName As String) As Boolean
+        Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(url, strToken)
+        For Each kvp As KeyValuePair(Of String, StoredAoi) In storedAois
+            If kvp.Value.name.ToUpper = aoiName.ToUpper Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
 End Module

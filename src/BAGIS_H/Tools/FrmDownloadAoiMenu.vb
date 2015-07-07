@@ -224,7 +224,7 @@ Public Class FrmDownloadAoiMenu
             End With
             AoiGrid.Rows.Add(item)
         Next kvp
-        AoiGrid.Sort(AoiGrid.Columns(idxAoiName), System.ComponentModel.ListSortDirection.Descending)
+        AoiGrid.Sort(AoiGrid.Columns(idxAoiName), System.ComponentModel.ListSortDirection.Ascending)
         AoiGrid.ClearSelection()
         AoiGrid.CurrentCell = Nothing
     End Sub
@@ -240,46 +240,13 @@ Public Class FrmDownloadAoiMenu
 
         If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
-        Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         Dim fileName As String = Path.GetFileNameWithoutExtension(TxtUploadPath.Text)
         If String.IsNullOrEmpty(fileName) Then
             MessageBox.Show("No file selected to upload", "No file selected", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Exit Sub
         End If
 
-        '---create a row---
-        Dim item As New DataGridViewRow
-        item.CreateCells(GrdTasks)
-        With item
-            .Cells(idxTaskAoi).Value = fileName
-            .Cells(idxTaskType).Value = UPLOAD_TYPE
-            .Cells(idxTaskStatus).Value = BA_Task_Started
-            .Cells(idxTaskTime).Value = "N/A"
-        End With
-        GrdTasks.Rows.Add(item)
-        Application.DoEvents()
-
-        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, fileName, TxtUploadPath.Text)
-        If anUpload.task IsNot Nothing Then
-            Dim interval As UInteger = 10000    'Value in milleseconds
-            Dim uploadTimeout As Double = 120   'Value in seconds
-            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval, uploadTimeout, Me)
-            m_timersList.Add(aTimer)
-            With item
-                .Cells(idxTaskStatus).Value = anUpload.task.status
-                .Cells(idxTaskUrl).Value = anUpload.url
-                .Cells(idxTaskTime).Value = "0"
-            End With
-            aTimer.EnableTimer(True)
-            'Clear out upload file name
-            TxtUploadPath.Text = Nothing
-        Else
-            With item
-                .Cells(idxTaskStatus).Value = BA_Task_Failure
-                .Cells(idxTaskTime).Value = "N/A"
-                .Cells(idxTaskMessage).Value = "An error occurred while trying to upload the AOI"
-            End With
-        End If
+        UploadAoi(TxtUploadPath.Text)
     End Sub
 
     'Work around cross-threading exception to update task table
@@ -326,12 +293,58 @@ Public Class FrmDownloadAoiMenu
 
     '@ToDo: Check server to see if there is existing aoi under this name
     Private Sub BtnSelectAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectAoi.Click
+        Dim bObjectSelected As Boolean
+        Dim pGxDialog As IGxDialog = New GxDialog
+        Dim pGxObject As IEnumGxObject = Nothing
+        Dim DataPath As String
+        Dim pFilter As IGxObjectFilter = New GxFilterContainers
 
+        Try
+            'initialize and open mini browser
+            With pGxDialog
+                .AllowMultiSelect = False
+                .ButtonCaption = "Select"
+                .Title = "Select AOI Folder"
+                .ObjectFilter = pFilter
+                bObjectSelected = .DoModalOpen(My.ArcMap.Application.hWnd, pGxObject)
+            End With
+
+            If bObjectSelected = False Then Exit Sub
+
+            'get the name of the selected folder
+            Dim pGxDataFolder As IGxFile
+            pGxDataFolder = pGxObject.Next
+            DataPath = pGxDataFolder.Path
+            If String.IsNullOrEmpty(DataPath) Then Exit Sub 'user cancelled the action
+
+            'check AOI/BASIN status
+            Dim success As BA_ReturnCode = BA_CheckAoiStatus(DataPath, My.ArcMap.Application.hWnd, My.ArcMap.Document)
+            If success = BA_ReturnCode.Success Then
+                If GenerateToken() = BA_ReturnCode.Success Then
+                    Dim aoiName As String = BA_GetBareName(DataPath)
+                    Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, m_token.token, aoiName)
+                    If inArchive = False Then
+                        TxtUploadPath.Text = DataPath
+                    Else
+                        Dim sb As StringBuilder = New StringBuilder
+                        sb.Append("An AOI named '" & aoiName & "' already exists in the repository. ")
+                        sb.Append("Please use the update form to update parts of this AOI or ")
+                        sb.Append("select another AOI to upload.")
+                        MessageBox.Show(sb.ToString, "AOI already exists", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        Exit Sub
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            Debug.Print("BtnSelectAoi_Click Exception: " & ex.Message)
+        End Try
     End Sub
 
     Private Sub TxtUploadPath_TextChanged(sender As System.Object, e As System.EventArgs) Handles TxtUploadPath.TextChanged
         If Not String.IsNullOrEmpty(TxtUploadPath.Text) Then
-            BtnUploadZip.Enabled = True
+            BtnUpload.Enabled = True
+        Else
+            BtnUpload.Enabled = False
         End If
     End Sub
 
@@ -462,7 +475,7 @@ Public Class FrmDownloadAoiMenu
         Dim archive As IZipArchive = New ZipArchive
         Dim tempFile As String = "\tempZip.txt"
         Try
-            If SelectAoi() = BA_ReturnCode.Success Then     'Move to BtnSelect
+            If Not String.IsNullOrEmpty(TxtUploadPath.Text) Then
                 Dim aoiName As String = BA_GetBareName(TxtUploadPath.Text)
                 Dim zipName As String = aoiName & ".zip"
                 Dim parentFolder As String = "PleaseReturn"
@@ -479,53 +492,62 @@ Public Class FrmDownloadAoiMenu
                 archive.AddFile(TxtUploadPath.Text & tempFile)
                 If BA_ZipGeodatabases(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
                     If BA_ZipMiscFiles(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
-                        BA_ZipHrus(TxtUploadPath.Text, archive)
+                        '@ToDo: Comment our sending HRUS for now until we figure out how to do it
+                        'BA_ZipHrus(TxtUploadPath.Text, archive)
+                        archive.CloseArchive()
+                        If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
+                        UploadAoi(parentFolder & zipName)
+                    End If
                 End If
-            End If
-            '@ToDo: delete temp text file
+                '@ToDo: delete temp text file
+            Else
+                MessageBox.Show("You must select an AOI to upload", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
         Catch ex As Exception
             Debug.Print("BtnUpload_Click exception: " & ex.Message)
         Finally
-            'Always close the archive
+            'Be sure the archive is closed
             archive.CloseArchive()
         End Try
     End Sub
 
-    Private Function SelectAoi() As BA_ReturnCode
-        Dim bObjectSelected As Boolean
-        Dim pGxDialog As IGxDialog = New GxDialog
-        Dim pGxObject As IEnumGxObject = Nothing
-        Dim DataPath As String
-        Dim pFilter As IGxObjectFilter = New GxFilterContainers
+    Private Sub UploadAoi(ByVal zipFilePath As String)
 
-        Try
-            'initialize and open mini browser
-            With pGxDialog
-                .AllowMultiSelect = False
-                .ButtonCaption = "Select"
-                .Title = "Select AOI Folder"
-                .ObjectFilter = pFilter
-                bObjectSelected = .DoModalOpen(My.ArcMap.Application.hWnd, pGxObject)
+        Dim aoiName As String = Path.GetFileNameWithoutExtension(zipFilePath)
+        '---create a row---
+        Dim item As New DataGridViewRow
+        item.CreateCells(GrdTasks)
+        With item
+            .Cells(idxTaskAoi).Value = aoiName
+            .Cells(idxTaskType).Value = UPLOAD_TYPE
+            .Cells(idxTaskStatus).Value = BA_Task_Started
+            .Cells(idxTaskTime).Value = "N/A"
+        End With
+        GrdTasks.Rows.Add(item)
+        Application.DoEvents()
+
+        Dim uploadUrl = TxtBasinsDb.Text & "aois/"
+        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, aoiName, zipFilePath)
+        If anUpload.task IsNot Nothing Then
+            Dim interval As UInteger = 10000    'Value in milleseconds
+            Dim uploadTimeout As Double = 120   'Value in seconds
+            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval, uploadTimeout, Me)
+            m_timersList.Add(aTimer)
+            With item
+                .Cells(idxTaskStatus).Value = anUpload.task.status
+                .Cells(idxTaskUrl).Value = anUpload.url
+                .Cells(idxTaskTime).Value = "0"
             End With
-
-            If bObjectSelected = False Then Exit Function
-
-            'get the name of the selected folder
-            Dim pGxDataFolder As IGxFile
-            pGxDataFolder = pGxObject.Next
-            DataPath = pGxDataFolder.Path
-            If String.IsNullOrEmpty(DataPath) Then Exit Function 'user cancelled the action
-
-            'check AOI/BASIN status
-            Dim success As BA_ReturnCode = BA_CheckAoiStatus(DataPath, My.ArcMap.Application.hWnd, My.ArcMap.Document)
-            If success = BA_ReturnCode.Success Then
-                TxtUploadPath.Text = DataPath
-            End If
-        Catch ex As Exception
-            Debug.Print("SelectAoi Exception: " & ex.Message)
-            Return BA_ReturnCode.OtherError
-        End Try
-    End Function
+            aTimer.EnableTimer(True)
+            'Clear out upload file name
+            TxtUploadPath.Text = Nothing
+        Else
+            With item
+                .Cells(idxTaskStatus).Value = BA_Task_Failure
+                .Cells(idxTaskTime).Value = "N/A"
+                .Cells(idxTaskMessage).Value = "An error occurred while trying to upload the AOI"
+            End With
+        End If
+    End Sub
 
 End Class

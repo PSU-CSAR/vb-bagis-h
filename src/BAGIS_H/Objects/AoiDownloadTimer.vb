@@ -50,7 +50,7 @@ Public Class AoiDownloadTimer
 
             Dim strMessage As String = Nothing
             Dim elapsedTime As TimeSpan = Now.Subtract(beginTime)
-            Debug.Print("beginTime 1: " & beginTime)
+            'Debug.Print("beginTime 1: " & beginTime)
             'Debug.Print("contentType: " & contentType)
             If contentType = BA_Mime_Zip Then
                 aTimer.Close()
