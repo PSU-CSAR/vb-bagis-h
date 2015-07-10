@@ -17,7 +17,8 @@ Public Class FrmDownloadAoiMenu
     Private idxDateUploaded As Integer = 1
     Private idxAuthor As Integer = 2
     Private idxDownload As Integer = 3
-    Private idxDownloadUrl As Integer = 4
+    Private idxComment As Integer = 4
+    Private idxDownloadUrl As Integer = 5
     Private idxTaskAoi As Integer = 0
     Private idxTaskType As Integer = 1
     Private idxTaskStatus As Integer = 2
@@ -219,7 +220,7 @@ Public Class FrmDownloadAoiMenu
                 .Cells(idxDateUploaded).Value = kvp.Value.DateCreated.ToString("MM-dd-yyyy")
                 .Cells(idxAuthor).Value = kvp.Value.created_by.username
                 '.Cells(3).Value = False
-                '.Cells(4).Value = "Updated AOI with new gauge station"
+                .Cells(idxComment).Value = kvp.Value.comment
                 .Cells(idxDownloadUrl).Value = kvp.Value.url
             End With
             AoiGrid.Rows.Add(item)
@@ -527,7 +528,7 @@ Public Class FrmDownloadAoiMenu
         Application.DoEvents()
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
-        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, aoiName, zipFilePath)
+        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, aoiName, zipFilePath, TxtComment.Text)
         If anUpload.task IsNot Nothing Then
             Dim interval As UInteger = 10000    'Value in milleseconds
             Dim uploadTimeout As Double = 120   'Value in seconds

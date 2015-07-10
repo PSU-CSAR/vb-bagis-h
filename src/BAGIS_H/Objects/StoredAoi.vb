@@ -3,7 +3,8 @@
     Dim m_name As String
     Dim m_url As String
     Dim m_created_at As String
-    Public created_by As created_by
+    Public created_by As Created_By
+    Public comment As String
 
     Property name As String
         Get

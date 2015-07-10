@@ -343,7 +343,8 @@ Module WebservicesModule
     'End Function
 
     Public Function BA_UploadMultiPart(ByVal webserviceUrl As String, ByVal strToken As String, _
-                                       ByVal fileName As String, ByVal filePath As String) As AoiUpload
+                                       ByVal fileName As String, ByVal filePath As String, _
+                                       ByVal comment As String) As AoiUpload
         Dim reqT As HttpWebRequest
         Dim resT As HttpWebResponse
         Dim anUpload As AoiUpload = New AoiUpload
@@ -365,6 +366,7 @@ Module WebservicesModule
             Dim requestStream As System.IO.Stream = reqT.GetRequestStream
             Dim postData As Dictionary(Of String, String) = New Dictionary(Of String, String)
             postData.Add("filename", fileName)
+            If Not String.IsNullOrEmpty(comment) Then postData.Add("comment", Trim(comment))
 
             Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath)
             postData.Add("md5", MultipartFormHelper.GenerateMD5Hash(fileInfo))
