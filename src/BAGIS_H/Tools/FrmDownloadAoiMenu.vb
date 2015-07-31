@@ -9,10 +9,6 @@ Imports ESRI.ArcGIS.esriSystem
 
 Public Class FrmDownloadAoiMenu
 
-    Private m_token As BagisToken = New BagisToken
-    'In practice the user name/password will be provided by the user
-    Private m_userName As String = Nothing
-    Private m_password As String = Nothing
     Private idxAoiName As Integer = 0
     Private idxDateUploaded As Integer = 1
     Private idxAuthor As Integer = 2
@@ -35,6 +31,9 @@ Public Class FrmDownloadAoiMenu
         ' This call is required by the designer.
         InitializeComponent()
 
+        'Set reference to HruExtension
+        Dim hruExt As HruExtension = HruExtension.GetExtension
+
         'Set the user name and password from a text file that is NOT in source countrol
         'Note: Developers will have to change this to a path valid on their machine
         Dim filePath As String = "C:\Docs\Lesley\Repository\vb\BAGIS_H\branches\lbross\src\BAGIS_H\GoldenTicket.txt"
@@ -43,8 +42,8 @@ Public Class FrmDownloadAoiMenu
             ' Create an instance of StreamReader to read from a file.
             ' The using statement also closes the StreamReader.
             Using sr As New StreamReader(filePath)
-                m_userName = sr.ReadLine()
-                m_password = sr.ReadLine()
+                hruExt.EBagisUserName = sr.ReadLine()
+                hruExt.EBagisPassword = sr.ReadLine()
             End Using
         Catch e As Exception
             ' Let the user know what went wrong.
@@ -149,12 +148,14 @@ Public Class FrmDownloadAoiMenu
                     End With
                     GrdTasks.Rows.Add(item)
                     Application.DoEvents()
-                    Dim aDownload As AoiUpload = BA_Download_Aoi(downloadUrl, m_token.token)
+                    'Set reference to HruExtension
+                    Dim hruExt As HruExtension = HruExtension.GetExtension
+                    Dim aDownload As AoiUpload = BA_Download_Aoi(downloadUrl, hruExt.EbagisToken.token)
                     If aDownload.task IsNot Nothing Then
                         Dim interval As UInteger = 10000    'Value in milleseconds
                         Dim downloadTimeout As Double = 300   'Value in seconds
                         Dim downloadFilePath As String = TxtDownloadPath.Text & "\" & aoiName & ".zip"
-                        Dim aTimer As AoiDownloadTimer = New AoiDownloadTimer(aDownload, m_token.token, interval, downloadTimeout, downloadFilePath, Me)
+                        Dim aTimer As AoiDownloadTimer = New AoiDownloadTimer(aDownload, hruExt.EbagisToken.token, interval, downloadTimeout, downloadFilePath, Me)
                         m_downTimersList.Add(aTimer)
                         With item
                             .Cells(idxTaskStatus).Value = aDownload.task.status
@@ -196,16 +197,15 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnList_Click(sender As System.Object, e As System.EventArgs) Handles BtnList.Click
         BtnList.Enabled = False
-        If String.IsNullOrEmpty(m_token.token) Then
-            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, TxtBasinsDb.Text & "api-token-auth/")
-            m_token.token = strToken
-            If String.IsNullOrEmpty(strToken) Then
-                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Exit Sub
-            End If
+
+        Dim success As BA_ReturnCode = GenerateToken()
+
+        If success = BA_ReturnCode.Success Then
+            'Set reference to HruExtension
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token)
+            RefreshGrid(storedAois)
         End If
-        Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, m_token.token)
-        RefreshGrid(storedAois)
         BtnList.Enabled = True
     End Sub
 
@@ -292,7 +292,6 @@ Public Class FrmDownloadAoiMenu
         Application.DoEvents()
     End Sub
 
-    '@ToDo: Check server to see if there is existing aoi under this name
     Private Sub BtnSelectAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectAoi.Click
         Dim bObjectSelected As Boolean
         Dim pGxDialog As IGxDialog = New GxDialog
@@ -323,7 +322,9 @@ Public Class FrmDownloadAoiMenu
             If success = BA_ReturnCode.Success Then
                 If GenerateToken() = BA_ReturnCode.Success Then
                     Dim aoiName As String = BA_GetBareName(DataPath)
-                    Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, m_token.token, aoiName)
+                    'Set reference to HruExtension
+                    Dim hruExt As HruExtension = HruExtension.GetExtension
+                    Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, hruExt.EbagisToken.token, aoiName)
                     If inArchive = False Then
                         TxtUploadPath.Text = DataPath
                     Else
@@ -392,14 +393,39 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Function GenerateToken() As BA_ReturnCode
-        If String.IsNullOrEmpty(m_token.token) Then
-            Dim tokenUrl = TxtBasinsDb.Text & "api-token-auth/"
-            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, tokenUrl)
-            m_token.token = strToken
-            If String.IsNullOrEmpty(strToken) Then
-                MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Return BA_ReturnCode.OtherError
+        'Set reference to HruExtension
+        Dim hruExt As HruExtension = HruExtension.GetExtension
+        If hruExt.EbagisToken Is Nothing Then  '1. look for token in extension
+            Dim strToken As String = SecurityHelper.BA_GetStoredToken() '2. if not, check to see if token is stored
+            If Not String.IsNullOrEmpty(strToken) Then
+                Dim isValid As Boolean = SecurityHelper.IsTokenValid(TxtBasinsDb.Text, strToken)
+                If isValid = True Then      '3. If stored token valid, store in extension
+                    Dim newToken As BagisToken = New BagisToken
+                    newToken.token = strToken
+                    hruExt.EbagisToken = newToken
+                    Return BA_ReturnCode.Success
+                Else
+                    ' 4. Otherwise use get user name and password for token
+                    Dim passwordForm As FrmPassword = New FrmPassword(TxtBasinsDb.Text & "api-token-auth/")
+                    passwordForm.ShowDialog()
+                    If hruExt.EbagisToken Is Nothing Then
+                        Return BA_ReturnCode.OtherError
+                    Else
+                        Return BA_ReturnCode.Success
+                    End If
+                End If
+            Else
+                ' 5. Otherwise use get user name and password for token
+                Dim passwordForm As FrmPassword = New FrmPassword(TxtBasinsDb.Text & "api-token-auth/")
+                passwordForm.ShowDialog()
+                If String.IsNullOrEmpty(hruExt.EbagisToken.token) Then
+                    Return BA_ReturnCode.OtherError
+                Else
+                    Return BA_ReturnCode.Success
+                End If
             End If
+        Else
+            Return BA_ReturnCode.Success
         End If
         Return BA_ReturnCode.Success
     End Function
@@ -408,8 +434,10 @@ Public Class FrmDownloadAoiMenu
         ' Using WebClient for built-in file download functionality
         Dim myWebClient As New WebClient()
         Try
+            'Set reference to HruExtension
+            Dim hruExt As HruExtension = HruExtension.GetExtension
             'Retrieve the token and format it for the header; Token comes from caller
-            Dim cred As String = String.Format("{0} {1}", "Token", m_token.token)
+            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
             'Put token in header
             myWebClient.Headers(HttpRequestHeader.Authorization) = cred
             AddHandler myWebClient.DownloadFileCompleted, AddressOf DownloadFileCompleted
@@ -528,11 +556,13 @@ Public Class FrmDownloadAoiMenu
         Application.DoEvents()
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
-        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, m_token.token, aoiName, zipFilePath, TxtComment.Text)
+        'Set reference to HruExtension
+        Dim hruExt As HruExtension = HruExtension.GetExtension
+        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, hruExt.EbagisToken.token, aoiName, zipFilePath, TxtComment.Text)
         If anUpload.task IsNot Nothing Then
             Dim interval As UInteger = 10000    'Value in milleseconds
             Dim uploadTimeout As Double = 120   'Value in seconds
-            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, m_token.token, interval, uploadTimeout, Me)
+            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, hruExt.EbagisToken.token, interval, uploadTimeout, Me)
             m_timersList.Add(aTimer)
             With item
                 .Cells(idxTaskStatus).Value = anUpload.task.status
