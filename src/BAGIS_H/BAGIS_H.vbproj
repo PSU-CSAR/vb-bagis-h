@@ -495,6 +495,12 @@
     <Compile Include="Tools\FrmFileLocator.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Tools\FrmPassword.Designer.vb">
+      <DependentUpon>FrmPassword.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmPassword.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Tools\FrmSlopeConverter.Designer.vb">
       <DependentUpon>FrmSlopeConverter.vb</DependentUpon>
     </Compile>
@@ -656,6 +662,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RefineHru\FrmZonalStats.resx">
       <DependentUpon>FrmZonalStats.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmPassword.resx">
+      <DependentUpon>FrmPassword.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmSlopeConverter.resx">
       <DependentUpon>FrmSlopeConverter.vb</DependentUpon>
