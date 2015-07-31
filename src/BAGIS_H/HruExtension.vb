@@ -14,6 +14,9 @@ Public Class HruExtension
     Private m_datum As String
     Private m_spatialReferenceName As String
     Private m_classLibraryVersion As String = BA_CLASS_LIBRARY_VERSION
+    Private m_eBagisUserName As String
+    Private m_eBagisPassword As String
+    Private m_eBagisToken As BagisToken
 
     Public Sub New()
         s_extension = Me
@@ -101,8 +104,33 @@ Public Class HruExtension
         Set(ByVal value As String)
             m_spatialReferenceName = value
         End Set
-
     End Property
 
+    Friend Property EBagisUserName() As String
+        Get
+            Return m_eBagisUserName
+        End Get
+        Set(ByVal value As String)
+            m_eBagisUserName = value
+        End Set
+    End Property
+
+    Friend Property EBagisPassword() As String
+        Get
+            Return m_eBagisPassword
+        End Get
+        Set(ByVal value As String)
+            m_eBagisPassword = value
+        End Set
+    End Property
+
+    Friend Property EbagisToken() As BagisToken
+        Get
+            Return m_eBagisToken
+        End Get
+        Set(ByVal value As BagisToken)
+            m_eBagisToken = value
+        End Set
+    End Property
 
 End Class
