@@ -4,7 +4,7 @@ Imports System.IO
 
 Public Class SecurityHelper
 
-    Public Shared Function GetStoredToken() As String
+    Public Shared Function BA_GetStoredToken() As String
         Return My.Settings.GoldenTicket
     End Function
 
@@ -13,7 +13,7 @@ Public Class SecurityHelper
         My.Settings.Save()
     End Sub
 
-    Public Shared Function GetServerToken(ByVal userName, ByVal password, ByVal url) As String
+    Public Shared Function GetServerToken(ByVal userName As String, ByVal password As String, ByVal url As String) As String
         Dim reqT As HttpWebRequest
         Dim resT As HttpWebResponse
         reqT = WebRequest.Create(url)
@@ -99,4 +99,5 @@ Public Class SecurityHelper
             End Try
         End If
     End Function
+
 End Class
