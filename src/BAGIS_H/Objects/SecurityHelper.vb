@@ -1,6 +1,7 @@
 ﻿Imports System.Net
 Imports System.Text
 Imports System.IO
+Imports BAGIS_ClassLibrary
 
 Public Class SecurityHelper
 
@@ -97,6 +98,33 @@ Public Class SecurityHelper
             Catch ex As IOException
                 IsPathWritable = False
             End Try
+        End If
+    End Function
+
+    Public Shared Function GenerateToken(ByVal validateUrl As String, ByVal tokenUrl As String) As BA_ReturnCode
+        'Set reference to HruExtension
+        Dim hruExt As HruExtension = HruExtension.GetExtension
+        If hruExt.EbagisToken Is Nothing Then  '1. look for token in extension
+            Dim strToken As String = SecurityHelper.BA_GetStoredToken() '2. if not, check to see if token is stored
+            If Not String.IsNullOrEmpty(strToken) Then
+                Dim isValid As Boolean = SecurityHelper.IsTokenValid(validateUrl, strToken)
+                If isValid = True Then      '3. If stored token valid, store in extension
+                    Dim newToken As BagisToken = New BagisToken
+                    newToken.token = strToken
+                    hruExt.EbagisToken = newToken
+                    Return BA_ReturnCode.Success
+                End If
+            End If
+            ' 4. Otherwise use get user name and password for token
+            Dim passwordForm As FrmPassword = New FrmPassword(tokenUrl)
+            passwordForm.ShowDialog()
+            If hruExt.EbagisToken Is Nothing Then   '5. The form puts the token in hruExt if it's successful
+                Return BA_ReturnCode.OtherError
+            Else
+                Return BA_ReturnCode.Success
+            End If
+        Else
+            Return BA_ReturnCode.Success
         End If
     End Function
 

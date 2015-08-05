@@ -393,41 +393,7 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Function GenerateToken() As BA_ReturnCode
-        'Set reference to HruExtension
-        Dim hruExt As HruExtension = HruExtension.GetExtension
-        If hruExt.EbagisToken Is Nothing Then  '1. look for token in extension
-            Dim strToken As String = SecurityHelper.BA_GetStoredToken() '2. if not, check to see if token is stored
-            If Not String.IsNullOrEmpty(strToken) Then
-                Dim isValid As Boolean = SecurityHelper.IsTokenValid(TxtBasinsDb.Text, strToken)
-                If isValid = True Then      '3. If stored token valid, store in extension
-                    Dim newToken As BagisToken = New BagisToken
-                    newToken.token = strToken
-                    hruExt.EbagisToken = newToken
-                    Return BA_ReturnCode.Success
-                Else
-                    ' 4. Otherwise use get user name and password for token
-                    Dim passwordForm As FrmPassword = New FrmPassword(TxtBasinsDb.Text & "api-token-auth/")
-                    passwordForm.ShowDialog()
-                    If hruExt.EbagisToken Is Nothing Then
-                        Return BA_ReturnCode.OtherError
-                    Else
-                        Return BA_ReturnCode.Success
-                    End If
-                End If
-            Else
-                ' 5. Otherwise use get user name and password for token
-                Dim passwordForm As FrmPassword = New FrmPassword(TxtBasinsDb.Text & "api-token-auth/")
-                passwordForm.ShowDialog()
-                If String.IsNullOrEmpty(hruExt.EbagisToken.token) Then
-                    Return BA_ReturnCode.OtherError
-                Else
-                    Return BA_ReturnCode.Success
-                End If
-            End If
-        Else
-            Return BA_ReturnCode.Success
-        End If
-        Return BA_ReturnCode.Success
+        Return SecurityHelper.GenerateToken(TxtBasinsDb.Text, TxtBasinsDb.Text & "api-token-auth/")
     End Function
 
     Friend Function DownloadFile(ByVal aoiDownload As AoiDownload) As BA_ReturnCode
