@@ -67,13 +67,16 @@ Public Class AoiUploadTimer
                 Case BA_Task_Failure
                     strMessage = m_aoiUpload.task.traceback
                     aTimer.Close()
+                    m_parent.UpdateLog(m_aoiUpload.id, m_aoiUpload.task.status, strMessage)
                 Case BA_Task_Success
                     aTimer.Close()
+                    m_parent.UpdateLog(m_aoiUpload.id, m_aoiUpload.task.status, strMessage)
                 Case BA_Task_Pending
                     If elapsedTime.TotalSeconds > m_uploadTimeout Then
                         m_aoiUpload.task.status = BA_Task_Timed_Out
                         strMessage = "Upload timed out"
                         aTimer.Close()
+                        m_parent.UpdateLog(m_aoiUpload.id, m_aoiUpload.task.status, strMessage)
                     End If
             End Select
             m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiUpload, CInt(elapsedTime.TotalSeconds), strMessage)

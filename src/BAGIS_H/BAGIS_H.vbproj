@@ -198,6 +198,7 @@
     <Compile Include="Objects\StoredAoi.vb" />
     <Compile Include="Objects\StoredAoiArray.vb" />
     <Compile Include="Objects\AoiUpload.vb" />
+    <Compile Include="Objects\TaskLog.vb" />
     <Compile Include="RefineHru\BtnReclassZones.vb" />
     <Compile Include="RefineHru\BtnSequentialId.vb" />
     <Compile Include="RefineHru\FrmSequentialId.Designer.vb">

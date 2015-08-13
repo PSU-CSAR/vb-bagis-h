@@ -54,7 +54,8 @@ Public Class AoiDownloadTimer
             'Debug.Print("contentType: " & contentType)
             If contentType = BA_Mime_Zip Then
                 aTimer.Close()
-                Dim aoiDownload As AoiDownload = New AoiDownload(m_aoiDownload.url, m_aoiDownload.task.status, beginTime, m_downloadFilePath)
+                Dim aoiDownload As AoiDownload = New AoiDownload(m_aoiDownload.url, m_aoiDownload.task.status, beginTime, _
+                                                                 m_downloadFilePath, m_aoiDownload.id)
                 Dim success As BA_ReturnCode = m_parent.DownloadFile(aoiDownload)
                 Exit Sub
             Else

@@ -56,15 +56,17 @@ Partial Class FrmDownloadAoiMenu
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TxtComment = New System.Windows.Forms.TextBox()
         Me.GrdTasks = New System.Windows.Forms.DataGridView()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.BtnClear = New System.Windows.Forms.Button()
+        Me.BtnUpload = New System.Windows.Forms.Button()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.AoiType = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Status = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Time = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Message = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Url = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.BtnClear = New System.Windows.Forms.Button()
-        Me.BtnUpload = New System.Windows.Forms.Button()
+        Me.Id = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.LocalFolder = New System.Windows.Forms.DataGridViewTextBoxColumn()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -277,6 +279,7 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.TxtComment.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtComment.Location = New System.Drawing.Point(139, 523)
+        Me.TxtComment.MaxLength = 512
         Me.TxtComment.Multiline = True
         Me.TxtComment.Name = "TxtComment"
         Me.TxtComment.Size = New System.Drawing.Size(550, 41)
@@ -296,13 +299,44 @@ Partial Class FrmDownloadAoiMenu
         DataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.GrdTasks.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle7
         Me.GrdTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GrdTasks.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.AoiType, Me.Status, Me.Time, Me.Message, Me.Url})
+        Me.GrdTasks.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.AoiType, Me.Status, Me.Time, Me.Message, Me.Url, Me.Id, Me.LocalFolder})
         Me.GrdTasks.Location = New System.Drawing.Point(10, 282)
         Me.GrdTasks.Name = "GrdTasks"
         Me.GrdTasks.ReadOnly = True
         Me.GrdTasks.Size = New System.Drawing.Size(896, 165)
         Me.GrdTasks.TabIndex = 83
         Me.GrdTasks.TabStop = False
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.Location = New System.Drawing.Point(12, 261)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(127, 16)
+        Me.Label3.TabIndex = 84
+        Me.Label3.Text = "Tasks in process"
+        '
+        'BtnClear
+        '
+        Me.BtnClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnClear.Location = New System.Drawing.Point(806, 246)
+        Me.BtnClear.Name = "BtnClear"
+        Me.BtnClear.Size = New System.Drawing.Size(100, 30)
+        Me.BtnClear.TabIndex = 85
+        Me.BtnClear.Text = "Clear tasks"
+        Me.BtnClear.UseVisualStyleBackColor = True
+        '
+        'BtnUpload
+        '
+        Me.BtnUpload.Enabled = False
+        Me.BtnUpload.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnUpload.Location = New System.Drawing.Point(806, 488)
+        Me.BtnUpload.Name = "BtnUpload"
+        Me.BtnUpload.Size = New System.Drawing.Size(100, 30)
+        Me.BtnUpload.TabIndex = 86
+        Me.BtnUpload.Text = "Upload"
+        Me.BtnUpload.UseVisualStyleBackColor = True
         '
         'DataGridViewTextBoxColumn1
         '
@@ -359,36 +393,21 @@ Partial Class FrmDownloadAoiMenu
         Me.Url.Visible = False
         Me.Url.Width = 5
         '
-        'Label3
+        'Id
         '
-        Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(12, 261)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(127, 16)
-        Me.Label3.TabIndex = 84
-        Me.Label3.Text = "Tasks in process"
+        Me.Id.HeaderText = "Id"
+        Me.Id.Name = "Id"
+        Me.Id.ReadOnly = True
+        Me.Id.Visible = False
+        Me.Id.Width = 5
         '
-        'BtnClear
+        'LocalFolder
         '
-        Me.BtnClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnClear.Location = New System.Drawing.Point(806, 246)
-        Me.BtnClear.Name = "BtnClear"
-        Me.BtnClear.Size = New System.Drawing.Size(100, 30)
-        Me.BtnClear.TabIndex = 85
-        Me.BtnClear.Text = "Clear tasks"
-        Me.BtnClear.UseVisualStyleBackColor = True
-        '
-        'BtnUpload
-        '
-        Me.BtnUpload.Enabled = False
-        Me.BtnUpload.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUpload.Location = New System.Drawing.Point(806, 488)
-        Me.BtnUpload.Name = "BtnUpload"
-        Me.BtnUpload.Size = New System.Drawing.Size(100, 30)
-        Me.BtnUpload.TabIndex = 86
-        Me.BtnUpload.Text = "Upload"
-        Me.BtnUpload.UseVisualStyleBackColor = True
+        Me.LocalFolder.HeaderText = "LocalFolder"
+        Me.LocalFolder.Name = "LocalFolder"
+        Me.LocalFolder.ReadOnly = True
+        Me.LocalFolder.Visible = False
+        Me.LocalFolder.Width = 5
         '
         'FrmDownloadAoiMenu
         '
@@ -440,12 +459,6 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents TxtComment As System.Windows.Forms.TextBox
     Friend WithEvents GrdTasks As System.Windows.Forms.DataGridView
     Friend WithEvents Label3 As System.Windows.Forms.Label
-    Friend WithEvents DataGridViewTextBoxColumn1 As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents AoiType As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Status As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Time As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Message As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Url As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents BtnClear As System.Windows.Forms.Button
     Friend WithEvents AoiName As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents Uploaded As System.Windows.Forms.DataGridViewTextBoxColumn
@@ -454,4 +467,12 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents Comment As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents DownloadUrl As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents BtnUpload As System.Windows.Forms.Button
+    Friend WithEvents DataGridViewTextBoxColumn1 As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents AoiType As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Status As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Time As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Message As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Url As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Id As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents LocalFolder As System.Windows.Forms.DataGridViewTextBoxColumn
 End Class

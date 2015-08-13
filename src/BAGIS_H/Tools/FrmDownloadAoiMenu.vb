@@ -21,6 +21,8 @@ Public Class FrmDownloadAoiMenu
     Private idxTaskTime As Integer = 3
     Private idxTaskMessage As Integer = 4
     Private idxTaskUrl As Integer = 5
+    Private idxId As Integer = 6
+    Private idxLocalPath As Integer = 7
     Private Const UPLOAD_TYPE As String = "Upload"
     Private Const DOWNLOAD_TYPE As String = "Download"
     Private m_timersList As IList(Of AoiUploadTimer)
@@ -439,6 +441,7 @@ Public Class FrmDownloadAoiMenu
             If e.Cancelled = False And e.Error Is Nothing Then
                 aoiDownload.Status = BA_Task_Success
                 UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "Download complete")
+                UpdateLog(aoiDownload.id, aoiDownload.Status, Nothing)
             End If
             'Dim messageBoxVB As New System.Text.StringBuilder()
             'messageBoxVB.AppendFormat("{0} = {1}", "AoiName", aoiDownload.AoiName)
@@ -534,6 +537,8 @@ Public Class FrmDownloadAoiMenu
                 .Cells(idxTaskStatus).Value = anUpload.task.status
                 .Cells(idxTaskUrl).Value = anUpload.url
                 .Cells(idxTaskTime).Value = "0"
+                .Cells(idxId).Value = anUpload.id
+                .Cells(idxLocalPath).Value = TxtUploadPath.Text
             End With
             aTimer.EnableTimer(True)
             'Clear out upload file name
@@ -544,6 +549,56 @@ Public Class FrmDownloadAoiMenu
                 .Cells(idxTaskTime).Value = "N/A"
                 .Cells(idxTaskMessage).Value = "An error occurred while trying to upload the AOI"
             End With
+        End If
+    End Sub
+
+    Friend Sub UpdateLog(ByVal id As String, ByVal status As String, ByVal errorMessage As String)
+        Dim foundEntry As TaskLogEntry = Nothing
+        For Each row As DataGridViewRow In GrdTasks.Rows
+            If row.Cells(idxId).Value.ToString.Equals(id) Then
+                'Update the task log entry
+                foundEntry = New TaskLogEntry()
+                With foundEntry
+                    foundEntry.id = id
+                    foundEntry.aoiName = row.Cells(idxAoiName).Value.ToString
+                    foundEntry.localFolder = row.Cells(idxLocalPath).Value.ToString
+                    foundEntry.taskType = row.Cells(idxTaskType).Value.ToString
+                    foundEntry.status = status
+                    foundEntry.dateCompleted = Now
+                    foundEntry.errorMessage = errorMessage
+                End With
+                Exit For
+            End If
+        Next
+
+        If foundEntry IsNot Nothing Then
+            Dim log As TaskLog = Nothing
+            'First try to load an existing log file
+            Dim downloadPath As String = foundEntry.localFolder
+            If foundEntry.taskType = DOWNLOAD_TYPE Then
+                downloadPath = downloadPath & "\" & foundEntry.aoiName
+            End If
+            If BA_File_ExistsWindowsIO(downloadPath & BA_EnumDescription(PublicPath.EBagisTaskLog)) Then
+                Dim obj As Object = SerializableData.Load(downloadPath & BA_EnumDescription(PublicPath.EBagisTaskLog), GetType(TaskLog))
+                If obj IsNot Nothing Then
+                    log = CType(obj, TaskLog)
+                End If
+            End If
+            'If log file doesn't exist then create a new one
+            If log Is Nothing Then
+                log = New TaskLog()
+            End If
+            'Add the new entry to the task log in memory
+            Dim entries As TaskLogEntry() = Nothing
+            If log.TaskLogEntries Is Nothing Then
+                entries = New TaskLogEntry(1) {}
+            Else
+                entries = log.TaskLogEntries
+                System.Array.Resize(entries, entries.Length + 1)
+            End If
+            entries(entries.Length - 1) = foundEntry
+            log.TaskLogEntries = entries
+            log.Save(downloadPath & BA_EnumDescription(PublicPath.EBagisTaskLog))
         End If
     End Sub
 
