@@ -1,7 +1,7 @@
 ﻿Public Module ConstantsModule
 
     'Class library version; Update with each change to class library
-    Public Const BA_CLASS_LIBRARY_VERSION As String = "L035"
+    Public Const BA_CLASS_LIBRARY_VERSION As String = "L036"
 
     ' Used with BA_QueryAttributeTable to customize query
     Public Const BA_STRING_ATTRIBUTE As String = "string_attribute"
@@ -187,6 +187,11 @@
     'eBAGIS mime types
     Public Const BA_Mime_Zip = "application/zip"
     Public Const BA_Mime_Json = "application/json"
+
+    'eBAGIS task types
+    Public Const TASK_UPLOAD As String = "Upload"
+    Public Const TASK_DOWNLOAD As String = "Download"
+
 
 End Module
 

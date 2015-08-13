@@ -514,6 +514,12 @@
     <Compile Include="Tools\FrmSnodas.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Tools\FrmTaskLog.Designer.vb">
+      <DependentUpon>FrmTaskLog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmTaskLog.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Tools\FrmToolsDataUnits.Designer.vb">
       <DependentUpon>FrmToolsDataUnits.vb</DependentUpon>
     </Compile>
@@ -672,6 +678,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmSnodas.resx">
       <DependentUpon>FrmSnodas.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmTaskLog.resx">
+      <DependentUpon>FrmTaskLog.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmToolsDataUnits.resx">
       <DependentUpon>FrmToolsDataUnits.vb</DependentUpon>

@@ -82,7 +82,7 @@ Public Class AoiUploadTimer
             m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiUpload, CInt(elapsedTime.TotalSeconds), strMessage)
         Catch ex As WebException
             Debug.Print("OnTimedEvent: " & ex.Message)
-            aTimer.Close()
+            aTimer.Close()  'Always close the timer
         End Try
     End Sub
 
