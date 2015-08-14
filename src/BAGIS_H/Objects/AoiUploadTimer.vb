@@ -5,13 +5,13 @@ Imports BAGIS_ClassLibrary
 Public Class AoiUploadTimer
 
     Private aTimer As Timer = New Timer
-    Private m_aoiUpload As AoiUpload
+    Private m_aoiUpload As AoiTask
     Private m_token As String
     Private m_parent As FrmDownloadAoiMenu
     Private beginTime As DateTime
     Private m_uploadTimeout As Double  'Units are seconds
 
-    Public Sub New(ByRef aoiUpload As AoiUpload, ByVal strToken As String, ByVal interval As UInteger, _
+    Public Sub New(ByRef aoiUpload As AoiTask, ByVal strToken As String, ByVal interval As UInteger, _
                    ByVal uploadTimeout As Double, ByRef parentForm As FrmDownloadAoiMenu)
         m_aoiUpload = aoiUpload
         m_token = strToken
@@ -57,7 +57,7 @@ Public Class AoiUploadTimer
 
             'Serialize the response so we can check the status
             Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(m_aoiUpload.[GetType]())
-            m_aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
+            m_aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
 
             Dim uploadStatus As String = Trim(m_aoiUpload.task.status).ToUpper
             Dim strMessage As String = Nothing

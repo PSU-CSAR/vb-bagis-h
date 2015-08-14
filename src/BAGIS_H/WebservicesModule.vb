@@ -344,10 +344,10 @@ Module WebservicesModule
 
     Public Function BA_UploadMultiPart(ByVal webserviceUrl As String, ByVal strToken As String, _
                                        ByVal fileName As String, ByVal filePath As String, _
-                                       ByVal comment As String) As AoiUpload
+                                       ByVal comment As String) As AoiTask
         Dim reqT As HttpWebRequest
         Dim resT As HttpWebResponse
-        Dim anUpload As AoiUpload = New AoiUpload
+        Dim anUpload As AoiTask = New AoiTask
         'The end point for getting a token for the web service
         reqT = WebRequest.Create(webserviceUrl)
         'This is a POST request
@@ -387,7 +387,7 @@ Module WebservicesModule
             'Convert the JSON response to a Task object
             Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
             'Put JSON payload into AOI object
-            anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
+            anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
 
             'If we didn't get an exception, the upload was successful
             Return anUpload
@@ -454,10 +454,10 @@ Module WebservicesModule
         Return aoiDictionary
     End Function
 
-    Public Function BA_Download_Aoi(ByVal url As String, ByVal strToken As String) As AoiUpload
+    Public Function BA_Download_Aoi(ByVal url As String, ByVal strToken As String) As AoiTask
         Dim reqT As HttpWebRequest
         Dim resT As HttpWebResponse
-        Dim aDownload As AoiUpload = New AoiUpload
+        Dim aDownload As AoiTask = New AoiTask
         'The end point for getting a token for the web service
         reqT = WebRequest.Create(url)
         'This is a GET request
@@ -472,7 +472,7 @@ Module WebservicesModule
             'Convert the JSON response to an AoiUpload object
             Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aDownload.[GetType]())
             'Put JSON payload into AOI object
-            aDownload = CType(ser.ReadObject(resT.GetResponseStream), AoiUpload)
+            aDownload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
 
             'Using stream As System.IO.Stream = resT.GetResponseStream
             '    Using streamReader As System.IO.StreamReader = New System.IO.StreamReader(stream)

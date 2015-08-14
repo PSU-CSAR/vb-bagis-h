@@ -150,7 +150,7 @@ Public Class FrmDownloadAoiMenu
                     Application.DoEvents()
                     'Set reference to HruExtension
                     Dim hruExt As HruExtension = HruExtension.GetExtension
-                    Dim aDownload As AoiUpload = BA_Download_Aoi(downloadUrl, hruExt.EbagisToken.token)
+                    Dim aDownload As AoiTask = BA_Download_Aoi(downloadUrl, hruExt.EbagisToken.token)
                     If aDownload.task IsNot Nothing Then
                         Dim interval As UInteger = 10000    'Value in milleseconds
                         Dim downloadTimeout As Double = 300   'Value in seconds
@@ -253,9 +253,9 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     'Work around cross-threading exception to update task table
-    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiUpload, ByVal elapsedTime As Integer, ByVal strMessage As String)
+    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiTask, ByVal elapsedTime As Integer, ByVal strMessage As String)
         If ctl.InvokeRequired Then
-            ctl.BeginInvoke(New Action(Of Control, AoiUpload, Integer, String)(AddressOf UpdateStatus), ctl, aoiUpload, elapsedTime, strMessage)
+            ctl.BeginInvoke(New Action(Of Control, AoiTask, Integer, String)(AddressOf UpdateStatus), ctl, aoiUpload, elapsedTime, strMessage)
         Else
             For Each row As DataGridViewRow In GrdTasks.Rows
                 Dim url As String = row.Cells(idxTaskUrl).Value
@@ -280,7 +280,7 @@ Public Class FrmDownloadAoiMenu
         Application.DoEvents()
     End Sub
 
-    Private Sub UpdateDownloadStatus(ByVal aoiDownload As AoiDownload, _
+    Private Sub UpdateDownloadStatus(ByVal aoiDownload As AoiDownloadInfo, _
                                      ByVal elapsedTime As Integer, ByVal strMessage As String)
         For Each row As DataGridViewRow In GrdTasks.Rows
             Dim url As String = row.Cells(idxTaskUrl).Value
@@ -398,7 +398,7 @@ Public Class FrmDownloadAoiMenu
         Return SecurityHelper.GenerateToken(TxtBasinsDb.Text, TxtBasinsDb.Text & "api-token-auth/")
     End Function
 
-    Friend Function DownloadFile(ByVal aoiDownload As AoiDownload) As BA_ReturnCode
+    Friend Function DownloadFile(ByVal aoiDownload As AoiDownloadInfo) As BA_ReturnCode
         ' Using WebClient for built-in file download functionality
         Dim myWebClient As New WebClient()
         Try
@@ -426,7 +426,7 @@ Public Class FrmDownloadAoiMenu
         Try
             Me.EnableDownloadBtn(BtnDownloadAoi, True)
             ' File download completed
-            Dim aoiDownload As AoiDownload = CType(e.UserState, AoiDownload)
+            Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
             If e.Error IsNot Nothing Then
                 aoiDownload.Status = BA_Task_Failure
@@ -473,7 +473,7 @@ Public Class FrmDownloadAoiMenu
         'CStr(e.UserState), e.BytesReceived, e.TotalBytesToReceive, e.ProgressPercentage)
         Try
             ' File download completed
-            Dim aoiDownload As AoiDownload = CType(e.UserState, AoiDownload)
+            Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
             UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "Downloading file")
         Catch ex As Exception
@@ -540,7 +540,7 @@ Public Class FrmDownloadAoiMenu
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         'Set reference to HruExtension
         Dim hruExt As HruExtension = HruExtension.GetExtension
-        Dim anUpload As AoiUpload = BA_UploadMultiPart(uploadUrl, hruExt.EbagisToken.token, aoiName, zipFilePath, TxtComment.Text)
+        Dim anUpload As AoiTask = BA_UploadMultiPart(uploadUrl, hruExt.EbagisToken.token, aoiName, zipFilePath, TxtComment.Text)
         If anUpload.task IsNot Nothing Then
             Dim interval As UInteger = 10000    'Value in milleseconds
             Dim uploadTimeout As Double = 120   'Value in seconds

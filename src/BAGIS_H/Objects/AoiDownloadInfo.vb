@@ -1,6 +1,11 @@
 ﻿Imports BAGIS_ClassLibrary
 
-Public Class AoiDownload
+''' <summary>
+'''  This class contains information that is passed to the DownloadFileCompleted event
+'''  This information tracks the state of the download and is used to update the user interface
+''' </summary>
+''' <remarks></remarks>
+Public Class AoiDownloadInfo
 
     Private _aoiDownloadUrl As String
     Private _downloadStartTime As DateTime
@@ -23,30 +28,64 @@ Public Class AoiDownload
         _id = id
     End Sub
 
+    ''' <summary>
+    ''' The url that is called to download the file; This url contains a unique code that 
+    ''' identifies the AOI
+    ''' </summary>
+    ''' <value></value>
+    ''' <returns>String</returns>
+    ''' <remarks></remarks>
     Public ReadOnly Property Url As String
         Get
             Return _aoiDownloadUrl
         End Get
     End Property
 
+    ''' <summary>
+    ''' The timestamp for when the download started; This allows us to track and 
+    ''' display elapsed time for the download
+    ''' </summary>
+    ''' <value></value>
+    ''' <returns>DateTime</returns>
+    ''' <remarks></remarks>
     Public ReadOnly Property StartTime As DateTime
         Get
             Return _downloadStartTime
         End Get
     End Property
 
+    ''' <summary>
+    ''' The AOI name. This should be unique but it is not guaranteed
+    ''' </summary>
+    ''' <value></value>
+    ''' <returns>String</returns>
+    ''' <remarks></remarks>
     Public ReadOnly Property AoiName As String
         Get
             Return _aoiName
         End Get
     End Property
 
+    ''' <summary>
+    ''' The folder that the AOI will be downloaded too. Assumption is that the aoi is in a .zip file
+    ''' The filePath does not include the AOI name; This folder will be created when the AOI is unzipped
+    ''' </summary>
+    ''' <value></value>
+    ''' <returns>String</returns>
+    ''' <remarks></remarks>
     Public ReadOnly Property FilePath As String
         Get
             Return _downloadFilepath
         End Get
     End Property
 
+    ''' <summary>
+    ''' The status of the task; Valid values from django are PENDING, FAILED, and SUCCESS
+    ''' eBagis may also use STARTED and TIMED OUT
+    ''' </summary>
+    ''' <value></value>
+    ''' <returns>String</returns>
+    ''' <remarks></remarks>
     Public Property Status As String
         Get
             Return _status
@@ -56,6 +95,12 @@ Public Class AoiDownload
         End Set
     End Property
 
+    ''' <summary>
+    ''' Id for the download object/record
+    ''' </summary>
+    ''' <value></value>
+    ''' <returns>String</returns>
+    ''' <remarks></remarks>
     Public ReadOnly Property id As String
         Get
             Return _id

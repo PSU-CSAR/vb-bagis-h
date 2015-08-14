@@ -5,14 +5,14 @@ Imports BAGIS_ClassLibrary
 Public Class AoiDownloadTimer
 
     Private aTimer As Timer = New Timer
-    Private m_aoiDownload As AoiUpload
+    Private m_aoiDownload As AoiTask
     Private m_token As String
     Private m_parent As FrmDownloadAoiMenu
     Private beginTime As DateTime
     Private m_downloadTimeout As Double  'Units are seconds
     Private m_downloadFilePath As String
 
-    Public Sub New(ByRef aoiDownload As AoiUpload, ByVal strToken As String, ByVal interval As UInteger, _
+    Public Sub New(ByRef aoiDownload As AoiTask, ByVal strToken As String, ByVal interval As UInteger, _
                    ByVal downloadTimeout As Double, ByVal downloadFilePath As String, ByRef parentForm As FrmDownloadAoiMenu)
         m_aoiDownload = aoiDownload
         m_token = strToken
@@ -54,7 +54,7 @@ Public Class AoiDownloadTimer
             'Debug.Print("contentType: " & contentType)
             If contentType = BA_Mime_Zip Then
                 aTimer.Close()
-                Dim aoiDownload As AoiDownload = New AoiDownload(m_aoiDownload.url, m_aoiDownload.task.status, beginTime, _
+                Dim aoiDownload As AoiDownloadInfo = New AoiDownloadInfo(m_aoiDownload.url, m_aoiDownload.task.status, beginTime, _
                                                                  m_downloadFilePath, m_aoiDownload.id)
                 Dim success As BA_ReturnCode = m_parent.DownloadFile(aoiDownload)
                 Exit Sub
