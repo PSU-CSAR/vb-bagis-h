@@ -188,6 +188,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Objects\AoiDownloadInfo.vb" />
+    <Compile Include="Objects\AoiTask.vb" />
     <Compile Include="Objects\AoiUploadTimer.vb" />
     <Compile Include="Objects\BagisToken.vb" />
     <Compile Include="Objects\AoiDownloadTimer.vb" />
@@ -197,7 +198,6 @@
     <Compile Include="Objects\SecurityHelper.vb" />
     <Compile Include="Objects\StoredAoi.vb" />
     <Compile Include="Objects\StoredAoiArray.vb" />
-    <Compile Include="Objects\AoiUpload.vb" />
     <Compile Include="Objects\TaskLog.vb" />
     <Compile Include="RefineHru\BtnReclassZones.vb" />
     <Compile Include="RefineHru\BtnSequentialId.vb" />
