@@ -43,6 +43,7 @@ Public Class FrmTaskLog
                 LoadTaskLog()
             Else
                 MessageBox.Show("A valid AOI was not found in the folder you selected")
+                BtnClear.Enabled = False
             End If
         Catch ex As Exception
             MessageBox.Show("BtnSelectAoi_Click Exception: " & ex.Message)
@@ -51,6 +52,7 @@ Public Class FrmTaskLog
 
     Private Sub LoadTaskLog()
         TxtLog.Text = Nothing
+        BtnClear.Enabled = False
         Dim log As TaskLog = Nothing
         If BA_File_ExistsWindowsIO(TxtAoiPath.Text & BA_EnumDescription(PublicPath.EBagisTaskLog)) Then
             Dim obj As Object = SerializableData.Load(TxtAoiPath.Text & BA_EnumDescription(PublicPath.EBagisTaskLog), GetType(TaskLog))
@@ -85,6 +87,23 @@ Public Class FrmTaskLog
             End If
             count += 1
         Next
+        BtnClear.Enabled = True
         TxtLog.Text = sb.ToString
+    End Sub
+
+    Private Sub BtnClear_Click(sender As System.Object, e As System.EventArgs) Handles BtnClear.Click
+        Dim sbWarning As StringBuilder = New StringBuilder
+        sbWarning.Append("The contents of this task log will be permanently deleted." & vbCrLf)
+        sbWarning.Append("Do you wish to continue ?")
+        Dim res As DialogResult = MessageBox.Show(sbWarning.ToString, "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If res = Windows.Forms.DialogResult.Yes Then
+            Dim retVal As BA_ReturnCode = BA_Remove_File(TxtAoiPath.Text & BA_EnumDescription(PublicPath.EBagisTaskLog))
+            If retVal = BA_ReturnCode.Success Then
+                TxtLog.Text = Nothing
+                TxtAoiPath.Text = Nothing
+            Else
+                MessageBox.Show("An error occurred while trying to clear the log", "Error", MessageBoxButtons.OK)
+            End If
+        End If
     End Sub
 End Class

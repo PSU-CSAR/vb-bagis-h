@@ -28,6 +28,7 @@ Partial Class FrmTaskLog
         Me.Label1 = New System.Windows.Forms.Label()
         Me.TxtLog = New System.Windows.Forms.TextBox()
         Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.BtnClear = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'TxtAoiPath
@@ -94,11 +95,23 @@ Partial Class FrmTaskLog
         Me.BtnCancel.Text = "Cancel"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
+        'BtnClear
+        '
+        Me.BtnClear.Enabled = False
+        Me.BtnClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnClear.Location = New System.Drawing.Point(436, 413)
+        Me.BtnClear.Name = "BtnClear"
+        Me.BtnClear.Size = New System.Drawing.Size(100, 30)
+        Me.BtnClear.TabIndex = 60
+        Me.BtnClear.Text = "Clear Log"
+        Me.BtnClear.UseVisualStyleBackColor = True
+        '
         'FrmTaskLog
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(658, 452)
+        Me.Controls.Add(Me.BtnClear)
         Me.Controls.Add(Me.BtnCancel)
         Me.Controls.Add(Me.TxtLog)
         Me.Controls.Add(Me.Label1)
@@ -118,4 +131,5 @@ Partial Class FrmTaskLog
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents TxtLog As System.Windows.Forms.TextBox
     Friend WithEvents BtnCancel As System.Windows.Forms.Button
+    Friend WithEvents BtnClear As System.Windows.Forms.Button
 End Class

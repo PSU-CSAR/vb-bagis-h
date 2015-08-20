@@ -2,7 +2,11 @@
 ''' This object is used to deserialize the json that is returned from either an
 ''' aoi upload or an aoidownload task
 ''' </summary>
-''' <remarks></remarks>
+''' <remarks>
+''' To access the docs for the rest api that describes these fields
+''' 1. Login here:  https://webservices.geog.pdx.edu/api/rest/ using test login
+''' 2. Docs here: https://webservices.geog.pdx.edu/api/rest/docs
+''' </remarks>
 Public Class AoiTask
 
     ' The id for the upload or download object

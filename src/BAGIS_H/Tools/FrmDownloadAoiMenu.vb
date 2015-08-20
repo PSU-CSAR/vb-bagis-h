@@ -450,6 +450,7 @@ Public Class FrmDownloadAoiMenu
                     aoiDownload.Status = BA_Task_Success
                     UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "Download complete")
                     UpdateLog(aoiDownload.id, aoiDownload.Status, Nothing)
+                    success = BA_Remove_File(zipFilePath)
                 Else
                     aoiDownload.Status = BA_Task_Failure
                     UpdateDownloadStatus(aoiDownload, elapsedTime.TotalSeconds, "An error occurred while unzipping the AOI")
