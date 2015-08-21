@@ -1502,6 +1502,16 @@ Module HruModule
  
     End Function
 
+    Public Function BA_ValidateHruName(ByVal hruName As String) As String
+        If hruName.Contains(" ") Then
+            Return ("The HRU name cannot contain spaces")
+        End If
+        If hruName.Substring(0, 1) = "_" Then
+            Return ("The HRU name cannot start with an underscore '_'")
+        End If
+        Return Nothing
+    End Function
+
 End Module
 
 

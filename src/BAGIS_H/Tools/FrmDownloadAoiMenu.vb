@@ -505,7 +505,7 @@ Public Class FrmDownloadAoiMenu
                 If BA_ZipGeodatabases(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
                     If BA_ZipMiscFiles(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
                         '@ToDo: Comment our sending HRUS for now until we figure out how to do it
-                        'BA_ZipHrus(TxtUploadPath.Text, archive)
+                        BA_ZipHrus(TxtUploadPath.Text, archive)
                         archive.CloseArchive()
                         If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
                         UploadAoi(parentFolder & zipName)
