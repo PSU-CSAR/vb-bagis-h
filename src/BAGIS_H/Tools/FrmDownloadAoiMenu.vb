@@ -504,14 +504,14 @@ Public Class FrmDownloadAoiMenu
                 archive.AddFile(TxtUploadPath.Text & tempFile)
                 If BA_ZipGeodatabases(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
                     If BA_ZipMiscFiles(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
-                        '@ToDo: Comment our sending HRUS for now until we figure out how to do it
+                        '@ToDo: Test upload with an HRU
                         BA_ZipHrus(TxtUploadPath.Text, archive)
                         archive.CloseArchive()
                         If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
                         UploadAoi(parentFolder & zipName)
                     End If
                 End If
-                '@ToDo: delete temp text file
+                BA_Remove_File(TxtUploadPath.Text & tempFile)
             Else
                 MessageBox.Show("You must select an AOI to upload", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If

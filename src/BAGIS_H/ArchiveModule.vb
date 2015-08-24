@@ -31,32 +31,48 @@ Module ArchiveModule
         Try
             If dirZonesArr IsNot Nothing Then
                 For Each dri In dirZonesArr
-                    Dim sourceGDB As String = BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name)
-                    Dim hruFilePath As String = sourceGDB & BA_EnumDescription(PublicPath.HruGrid)
-                    Dim hruXmlFilePath As String = BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruXml)
-                    ' Add hru to the list if the grid exists
-                    If BA_File_Exists(hruFilePath, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) And _
-                       BA_File_ExistsWindowsIO(hruXmlFilePath) Then
-                        'grid
-                        archive.AddFile(sourceGDB & BA_EnumDescription(PublicPath.HruGrid))
-                        'grid_v
-                        If BA_File_Exists(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True), WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
-                            archive.AddFile(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True))
-                        End If
-                        'grid_zones_v
-                        If BA_File_Exists(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True), WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
-                            archive.AddFile(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True))
-                        End If
-                        'log.xml
-                        archive.AddFile(hruXmlFilePath)
-                        'Checks first to see if param.gdb exists
-                        Dim paramGdbPath As String = BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.BagisParamGdb)
-                        If wsf.IsWorkspace(paramGdbPath) Then
-                            Dim files As String() = Directory.GetFiles(paramGdbPath)
-                            For Each nFile As String In files
+                    '1. Create _hruGDB
+                    '2. Copy files to new .gdb (including param.gdb)
+                    Dim hruFolder As String = BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name)
+                    Dim tempGdbName As String = "_" & dri.Name & ".gdb"
+                    Dim success As BA_ReturnCode = BA_CreateFileGdb(hruFolder, tempGdbName)
+                    If success = BA_ReturnCode.Success Then
+                        Dim targetGDB As String = hruFolder & "\" & tempGdbName
+                        Dim sourceGDB As String = BA_GetHruPathGDB(aoiFolder, PublicPath.HruDirectory, dri.Name)
+                        Dim hruFilePath As String = sourceGDB & BA_EnumDescription(PublicPath.HruGrid)
+                        Dim hruXmlFilePath As String = BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.HruXml)
+                        ' Add hru to the list if the grid exists
+                        If BA_File_Exists(hruFilePath, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) And _
+                           BA_File_ExistsWindowsIO(hruXmlFilePath) Then
+                            'grid
+                            success = BA_Copy(hruFilePath, targetGDB & BA_EnumDescription(PublicPath.HruGrid))
+                            'grid_v
+                            If BA_File_Exists(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True), WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                                success = BA_CopyFeatures(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True), targetGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True))
+                            End If
+                            'grid_zones_v
+                            If BA_File_Exists(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True), WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                                success = BA_CopyFeatures(sourceGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True), targetGDB & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruZonesVector), False, True))
+                            End If
+                            'Add _hru.gdb with 3 files to archive
+                            Dim hruFiles As String() = Directory.GetFiles(targetGDB)
+                            For Each nFile As String In hruFiles
                                 'Debug.Print("Adding file " & nFile)
                                 archive.AddFile(nFile)
                             Next
+                            'Delete _hru.gdb
+                            success = BA_Remove_WorkspaceGP(targetGDB)
+                            'log.xml
+                            archive.AddFile(hruXmlFilePath)
+                            'Checks first to see if param.gdb exists
+                            Dim paramGdbPath As String = BA_GetHruPath(aoiFolder, PublicPath.HruDirectory, dri.Name) & BA_EnumDescription(PublicPath.BagisParamGdb)
+                            If wsf.IsWorkspace(paramGdbPath) Then
+                                Dim files As String() = Directory.GetFiles(paramGdbPath)
+                                For Each nFile As String In files
+                                    'Debug.Print("Adding file " & nFile)
+                                    archive.AddFile(nFile)
+                                Next
+                            End If
                         End If
                     End If
                 Next dri
