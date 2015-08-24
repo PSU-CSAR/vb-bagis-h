@@ -1332,7 +1332,7 @@ Public Module ToolsModule
         End If
     End Function
 
-    Public Function BA_Copy(ByVal inData As String, ByVal outData As String)
+    Public Function BA_Copy(ByVal inData As String, ByVal outData As String) As BA_ReturnCode
         Dim tool As Copy = New Copy
         tool.in_data = inData
         tool.out_data = outData
