@@ -395,7 +395,7 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Function GenerateToken() As BA_ReturnCode
-        Return SecurityHelper.GenerateToken(TxtBasinsDb.Text, TxtBasinsDb.Text & "api-token-auth/")
+        Return SecurityHelper.GenerateToken(TxtBasinsDb.Text & "validate-token/", TxtBasinsDb.Text & "api-token-auth/")
     End Function
 
     Friend Function DownloadFile(ByVal aoiDownload As AoiDownloadInfo) As BA_ReturnCode

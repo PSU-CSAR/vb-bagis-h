@@ -70,12 +70,16 @@ Public Class SecurityHelper
 
         Try
             resT = CType(reqT.GetResponse(), HttpWebResponse)
-            'Printing the response to the Console for testing
-            'Using SReader As System.IO.StreamReader = New System.IO.StreamReader(resT.GetResponseStream)
-            '    Debug.Print(SReader.ReadToEnd())
-            'End Using
-            'If we didn't get an exception, the token is valid
-            Return True
+            'Convert the JSON response to ValidateToken object
+            Dim validateToken As ValidateToken = New ValidateToken
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(validateToken.[GetType]())
+            validateToken = CType(ser.ReadObject(resT.GetResponseStream), ValidateToken)
+            If String.IsNullOrEmpty(validateToken.detail) AndAlso _
+                Not String.IsNullOrEmpty(validateToken.message) Then Return True
+            If Not String.IsNullOrEmpty(validateToken.detail) Then
+                Debug.Print("Invalid token detail: " & validateToken.detail)
+            End If
+            Return False
         Catch ex As WebException
             'Catch exception and return false; Token is not valid
             Return False
