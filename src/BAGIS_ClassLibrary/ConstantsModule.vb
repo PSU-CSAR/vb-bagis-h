@@ -178,6 +178,7 @@
     Public Const BA_Resample_Majority = "MAJORITY"
 
     'eBAGIS task status
+    Public Const BA_Task_Staging = "STAGING"
     Public Const BA_Task_Started = "STARTED"
     Public Const BA_Task_Pending = "PENDING"
     Public Const BA_Task_Failure = "FAILURE"

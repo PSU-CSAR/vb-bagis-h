@@ -23,7 +23,6 @@ Public Class FrmDownloadAoiMenu
     Private idxTaskUrl As Integer = 5
     Private idxTaskId As Integer = 6
     Private idxTaskLocalPath As Integer = 7
-    Private m_timersList As IList(Of AoiUploadTimer)
     Private m_downTimersList As IList(Of AoiDownloadTimer)
 
     Public Sub New()
@@ -79,8 +78,6 @@ Public Class FrmDownloadAoiMenu
         AoiGrid.CurrentCell = Nothing
 
         'Check for token
-        'm_token.token = SecurityHelper.GetStoredToken
-        m_timersList = New List(Of AoiUploadTimer)
         m_downTimersList = New List(Of AoiDownloadTimer)
     End Sub
 
@@ -253,15 +250,14 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     'Work around cross-threading exception to update task table
-    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiTask, ByVal elapsedTime As Integer, ByVal strMessage As String)
+    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiTask, ByVal strMessage As String)
         If ctl.InvokeRequired Then
-            ctl.BeginInvoke(New Action(Of Control, AoiTask, Integer, String)(AddressOf UpdateStatus), ctl, aoiUpload, elapsedTime, strMessage)
+            ctl.BeginInvoke(New Action(Of Control, AoiTask, String)(AddressOf UpdateStatus), ctl, aoiUpload, strMessage)
         Else
             For Each row As DataGridViewRow In GrdTasks.Rows
                 Dim url As String = row.Cells(idxTaskUrl).Value
                 If url = aoiUpload.url Then
                     row.Cells(idxTaskStatus).Value = aoiUpload.task.status
-                    row.Cells(idxTaskTime).Value = CStr(elapsedTime)
                     row.Cells(idxTaskMessage).Value = strMessage
                     Exit Sub
                 End If
@@ -354,10 +350,6 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnClear_Click(sender As System.Object, e As System.EventArgs) Handles BtnClear.Click
         GrdTasks.Rows.Clear()
-        For Each aTimer As AoiUploadTimer In m_timersList
-            aTimer.CloseTimer()
-        Next
-        m_timersList.Clear()
         For Each aTimer As AoiDownloadTimer In m_downTimersList
             aTimer.CloseTimer()
         Next
@@ -532,7 +524,7 @@ Public Class FrmDownloadAoiMenu
         With item
             .Cells(idxTaskAoi).Value = aoiName
             .Cells(idxTaskType).Value = TASK_UPLOAD
-            .Cells(idxTaskStatus).Value = BA_Task_Started
+            .Cells(idxTaskStatus).Value = BA_Task_Staging
             .Cells(idxTaskTime).Value = "N/A"
         End With
         GrdTasks.Rows.Add(item)
@@ -543,18 +535,13 @@ Public Class FrmDownloadAoiMenu
         Dim hruExt As HruExtension = HruExtension.GetExtension
         Dim anUpload As AoiTask = BA_UploadMultiPart(uploadUrl, hruExt.EbagisToken.token, aoiName, zipFilePath, TxtComment.Text)
         If anUpload.task IsNot Nothing Then
-            Dim interval As UInteger = 10000    'Value in milleseconds
-            Dim uploadTimeout As Double = 120   'Value in seconds
-            Dim aTimer As AoiUploadTimer = New AoiUploadTimer(anUpload, hruExt.EbagisToken.token, interval, uploadTimeout, Me)
-            m_timersList.Add(aTimer)
             With item
                 .Cells(idxTaskStatus).Value = anUpload.task.status
                 .Cells(idxTaskUrl).Value = anUpload.url
-                .Cells(idxTaskTime).Value = "0"
+                .Cells(idxTaskTime).Value = DateTime.Now.ToString("MM/dd/yy H:mm")
                 .Cells(idxTaskId).Value = anUpload.id
                 .Cells(idxTaskLocalPath).Value = TxtUploadPath.Text
             End With
-            aTimer.EnableTimer(True)
             'Clear out upload file name
             TxtUploadPath.Text = Nothing
         Else
@@ -618,5 +605,54 @@ Public Class FrmDownloadAoiMenu
     Private Sub BtnTaskLog_Click(sender As System.Object, e As System.EventArgs) Handles BtnTaskLog.Click
         Dim frmTaskLog As FrmTaskLog = New FrmTaskLog
         frmTaskLog.ShowDialog
+    End Sub
+
+    Private Sub BtnUpdateStatus_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpdateStatus.Click
+        For Each row As DataGridViewRow In GrdTasks.Rows
+            Dim taskType As String = row.Cells(idxTaskType).Value
+            If taskType.Equals(TASK_UPLOAD) Then
+                Dim url As String = row.Cells(idxTaskUrl).Value
+                CheckUploadStatus(url)
+            End If
+        Next
+    End Sub
+
+    Private Sub CheckUploadStatus(ByVal uploadUrl As String)
+        Dim reqT As HttpWebRequest
+        Dim resT As HttpWebResponse
+        Try
+            reqT = WebRequest.Create(uploadUrl)
+            'This is a GET request
+            reqT.Method = "GET"
+
+            'Retrieve the token and format it for the header
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
+            'Put token in header
+            reqT.Headers(HttpRequestHeader.Authorization) = cred
+            resT = CType(reqT.GetResponse(), HttpWebResponse)
+
+            'Serialize the response so we can check the status
+            Dim aoiUpload As AoiTask = New AoiTask()
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
+            aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+
+            Dim uploadStatus As String = Trim(aoiUpload.task.status).ToUpper
+            Dim strMessage As String = Nothing
+            Select Case uploadStatus
+                Case BA_Task_Started
+                    Me.UpdateLog(aoiUpload.id, aoiUpload.task.status, strMessage)
+                Case BA_Task_Success
+                    Me.UpdateLog(aoiUpload.id, aoiUpload.task.status, strMessage)
+                Case BA_Task_Pending
+                    Me.UpdateLog(aoiUpload.id, aoiUpload.task.status, strMessage)
+                Case BA_Task_Failure
+                    strMessage = aoiUpload.task.traceback
+                    Me.UpdateLog(aoiUpload.id, aoiUpload.task.status, strMessage)
+            End Select
+            Me.UpdateStatus(GrdTasks, aoiUpload, strMessage)
+        Catch ex As WebException
+            Debug.Print("OnTimedEvent: " & ex.Message)
+        End Try
     End Sub
 End Class

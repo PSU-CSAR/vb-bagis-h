@@ -78,7 +78,7 @@ Public Class AoiDownloadTimer
                         m_parent.EnableDownloadBtn(m_parent.BtnDownloadAoi, True)
                     End If
             End Select
-            m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiDownload, CInt(elapsedTime.TotalSeconds), strMessage)
+            m_parent.UpdateStatus(m_parent.GrdTasks, m_aoiDownload, strMessage)
         Catch ex As WebException
             Debug.Print("AoiDownloadTimer.OnTimedEvent: " & ex.Message)
             aTimer.Close()

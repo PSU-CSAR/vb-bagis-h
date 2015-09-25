@@ -56,18 +56,19 @@ Partial Class FrmDownloadAoiMenu
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TxtComment = New System.Windows.Forms.TextBox()
         Me.GrdTasks = New System.Windows.Forms.DataGridView()
-        Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.AoiType = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Status = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Time = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Message = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Url = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Id = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.LocalFolder = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.BtnClear = New System.Windows.Forms.Button()
         Me.BtnUpload = New System.Windows.Forms.Button()
         Me.BtnTaskLog = New System.Windows.Forms.Button()
+        Me.BtnUpdateStatus = New System.Windows.Forms.Button()
+        Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.AoiType = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Status = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Started = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Message = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Url = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Id = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.LocalFolder = New System.Windows.Forms.DataGridViewTextBoxColumn()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -300,84 +301,13 @@ Partial Class FrmDownloadAoiMenu
         DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.GrdTasks.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle19
         Me.GrdTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.GrdTasks.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.AoiType, Me.Status, Me.Time, Me.Message, Me.Url, Me.Id, Me.LocalFolder})
+        Me.GrdTasks.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.AoiType, Me.Status, Me.Started, Me.Message, Me.Url, Me.Id, Me.LocalFolder})
         Me.GrdTasks.Location = New System.Drawing.Point(10, 282)
         Me.GrdTasks.Name = "GrdTasks"
         Me.GrdTasks.ReadOnly = True
         Me.GrdTasks.Size = New System.Drawing.Size(896, 165)
         Me.GrdTasks.TabIndex = 83
         Me.GrdTasks.TabStop = False
-        '
-        'DataGridViewTextBoxColumn1
-        '
-        DataGridViewCellStyle20.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle20
-        Me.DataGridViewTextBoxColumn1.HeaderText = "AOI Name"
-        Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
-        Me.DataGridViewTextBoxColumn1.ReadOnly = True
-        Me.DataGridViewTextBoxColumn1.Width = 250
-        '
-        'AoiType
-        '
-        DataGridViewCellStyle21.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AoiType.DefaultCellStyle = DataGridViewCellStyle21
-        Me.AoiType.HeaderText = "Type"
-        Me.AoiType.Name = "AoiType"
-        Me.AoiType.ReadOnly = True
-        '
-        'Status
-        '
-        DataGridViewCellStyle22.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Status.DefaultCellStyle = DataGridViewCellStyle22
-        Me.Status.HeaderText = "Status"
-        Me.Status.Name = "Status"
-        Me.Status.ReadOnly = True
-        '
-        'Time
-        '
-        DataGridViewCellStyle23.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Time.DefaultCellStyle = DataGridViewCellStyle23
-        Me.Time.HeaderText = "Elapsed Time"
-        Me.Time.Name = "Time"
-        Me.Time.ReadOnly = True
-        Me.Time.Resizable = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.Time.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.Time.Width = 125
-        '
-        'Message
-        '
-        DataGridViewCellStyle24.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.Message.DefaultCellStyle = DataGridViewCellStyle24
-        Me.Message.HeaderText = "Message"
-        Me.Message.Name = "Message"
-        Me.Message.ReadOnly = True
-        Me.Message.Width = 275
-        '
-        'Url
-        '
-        Me.Url.HeaderText = "Url"
-        Me.Url.Name = "Url"
-        Me.Url.ReadOnly = True
-        Me.Url.Visible = False
-        Me.Url.Width = 5
-        '
-        'Id
-        '
-        Me.Id.HeaderText = "Id"
-        Me.Id.Name = "Id"
-        Me.Id.ReadOnly = True
-        Me.Id.Visible = False
-        Me.Id.Width = 5
-        '
-        'LocalFolder
-        '
-        Me.LocalFolder.HeaderText = "LocalFolder"
-        Me.LocalFolder.Name = "LocalFolder"
-        Me.LocalFolder.ReadOnly = True
-        Me.LocalFolder.Visible = False
-        Me.LocalFolder.Width = 5
         '
         'Label3
         '
@@ -420,11 +350,93 @@ Partial Class FrmDownloadAoiMenu
         Me.BtnTaskLog.Text = "View task log"
         Me.BtnTaskLog.UseVisualStyleBackColor = True
         '
+        'BtnUpdateStatus
+        '
+        Me.BtnUpdateStatus.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnUpdateStatus.Location = New System.Drawing.Point(551, 246)
+        Me.BtnUpdateStatus.Name = "BtnUpdateStatus"
+        Me.BtnUpdateStatus.Size = New System.Drawing.Size(120, 30)
+        Me.BtnUpdateStatus.TabIndex = 88
+        Me.BtnUpdateStatus.Text = "Update status"
+        Me.BtnUpdateStatus.UseVisualStyleBackColor = True
+        '
+        'DataGridViewTextBoxColumn1
+        '
+        DataGridViewCellStyle20.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle20
+        Me.DataGridViewTextBoxColumn1.HeaderText = "AOI Name"
+        Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
+        Me.DataGridViewTextBoxColumn1.ReadOnly = True
+        Me.DataGridViewTextBoxColumn1.Width = 250
+        '
+        'AoiType
+        '
+        DataGridViewCellStyle21.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AoiType.DefaultCellStyle = DataGridViewCellStyle21
+        Me.AoiType.HeaderText = "Type"
+        Me.AoiType.Name = "AoiType"
+        Me.AoiType.ReadOnly = True
+        '
+        'Status
+        '
+        DataGridViewCellStyle22.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Status.DefaultCellStyle = DataGridViewCellStyle22
+        Me.Status.HeaderText = "Status"
+        Me.Status.Name = "Status"
+        Me.Status.ReadOnly = True
+        '
+        'Started
+        '
+        DataGridViewCellStyle23.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Started.DefaultCellStyle = DataGridViewCellStyle23
+        Me.Started.HeaderText = "Started"
+        Me.Started.Name = "Started"
+        Me.Started.ReadOnly = True
+        Me.Started.Resizable = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.Started.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.Started.Width = 125
+        '
+        'Message
+        '
+        DataGridViewCellStyle24.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.Message.DefaultCellStyle = DataGridViewCellStyle24
+        Me.Message.HeaderText = "Message"
+        Me.Message.Name = "Message"
+        Me.Message.ReadOnly = True
+        Me.Message.Width = 275
+        '
+        'Url
+        '
+        Me.Url.HeaderText = "Url"
+        Me.Url.Name = "Url"
+        Me.Url.ReadOnly = True
+        Me.Url.Visible = False
+        Me.Url.Width = 5
+        '
+        'Id
+        '
+        Me.Id.HeaderText = "Id"
+        Me.Id.Name = "Id"
+        Me.Id.ReadOnly = True
+        Me.Id.Visible = False
+        Me.Id.Width = 5
+        '
+        'LocalFolder
+        '
+        Me.LocalFolder.HeaderText = "LocalFolder"
+        Me.LocalFolder.Name = "LocalFolder"
+        Me.LocalFolder.ReadOnly = True
+        Me.LocalFolder.Visible = False
+        Me.LocalFolder.Width = 5
+        '
         'FrmDownloadAoiMenu
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(928, 572)
+        Me.Controls.Add(Me.BtnUpdateStatus)
         Me.Controls.Add(Me.BtnTaskLog)
         Me.Controls.Add(Me.BtnUpload)
         Me.Controls.Add(Me.BtnClear)
@@ -479,13 +491,14 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents Comment As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents DownloadUrl As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents BtnUpload As System.Windows.Forms.Button
+    Friend WithEvents BtnTaskLog As System.Windows.Forms.Button
+    Friend WithEvents BtnUpdateStatus As System.Windows.Forms.Button
     Friend WithEvents DataGridViewTextBoxColumn1 As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents AoiType As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents Status As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents Time As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents Started As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents Message As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents Url As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents Id As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents LocalFolder As System.Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents BtnTaskLog As System.Windows.Forms.Button
 End Class
