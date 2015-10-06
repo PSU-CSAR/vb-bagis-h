@@ -1088,10 +1088,13 @@ Module HruModule
 
         Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
         If allowNonContiguous = False Then
-            'Delete initial grid so we can overwrite it
+            'Delete initial grid so we can overwrite it, if it exists
             Dim gridName As String = BA_EnumDescription(PublicPath.HruGrid)
-            gridName = gridName.Remove(0, 1) 'remove the backslash
-            Dim retVal As Integer = BA_RemoveRasterFromGDB(hruOutputPath, gridName)
+            Dim retVal As Integer = 1
+            If BA_File_Exists(hruOutputPath & gridName, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) Then
+                gridName = gridName.Remove(0, 1) 'remove the backslash
+                retVal = BA_RemoveRasterFromGDB(hruOutputPath, gridName)
+            End If
 
             If retVal = 1 Then
                 'Convert the feature class to raster in final grid file
