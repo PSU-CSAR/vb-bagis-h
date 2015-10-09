@@ -1102,7 +1102,7 @@ Module HruModule
                 success = BA_Feature2RasterGP(vOutputPath, outRasterPath, BA_FIELD_HRUID_CO, cellSize, snapRasterPath)
                 If success = BA_ReturnCode.Success Then
                     'Ensure that the grid_code in grid_v matches the grid that was generated during BA_Feature2RasterGP
-                    BA_UpdateGridCodeForContig(hruOutputPath, vOutputFileName)
+                    BA_UpdateRequiredColumns(hruOutputPath, vOutputFileName, BA_FIELD_HRUID_CO)
                 End If
             End If
         Else
@@ -1111,7 +1111,7 @@ Module HruModule
             If success = BA_ReturnCode.Success Then
                 success = BA_Dissolve(hruOutputPath & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
                 If success = BA_ReturnCode.Success Then
-                    BA_UpdateRequiredColumns(hruOutputPath, vOutputFileName)
+                    BA_UpdateRequiredColumns(hruOutputPath, vOutputFileName, BA_FIELD_HRUID_NC)
                 End If
             End If
         End If
@@ -1137,10 +1137,9 @@ Module HruModule
         End If
     End Function
 
-    ' Copy values from hruid_nc to grid_code field, and from OBJECT_ID to Id field 
-    ' for compability with rest of app; Used for non-contig zones where we have to 
-    ' dissolve/regenerate the vector layer
-    Public Sub BA_UpdateRequiredColumns(ByVal featClassPath, ByVal featClassName)
+    ' Copy values from hruid_nc/hruid_co to grid_code field, and from OBJECT_ID to Id field 
+    ' for compability with rest of app;
+    Public Sub BA_UpdateRequiredColumns(ByVal featClassPath As String, ByVal featClassName As String, ByVal hruIdColumn As String)
         Dim fc As IFeatureClass = Nothing
         Dim pCursor As IFeatureCursor = Nothing
         Dim pFeature As IFeature = Nothing
@@ -1152,6 +1151,7 @@ Module HruModule
             If idxGridCd < 0 Then
                 idxGridCd = fc.FindField(BA_FIELD_GRIDCODE)
             End If
+            ' Updating this field for compatibility with BAGIS-P models
             Dim idxId As Integer = fc.FindField(BA_FIELD_ID)
 
             If idxGridCd < 0 Then
@@ -1175,64 +1175,22 @@ Module HruModule
             End If
 
 
-            Dim idxNc As Short = fc.FindField(BA_FIELD_HRUID_NC)
+            'Dim idxNc As Short = fc.FindField(BA_FIELD_HRUID_NC)
+            Dim idxHruId As Short = fc.FindField(hruIdColumn)
             Dim idxObjId As Short = fc.FindField(BA_FIELD_OBJECT_ID)
 
             pCursor = fc.Update(Nothing, False)
             pFeature = pCursor.NextFeature
             Do While Not pFeature Is Nothing
-                pFeature.Value(idxGridCd) = pFeature.Value(idxNc)
-                pFeature.Value(idxId) = pFeature.Value(idxObjId)
+                pFeature.Value(idxGridCd) = pFeature.Value(idxHruId)
+                'Set ID column to same value as hru id for compatibility with BAGIS-P
+                'pFeature.Value(idxId) = pFeature.Value(idxObjId)
+                pFeature.Value(idxId) = pFeature.Value(idxHruId)
                 pCursor.UpdateFeature(pFeature)
                 pFeature = pCursor.NextFeature
             Loop
         Catch ex As Exception
             MsgBox("BA_UpdateRequiredColumns Exception" & ex.Message)
-        Finally
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(fc)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pCursor)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pFeature)
-        End Try
-
-    End Sub
-
-    ' Copy values from hruid_co to grid_code field 
-    ' for compability with rest of app; Used for contig zones where we have to 
-    ' dissolve/regenerate the grid layer
-    Public Sub BA_UpdateGridCodeForContig(ByVal featClassPath, ByVal featClassName)
-        Dim fc As IFeatureClass = Nothing
-        Dim pCursor As IFeatureCursor = Nothing
-        Dim pFeature As IFeature = Nothing
-
-        Try
-            fc = BA_OpenFeatureClassFromGDB(featClassPath, featClassName)
-            Dim idxGridCd As Integer = fc.FindField(BA_FIELD_GRIDCODE_GDB)
-            'Try alternate name for grid_code for compatibility with later versions of ArcMap
-            If idxGridCd < 0 Then
-                idxGridCd = fc.FindField(BA_FIELD_GRIDCODE)
-            End If
-
-            If idxGridCd < 0 Then
-                Dim pFieldCont As IFieldEdit = New Field
-                With pFieldCont
-                    .Type_2 = esriFieldType.esriFieldTypeInteger
-                    .Name_2 = BA_FIELD_GRIDCODE_GDB
-                End With
-                fc.AddField(pFieldCont)
-                idxGridCd = fc.FindField(BA_FIELD_GRIDCODE_GDB)
-            End If
-
-            Dim idxCo As Short = fc.FindField(BA_FIELD_HRUID_CO)
-
-            pCursor = fc.Update(Nothing, False)
-            pFeature = pCursor.NextFeature
-            Do While Not pFeature Is Nothing
-                pFeature.Value(idxGridCd) = pFeature.Value(idxCo)
-                pCursor.UpdateFeature(pFeature)
-                pFeature = pCursor.NextFeature
-            Loop
-        Catch ex As Exception
-            MsgBox("BA_UpdateGridCodeForContig Exception" & ex.Message)
         Finally
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(fc)
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pCursor)

@@ -79,7 +79,8 @@ Public Module ToolsModule
             End If
 
             ' Configure and run ZonalStatistic tool
-            Dim srcField As String = BA_FIELD_ID 'set the default value
+            'Dim srcField As String = BA_FIELD_ID 'set the default value
+            Dim srcField As String = Nothing    'Should be using grid code instead of id
             If layerIsRaster Then
                 tool.in_zone_data = zoneLayerFilePath
                 tool.zone_field = BA_FIELD_VALUE
