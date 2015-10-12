@@ -1107,6 +1107,9 @@ Module HruModule
             End If
         Else
             Dim polyFileName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False)
+            If BA_File_Exists(hruOutputPath & "\" & polyFileName, WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                BA_Remove_ShapefileFromGDB(hruOutputPath, polyFileName)
+            End If
             success = BA_RenameFeatureClassInGDB(hruOutputPath, vOutputFileName, polyFileName)
             If success = BA_ReturnCode.Success Then
                 success = BA_Dissolve(hruOutputPath & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)

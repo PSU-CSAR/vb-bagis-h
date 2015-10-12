@@ -15,6 +15,7 @@ Public Class FrmSequentialId
     Dim m_aoi As Aoi
     Dim m_version As String
     Dim m_lstHruLayersItem As LayerListItem = Nothing
+    Dim m_hru As Hru
 
     Public Sub New()
         ' This call is required by the Windows Form Designer.
@@ -154,6 +155,25 @@ Public Class FrmSequentialId
 
         ' reset selected index to new value
         m_lstHruLayersItem = LstSelectHruLayers.SelectedItem
+
+        ' populate global hru variable
+        If m_lstHruLayersItem IsNot Nothing Then
+            If m_aoi.HruList Is Nothing Then
+                Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, m_lstHruLayersItem.Name)
+                m_aoi = BA_LoadHRUFromXml(hruInputPath)
+            End If
+            If m_aoi.HruList IsNot Nothing Then
+                For Each pHru As Hru In m_aoi.HruList
+                    If pHru.Name = m_lstHruLayersItem.Name Then
+                        m_hru = pHru
+                        Exit For
+                    End If
+                Next
+            End If
+            If m_hru Is Nothing Then
+                MessageBox.Show("The hru definition could not be loaded. The Sequential Id tool cannot be run", "Unable to load HRU")
+            End If
+        End If
 
         Btnclear.Enabled = True
         If m_lstHruLayersItem Is Nothing Then
@@ -327,6 +347,14 @@ Public Class FrmSequentialId
                                         'This method returns a 0 if it succeeds instead of 1
                                         If BA_AddShapeAreaToAttrib(vOutputPath) = 0 Then
                                             vReturnVal = 1
+                                            ' Filled DEM Path
+                                            Dim layerPath As String = m_aoi.FilePath & "\" & BA_EnumDescription(GeodatabaseNames.Surfaces)
+                                            Dim fullLayerPath As String = layerPath & "\" & BA_EnumDescription(MapsFileName.filled_dem_gdb)
+                                            'get raster resolution
+                                            Dim cellSize As Double
+                                            Dim rasterStat As IRasterStatistics = BA_GetRasterStatsGDB(fullLayerPath, cellSize)
+
+                                            success = BA_ProcessNonContiguousGrids(m_hru.AllowNonContiguousHru, vOutputPath, hruFolder, cellSize, snapRasterPath)
                                         Else
                                             vReturnVal = -1
                                             MessageBox.Show("An error occurred while trying to assign sequential ID numbers. Please restart ArcMap and try again.", "File locked", _
