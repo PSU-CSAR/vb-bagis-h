@@ -87,32 +87,32 @@ Public Class AoiDownloadTimer
             Dim activeDownloads As Integer = 0
             For Each pRow As DataGridViewRow In m_parent.GrdTasks.Rows
                 Dim downloadTask As AoiTask = Nothing
-                Dim taskType As String = pRow.Cells(m_parent.idxTaskType).Value
-                Dim downloadStatus As String = pRow.Cells(m_parent.idxDownloadStatus).Value
-                If Not String.IsNullOrEmpty(downloadStatus) AndAlso downloadStatus.Equals(BA_Download_Processing) Then
-                    activeDownloads += 1
-                    Dim url As String = pRow.Cells(m_parent.idxTaskUrl).Value
-                    'Check to see if we have a zip file
-                    Dim contentType As String = WebservicesModule.BA_GetResponseContentType(url, m_token)
-                    Dim strMessage As String = Nothing
+                'Dim taskType As String = pRow.Cells(m_parent.idxTaskType).Value
+                'Dim downloadStatus As String = pRow.Cells(m_parent.idxDownloadStatus).Value
+                'If Not String.IsNullOrEmpty(downloadStatus) AndAlso downloadStatus.Equals(BA_Download_Processing) Then
+                '    activeDownloads += 1
+                '    Dim url As String = pRow.Cells(m_parent.idxTaskUrl).Value
+                'Check to see if we have a zip file
+                'Dim contentType As String = WebservicesModule.BA_GetResponseContentType(url, m_token)
+                'Dim strMessage As String = Nothing
 
-                    If contentType = BA_Mime_Zip Then
-                        Dim success As BA_ReturnCode = m_parent.DownloadFile(url)
-                        Exit Sub
-                    Else
-                        downloadTask = BA_Download_Aoi(url, m_token)
-                    End If
+                'If contentType = BA_Mime_Zip Then
+                '    Dim success As BA_ReturnCode = m_parent.DownloadFile(url)
+                '    Exit Sub
+                'Else
+                '    downloadTask = BA_Download_Aoi(url, m_token)
+                'End If
 
-                    Dim uploadStatus As String = Trim(downloadTask.task.status).ToUpper
-                    Select Case uploadStatus
-                        Case BA_Task_Failure
-                            strMessage = downloadTask.task.traceback
-                            Debug.Print("Download failure from server: " & downloadTask.task.traceback)
-                        Case BA_Task_Pending
-                            strMessage = "Assembling download"
-                    End Select
-                    m_parent.UpdateStatus(m_parent.GrdTasks, downloadTask, strMessage)
-                End If
+                'Dim uploadStatus As String = Trim(downloadTask.task.status).ToUpper
+                'Select Case uploadStatus
+                '    Case BA_Task_Failure
+                '        strMessage = downloadTask.task.traceback
+                '        Debug.Print("Download failure from server: " & downloadTask.task.traceback)
+                '    Case BA_Task_Pending
+                '        strMessage = "Assembling download"
+                'End Select
+                'm_parent.UpdateStatus(m_parent.GrdTasks, downloadTask, strMessage)
+                'End If
             Next
             If activeDownloads < 1 Then aTimer.Stop()
         Catch ex As WebException

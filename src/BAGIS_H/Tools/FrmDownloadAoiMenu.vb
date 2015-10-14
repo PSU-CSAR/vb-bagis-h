@@ -16,15 +16,14 @@ Public Class FrmDownloadAoiMenu
     Private idxComment As Integer = 4
     Private idxDownloadUrl As Integer = 5
     Private idxTaskAoi As Integer = 0
-    Friend idxTaskType As Integer = 1
+    Private idxTaskType As Integer = 1
     Private idxTaskStatus As Integer = 2
     Private idxTaskTime As Integer = 3
     Private idxTaskMessage As Integer = 4
-    Friend idxTaskUrl As Integer = 5
+    Private idxTaskUrl As Integer = 5
     Private idxTaskId As Integer = 6
     Private idxTaskLocalPath As Integer = 7
-    Friend idxDownloadStatus As Integer = 8
-    Private m_timer As AoiDownloadTimer = Nothing
+    Private idxDownloadStatus As Integer = 8
 
     Public Sub New()
 
@@ -104,6 +103,17 @@ Public Class FrmDownloadAoiMenu
                     dCount += 1
                     Dim downloadFilePath As String = TxtDownloadPath.Text & "\" & Convert.ToString(pRow.Cells(idxAoiName).Value)
                     If Directory.Exists(downloadFilePath) Then dList.Add(Convert.ToString(pRow.Cells(idxAoiName).Value))
+
+                    'Make sure the selected aoi isn't already being downloaded
+                    Dim aoiName As String = Convert.ToString(pRow.Cells(idxAoiName).Value)
+                    For Each tRow As DataGridViewRow In GrdTasks.Rows
+                        Dim aoiTask As String = Convert.ToString(tRow.Cells(idxTaskAoi).Value)
+                        If aoiName.Equals(aoiTask) Then
+                            MessageBox.Show(aoiName & " is already being downloaded.")
+                            pRow.Cells(idxDownload).Value = False
+                            Exit Sub
+                        End If
+                    Next
                 End If
             Next
             If dCount < 1 Then
@@ -119,13 +129,16 @@ Public Class FrmDownloadAoiMenu
                 Next
                 messageBoxVB.AppendLine("")
                 messageBoxVB.AppendLine("Click 'Yes' to overwrite or 'No' to cancel.")
-                MessageBox.Show(messageBoxVB.ToString, "Existing AOI's", MessageBoxButtons.YesNo)
+                Dim res As DialogResult = MessageBox.Show(messageBoxVB.ToString, "Existing AOI's", MessageBoxButtons.YesNo)
+                If Not res = Windows.Forms.DialogResult.Yes Then
+                    Exit Sub
+                End If
             End If
 
             'Check token
             If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
-            BtnDownloadAoi.Enabled = False
+            'BtnDownloadAoi.Enabled = False
             For Each pRow As DataGridViewRow In AoiGrid.Rows
                 Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
                 If ckDownload = True Then
@@ -142,15 +155,13 @@ Public Class FrmDownloadAoiMenu
                         .Cells(idxTaskTime).Value = "N/A"
                     End With
                     GrdTasks.Rows.Add(item)
+                    'Uncheck selected download so not accidently reselected
+                    pRow.Cells(idxDownload).Value = False
                     Application.DoEvents()
                     'Set reference to HruExtension
                     Dim hruExt As HruExtension = HruExtension.GetExtension
                     Dim aDownload As AoiTask = BA_Download_Aoi(downloadUrl, hruExt.EbagisToken.token)
                     If aDownload.task IsNot Nothing Then
-                        Dim interval As UInteger = 10000    'Value in milleseconds
-                        If m_timer Is Nothing Then
-                            m_timer = New AoiDownloadTimer(hruExt.EbagisToken.token, interval, Me)
-                        End If
                         With item
                             .Cells(idxTaskStatus).Value = aDownload.task.status
                             .Cells(idxTaskUrl).Value = aDownload.url
@@ -160,7 +171,7 @@ Public Class FrmDownloadAoiMenu
                             .Cells(idxTaskLocalPath).Value = TxtDownloadPath.Text & "\" & aoiName & ".zip"
                             .Cells(idxDownloadStatus).Value = BA_Download_Processing
                         End With
-                        If m_timer.Enabled = False Then m_timer.EnableTimer(True)
+                        If DownloadTimer.Enabled = False Then DownloadTimer.Enabled = True
                     Else
                         With item
                             .Cells(idxTaskStatus).Value = BA_Task_Failure
@@ -265,14 +276,14 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     'Work around cross-threading exception to enable download button
-    Friend Sub EnableDownloadBtn(ByVal ctl As Control, ByVal Enabled As Boolean)
-        If ctl.InvokeRequired Then
-            ctl.BeginInvoke(New Action(Of Control, Boolean)(AddressOf EnableDownloadBtn), ctl, Enabled)
-        Else
-            BtnDownloadAoi.Enabled = Enabled
-        End If
-        Application.DoEvents()
-    End Sub
+    'Friend Sub EnableDownloadBtn(ByVal ctl As Control, ByVal Enabled As Boolean)
+    '    If ctl.InvokeRequired Then
+    '        ctl.BeginInvoke(New Action(Of Control, Boolean)(AddressOf EnableDownloadBtn), ctl, Enabled)
+    '    Else
+    '        BtnDownloadAoi.Enabled = Enabled
+    '    End If
+    '    Application.DoEvents()
+    'End Sub
 
     Private Sub UpdateDownloadStatus(ByVal aoiDownload As AoiDownloadInfo, ByVal strMessage As String)
         For Each row As DataGridViewRow In GrdTasks.Rows
@@ -347,7 +358,7 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnClear_Click(sender As System.Object, e As System.EventArgs) Handles BtnClear.Click
         GrdTasks.Rows.Clear()
-        BtnDownloadAoi.Enabled = True
+        'BtnDownloadAoi.Enabled = True
     End Sub
 
     Private Sub BtnSelectDownloadFolder_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectDownloadFolder.Click
@@ -407,7 +418,6 @@ Public Class FrmDownloadAoiMenu
                     aoiDownload.downloadStatus = BA_Download_Download_Started
                 End If
             Next
-            m_timer.EnableTimer(False)
             myWebClient.DownloadFileAsync(downloadUri, aoiDownload.FilePath, aoiDownload)
             UpdateDownloadStatus(aoiDownload, "Downloading file")
             Return BA_ReturnCode.Success
@@ -420,7 +430,7 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
         Try
-            Me.EnableDownloadBtn(BtnDownloadAoi, True)
+            'Me.EnableDownloadBtn(BtnDownloadAoi, True)
             ' File download completed
             Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             aoiDownload.downloadStatus = BA_Download_Complete
@@ -436,14 +446,14 @@ Public Class FrmDownloadAoiMenu
             End If
             ' The download succeeded !!
             If e.Cancelled = False And e.Error Is Nothing Then
-                aoiDownload.Status = BA_Task_Pending
+                'aoiDownload.Status = BA_Task_Pending
                 UpdateDownloadStatus(aoiDownload, "Unzipping file")
                 Dim parentFolder As String = "PleaseReturn"
                 Dim zipFile As String = BA_GetBareName(aoiDownload.FilePath, parentFolder)
                 Dim zipFilePath As String = aoiDownload.FilePath
                 Dim success As BA_ReturnCode = BA_UnzipAoi(zipFilePath, parentFolder & aoiDownload.AoiName)
                 If success = BA_ReturnCode.Success Then
-                    aoiDownload.Status = BA_Task_Success
+                    'aoiDownload.Status = BA_Task_Success
                     UpdateDownloadStatus(aoiDownload, "Download complete")
                     UpdateLog(aoiDownload.id, aoiDownload.Status, Nothing)
                     success = BA_Remove_File(zipFilePath)
@@ -563,10 +573,13 @@ Public Class FrmDownloadAoiMenu
             If row.Cells(idxTaskId).Value.ToString.Equals(id) Then
                 'Update the task log entry
                 foundEntry = New TaskLogEntry()
+                Dim zipPath As String = row.Cells(idxTaskLocalPath).Value.ToString  'The path of the .zip file
+                Dim localAoiPath As String = "PleaseReturn"
+                Dim tempFile As String = BA_GetBareName(zipPath, localAoiPath)
                 With foundEntry
                     foundEntry.id = id
                     foundEntry.aoiName = row.Cells(idxAoiName).Value.ToString
-                    foundEntry.localFolder = row.Cells(idxTaskLocalPath).Value.ToString
+                    foundEntry.localFolder = localAoiPath & foundEntry.aoiName
                     foundEntry.taskType = row.Cells(idxTaskType).Value.ToString
                     foundEntry.status = status
                     foundEntry.dateCompleted = Now
@@ -579,13 +592,8 @@ Public Class FrmDownloadAoiMenu
         If foundEntry IsNot Nothing Then
             Dim log As TaskLog = Nothing
             'First try to load an existing log file
-            Dim downloadPath As String = foundEntry.localFolder
-            Dim parentFolder As String = "PleaseReturn"
-            If foundEntry.taskType = BA_TASK_DOWNLOAD Then
-                Dim tempFile As String = BA_GetBareName(downloadPath, parentFolder)
-            End If
-            If BA_File_ExistsWindowsIO(parentFolder & BA_EnumDescription(PublicPath.EBagisTaskLog)) Then
-                Dim obj As Object = SerializableData.Load(parentFolder & BA_EnumDescription(PublicPath.EBagisTaskLog), GetType(TaskLog))
+             If BA_File_ExistsWindowsIO(foundEntry.localFolder & BA_EnumDescription(PublicPath.EBagisTaskLog)) Then
+                Dim obj As Object = SerializableData.Load(foundEntry.localFolder & BA_EnumDescription(PublicPath.EBagisTaskLog), GetType(TaskLog))
                 If obj IsNot Nothing Then
                     log = CType(obj, TaskLog)
                 End If
@@ -602,7 +610,7 @@ Public Class FrmDownloadAoiMenu
             End If
             entries(entries.Length - 1) = foundEntry
             log.TaskLogEntries = entries
-            log.Save(parentFolder & BA_EnumDescription(PublicPath.EBagisTaskLog))
+            log.Save(foundEntry.localFolder & BA_EnumDescription(PublicPath.EBagisTaskLog))
         End If
     End Sub
 
@@ -658,6 +666,44 @@ Public Class FrmDownloadAoiMenu
             Me.UpdateStatus(GrdTasks, aoiUpload, strMessage)
         Catch ex As WebException
             Debug.Print("OnTimedEvent: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub DownloadTimer_Tick(sender As System.Object, e As System.EventArgs) Handles DownloadTimer.Tick
+        Try
+            Dim activeDownloads As Integer = 0
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            For Each pRow As DataGridViewRow In GrdTasks.Rows
+                Dim downloadTask As AoiTask = Nothing
+                Dim downloadStatus As String = pRow.Cells(idxDownloadStatus).Value
+                If Not String.IsNullOrEmpty(downloadStatus) AndAlso downloadStatus.Equals(BA_Download_Processing) Then
+                    activeDownloads += 1
+                    Dim url As String = pRow.Cells(idxTaskUrl).Value
+                    'Check to see if we have a zip file
+                    Dim contentType As String = WebservicesModule.BA_GetResponseContentType(url, hruExt.EbagisToken.token)
+                    Dim strMessage As String = Nothing
+
+                    If contentType = BA_Mime_Zip Then
+                        Dim success As BA_ReturnCode = Me.DownloadFile(url)
+                        Exit Sub
+                    Else
+                        downloadTask = BA_Download_Aoi(url, hruExt.EbagisToken.token)
+                    End If
+
+                    Dim uploadStatus As String = Trim(downloadTask.task.status).ToUpper
+                    Select Case uploadStatus
+                        Case BA_Task_Failure
+                            strMessage = downloadTask.task.traceback
+                            Debug.Print("Download failure from server: " & downloadTask.task.traceback)
+                        Case BA_Task_Pending
+                            strMessage = "Assembling download"
+                    End Select
+                    Me.UpdateStatus(GrdTasks, downloadTask, strMessage)
+                End If
+            Next
+            If activeDownloads < 1 Then DownloadTimer.Enabled = False
+        Catch ex As WebException
+            Debug.Print("DownloadTimer.Tick Exception: " & ex.Message)
         End Try
     End Sub
 End Class
