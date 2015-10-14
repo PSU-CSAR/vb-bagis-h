@@ -75,9 +75,9 @@ Public Class FrmTaskLog
             sb.Append("Local folder: " & entry.localFolder & vbCrLf)
             Dim fDate As String = entry.dateCompleted.ToShortDateString & " " & entry.dateCompleted.ToShortTimeString
             Select Case entry.taskType
-                Case TASK_DOWNLOAD
+                Case BA_TASK_DOWNLOAD
                     sb.Append("Downloaded: " & fDate & vbCrLf)
-                Case TASK_UPLOAD
+                Case BA_TASK_UPLOAD
                     sb.Append("Uploaded: " & fDate & vbCrLf)
             End Select
             sb.Append("Result: " & entry.status & vbCrLf)

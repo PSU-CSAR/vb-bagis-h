@@ -13,12 +13,12 @@ Public Class AoiDownloadInfo
     Private _status As String
     Private _aoiName As String
     Private _id As String
+    Private _downloadStatus As String
 
     Public Sub New(ByVal aoiDownloadUrl As String, ByVal aoiStatus As String, ByVal startTime As DateTime, ByVal filePath As String, _
                    ByVal id As String)
         _aoiDownloadUrl = aoiDownloadUrl
         _downloadStartTime = startTime
-        Debug.Print("beginTime 2: " & _downloadStartTime)
         _downloadFilepath = filePath
         'Extract aoiName from file path (ex: C:\Docs\Lesley\Downloads\uptest2.zip
         If Not String.IsNullOrEmpty(_downloadFilepath) Then
@@ -80,8 +80,8 @@ Public Class AoiDownloadInfo
     End Property
 
     ''' <summary>
-    ''' The status of the task; Valid values from django are PENDING, FAILED, and SUCCESS
-    ''' eBagis may also use STARTED and TIMED OUT
+    ''' The status of the task; Valid values from django are STARTED, PENDING, FAILED, and SUCCESS
+    ''' eBagis may also use STAGING
     ''' </summary>
     ''' <value></value>
     ''' <returns>String</returns>
@@ -105,5 +105,20 @@ Public Class AoiDownloadInfo
         Get
             Return _id
         End Get
+    End Property
+
+    ''' <summary>
+    ''' Download status for PC-BAGIS client; Managed by PC-BAGIS
+    ''' </summary>
+    ''' <value></value>
+    ''' <returns>String</returns>
+    ''' <remarks></remarks>
+    Public Property downloadStatus As String
+        Get
+            Return _downloadStatus
+        End Get
+        Set(value As String)
+            _downloadStatus = value
+        End Set
     End Property
 End Class

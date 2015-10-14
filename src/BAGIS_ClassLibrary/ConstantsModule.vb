@@ -190,8 +190,14 @@
     Public Const BA_Mime_Json = "application/json"
 
     'eBAGIS task types
-    Public Const TASK_UPLOAD As String = "Upload"
-    Public Const TASK_DOWNLOAD As String = "Download"
+    Public Const BA_TASK_UPLOAD As String = "Upload"
+    Public Const BA_TASK_DOWNLOAD As String = "Download"
+
+    'eBAGIS download status
+    Public Const BA_Download_Processing As String = "Processing"
+    Public Const BA_Download_Ready As String = "Ready"
+    Public Const BA_Download_Download_Started As String = "Started"
+    Public Const BA_Download_Complete As String = "Complete"
 
 
 End Module
