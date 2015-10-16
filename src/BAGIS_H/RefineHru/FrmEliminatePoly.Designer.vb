@@ -64,6 +64,7 @@ Partial Class FrmEliminatePoly
         Me.TxtAOIPath = New System.Windows.Forms.TextBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.CkRetainAttributes = New System.Windows.Forms.CheckBox()
+        Me.Label5 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.PanelArea.SuspendLayout()
@@ -344,7 +345,7 @@ Partial Class FrmEliminatePoly
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(9, 362)
+        Me.Label3.Location = New System.Drawing.Point(9, 364)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(138, 16)
         Me.Label3.TabIndex = 23
@@ -353,7 +354,7 @@ Partial Class FrmEliminatePoly
         'TxtHruName
         '
         Me.TxtHruName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtHruName.Location = New System.Drawing.Point(153, 359)
+        Me.TxtHruName.Location = New System.Drawing.Point(153, 361)
         Me.TxtHruName.Name = "TxtHruName"
         Me.TxtHruName.Size = New System.Drawing.Size(100, 22)
         Me.TxtHruName.TabIndex = 22
@@ -365,9 +366,9 @@ Partial Class FrmEliminatePoly
         Me.LlbRemoved.ForeColor = System.Drawing.Color.Red
         Me.LlbRemoved.Location = New System.Drawing.Point(10, 334)
         Me.LlbRemoved.Name = "LlbRemoved"
-        Me.LlbRemoved.Size = New System.Drawing.Size(155, 16)
+        Me.LlbRemoved.Size = New System.Drawing.Size(218, 16)
         Me.LlbRemoved.TabIndex = 24
-        Me.LlbRemoved.Text = "No. Of Zones Removed :"
+        Me.LlbRemoved.Text = "Estimated No. Of Zones Removed :"
         '
         'BtnEliminate
         '
@@ -438,7 +439,7 @@ Partial Class FrmEliminatePoly
         Me.TxtNoZonesRemoved.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtNoZonesRemoved.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtNoZonesRemoved.ForeColor = System.Drawing.Color.Red
-        Me.TxtNoZonesRemoved.Location = New System.Drawing.Point(171, 331)
+        Me.TxtNoZonesRemoved.Location = New System.Drawing.Point(227, 332)
         Me.TxtNoZonesRemoved.Name = "TxtNoZonesRemoved"
         Me.TxtNoZonesRemoved.Size = New System.Drawing.Size(67, 22)
         Me.TxtNoZonesRemoved.TabIndex = 29
@@ -457,7 +458,7 @@ Partial Class FrmEliminatePoly
         '
         Me.CkNonContiguous.AutoSize = True
         Me.CkNonContiguous.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkNonContiguous.Location = New System.Drawing.Point(270, 350)
+        Me.CkNonContiguous.Location = New System.Drawing.Point(270, 352)
         Me.CkNonContiguous.Name = "CkNonContiguous"
         Me.CkNonContiguous.Size = New System.Drawing.Size(210, 20)
         Me.CkNonContiguous.TabIndex = 34
@@ -510,17 +511,29 @@ Partial Class FrmEliminatePoly
         Me.CkRetainAttributes.Checked = True
         Me.CkRetainAttributes.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CkRetainAttributes.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkRetainAttributes.Location = New System.Drawing.Point(270, 369)
+        Me.CkRetainAttributes.Location = New System.Drawing.Point(270, 371)
         Me.CkRetainAttributes.Name = "CkRetainAttributes"
         Me.CkRetainAttributes.Size = New System.Drawing.Size(191, 20)
         Me.CkRetainAttributes.TabIndex = 39
         Me.CkRetainAttributes.Text = "Retain source attributes"
         Me.CkRetainAttributes.UseVisualStyleBackColor = True
         '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label5.ForeColor = System.Drawing.Color.Red
+        Me.Label5.Location = New System.Drawing.Point(305, 334)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(124, 16)
+        Me.Label5.TabIndex = 40
+        Me.Label5.Text = "Actual no. may vary"
+        '
         'FrmEliminatePoly
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 18.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.CkRetainAttributes)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.TxtAOIPath)
@@ -612,5 +625,6 @@ Partial Class FrmEliminatePoly
     Friend WithEvents TxtAOIPath As System.Windows.Forms.TextBox
     Friend WithEvents Label4 As System.Windows.Forms.Label
     Friend WithEvents CkRetainAttributes As System.Windows.Forms.CheckBox
+    Friend WithEvents Label5 As System.Windows.Forms.Label
 
 End Class

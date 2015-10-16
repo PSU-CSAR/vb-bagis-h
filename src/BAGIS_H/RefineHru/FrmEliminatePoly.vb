@@ -491,8 +491,27 @@ Public Class FrmEliminatePoly
                 tempm_featureName = m_featureName
             End If
 
-            'eliminate polygons iteratively
-            response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+             'if output layer is contiguous only and input layer was non-contig, explode multi-part polygons before proceeding
+            Dim parentHruName As LayerListItem = CType(LstSelectHruLayers.SelectedItem, LayerListItem)  'explicit cast
+            Dim aoi As Aoi = Nothing
+            Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, parentHruName.Name)
+            If CkNonContiguous.Checked = False Then
+                aoi = BA_LoadHRUFromXml(hruInputPath)
+                For Each anHru In aoi.HruList
+                    ' We found the hru the user selected
+                    If String.Compare(anHru.Name, parentHruName.Name) = 0 Then
+                        'checking to see if input layer was non-contig
+                        If anHru.AllowNonContiguousHru = True Then
+                            ' We need to explode the polygons before proceeding
+                            Dim success As BA_ReturnCode = BA_MultipartToSinglepart(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+                        Else
+                            response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+                        End If
+                    End If
+                Next
+            Else
+                response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+            End If
             success2 = BA_AddShapeAreaToAttrib(hruOutputPath2 & "\" & tempm_featureName)
             success2 = BA_GetDataStatistics(hruOutputPath2 & "\" & tempm_featureName, BA_FIELD_AREA_SQKM, statResults)
             Dim maxiteration As Integer = 3
@@ -594,10 +613,7 @@ Public Class FrmEliminatePoly
             End If
             pHru.EliminateProcess = elimProcess
 
-            Dim parentHruName As LayerListItem = CType(LstSelectHruLayers.SelectedItem, LayerListItem)  'explicit cast
-
-            Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, parentHruName.Name)
-            Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
+            If aoi Is Nothing Then aoi = BA_LoadHRUFromXml(hruInputPath)
             For Each parentHru As Hru In aoi.HruList
                 ' We found the hru the user selected
                 If String.Compare(parentHru.Name, parentHruName.Name) = 0 Then
