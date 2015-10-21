@@ -331,6 +331,18 @@ Public Class FrmEliminatePoly
             PanelPercentile.Visible = False
             PanelArea.Visible = True
             TxtPolyArea.Enabled = True
+            BtnGoToMap.Enabled = True
+        Else
+            PanelPercentile.Visible = True
+            PanelArea.Visible = False
+        End If
+    End Sub
+
+    Private Sub RdoPolyArea_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles RdoPolyArea.CheckedChanged
+        If RdoPolyArea.Checked Then
+            PanelPercentile.Visible = False
+            PanelArea.Visible = True
+            TxtPolyArea.Enabled = True
             'TxtNoZonesRemoved.Text = ""
             BtnGoToMap.Enabled = True
         Else
@@ -742,4 +754,10 @@ Public Class FrmEliminatePoly
         Dim toolHelpForm As FrmHelp = New FrmHelp(BA_HelpTopics.Eliminate)
         toolHelpForm.ShowDialog()
     End Sub
+
+    Private Sub CkNonContiguous_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CkNonContiguous.CheckedChanged
+        'Show this option only when non-contiguous HRU are desired
+        RdoPolyArea.Visible = CkNonContiguous.Checked
+    End Sub
+
 End Class
