@@ -331,6 +331,18 @@ Public Class FrmEliminatePoly
             PanelPercentile.Visible = False
             PanelArea.Visible = True
             TxtPolyArea.Enabled = True
+            BtnGoToMap.Enabled = True
+        Else
+            PanelPercentile.Visible = True
+            PanelArea.Visible = False
+        End If
+    End Sub
+
+    Private Sub RdoPolyArea_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles RdoPolyArea.CheckedChanged
+        If RdoPolyArea.Checked Then
+            PanelPercentile.Visible = False
+            PanelArea.Visible = True
+            TxtPolyArea.Enabled = True
             'TxtNoZonesRemoved.Text = ""
             BtnGoToMap.Enabled = True
         Else
@@ -473,6 +485,7 @@ Public Class FrmEliminatePoly
             Dim vName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True)
             Dim rInputPath As String = hruOutputPath2 & BA_EnumDescription(PublicPath.HruGrid)
             Dim vOutputPath As String = hruOutputPath2 & vName
+            Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
 
             If vName(0) = "\" Then
                 vName = vName.Remove(0, 1)
@@ -490,8 +503,27 @@ Public Class FrmEliminatePoly
                 tempm_featureName = m_featureName
             End If
 
-            'eliminate polygons iteratively
-            response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+             'if output layer is contiguous only and input layer was non-contig, explode multi-part polygons before proceeding
+            Dim parentHruName As LayerListItem = CType(LstSelectHruLayers.SelectedItem, LayerListItem)  'explicit cast
+            Dim aoi As Aoi = Nothing
+            Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, parentHruName.Name)
+            If CkNonContiguous.Checked = False Then
+                aoi = BA_LoadHRUFromXml(hruInputPath)
+                For Each anHru In aoi.HruList
+                    ' We found the hru the user selected
+                    If String.Compare(anHru.Name, parentHruName.Name) = 0 Then
+                        'checking to see if input layer was non-contig
+                        If anHru.AllowNonContiguousHru = True Then
+                            ' We need to explode the polygons before proceeding
+                            Dim success As BA_ReturnCode = BA_MultipartToSinglepart(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+                        Else
+                            response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+                        End If
+                    End If
+                Next
+            Else
+                response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+            End If
             success2 = BA_AddShapeAreaToAttrib(hruOutputPath2 & "\" & tempm_featureName)
             success2 = BA_GetDataStatistics(hruOutputPath2 & "\" & tempm_featureName, BA_FIELD_AREA_SQKM, statResults)
             Dim maxiteration As Integer = 3
@@ -550,16 +582,16 @@ Public Class FrmEliminatePoly
             If CkNonContiguous.Checked Then
                 BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_NC, cellSize, snapRasterPath)
                 'Additional processing to ensure grid_v is compatible with rest of app
-                Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
                 Dim polyFileName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False)
                 Dim success As BA_ReturnCode = BA_RenameFeatureClassInGDB(hruOutputPath2, vOutputFileName, polyFileName)
                 If success = BA_ReturnCode.Success Then
                     BA_Dissolve(hruOutputPath2 & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
-                    BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName)
+                    BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_NC)
                 End If
 
             Else
                 BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_CO, cellSize, snapRasterPath)
+                BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_CO)
             End If
             pStepProg.Step()
 
@@ -593,10 +625,7 @@ Public Class FrmEliminatePoly
             End If
             pHru.EliminateProcess = elimProcess
 
-            Dim parentHruName As LayerListItem = CType(LstSelectHruLayers.SelectedItem, LayerListItem)  'explicit cast
-
-            Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, parentHruName.Name)
-            Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
+            If aoi Is Nothing Then aoi = BA_LoadHRUFromXml(hruInputPath)
             For Each parentHru As Hru In aoi.HruList
                 ' We found the hru the user selected
                 If String.Compare(parentHru.Name, parentHruName.Name) = 0 Then
@@ -725,4 +754,10 @@ Public Class FrmEliminatePoly
         Dim toolHelpForm As FrmHelp = New FrmHelp(BA_HelpTopics.Eliminate)
         toolHelpForm.ShowDialog()
     End Sub
+
+    Private Sub CkNonContiguous_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CkNonContiguous.CheckedChanged
+        'Show this option only when non-contiguous HRU are desired
+        RdoPolyArea.Visible = CkNonContiguous.Checked
+    End Sub
+
 End Class

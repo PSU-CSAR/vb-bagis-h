@@ -156,8 +156,10 @@ Public Class FrmHruRasterReclassRule
                     Dim textFontSize As Short = 8
                     Dim numberFontSize As Single = 9.5
                     If validVAT = False Then
-                        Dim errMsg As String = "The selected raster does not have an attribute table. Please use ArcMap to create an attribute table for the raster."
-                        MessageBox.Show(errMsg, "Missing attribute table", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        If Not m_isSlice Then
+                            Dim errMsg As String = "The selected raster does not have an attribute table. Please use ArcMap to create an attribute table for the raster."
+                            MessageBox.Show(errMsg, "Missing attribute table", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        End If
                         BtnLoad.Enabled = False
                         BtnUnique.Enabled = False
                         pRasterStats = pRasterBand.Statistics
