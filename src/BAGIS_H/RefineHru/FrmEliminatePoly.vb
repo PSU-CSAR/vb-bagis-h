@@ -106,6 +106,7 @@ Public Class FrmEliminatePoly
         RadPercentile.Checked = True
         RadPercentile.Enabled = False
         RadAreaOfAoi.Enabled = False
+        RdoPolyArea.Enabled = False
         BtnGoToMap.Enabled = False
 
         TxtPolyArea.Text = ""
@@ -268,6 +269,7 @@ Public Class FrmEliminatePoly
 
         Dim nonContigStatResults As BA_DataStatistics
         If TxtParentNonContig.Text.Equals(YES) Then
+            RdoPolyArea.Enabled = True
             Dim zonesVecPath As String = pathName & BA_EnumDescription(PublicPath.HruPolyVector)
             nonContigStatResults = BA_GetAreaStatistics(pathName, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False), BA_FIELD_SHAPE_AREA, _
                                     MeasurementUnit.SquareKilometers)
@@ -277,6 +279,8 @@ Public Class FrmEliminatePoly
                 MessageBox.Show("Can't get data statistics for polygrid_v")
             End If
         Else
+            RdoPolyArea.Enabled = False
+            RdoPolyArea.Checked = False
             m_minPolyArea = m_minHRUarea
         End If
 
@@ -305,6 +309,8 @@ Public Class FrmEliminatePoly
         RadPercentile.Enabled = True
         RadAreaOfAoi.Enabled = True
         If RadPercentile.Checked = True Then
+            BtnGoToMap.Enabled = False
+        ElseIf RdoPolyArea.Checked = True Then
             BtnGoToMap.Enabled = False
         Else
             BtnGoToMap.Enabled = True
@@ -368,12 +374,12 @@ Public Class FrmEliminatePoly
     End Sub
 
     Private Sub RdoPolyArea_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles RdoPolyArea.CheckedChanged
+        BtnGoToMap.Enabled = False  'Can't use this because don't have vector to display individual polygons
         If RdoPolyArea.Checked Then
             PanelPercentile.Visible = False
             PanelArea.Visible = True
             TxtPolyArea.Enabled = True
             'TxtNoZonesRemoved.Text = ""
-            BtnGoToMap.Enabled = True
         Else
             PanelPercentile.Visible = True
             PanelArea.Visible = False
@@ -775,11 +781,6 @@ Public Class FrmEliminatePoly
     Private Sub BtnAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnAbout.Click
         Dim toolHelpForm As FrmHelp = New FrmHelp(BA_HelpTopics.Eliminate)
         toolHelpForm.ShowDialog()
-    End Sub
-
-    Private Sub CkNonContiguous_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CkNonContiguous.CheckedChanged
-        'Show this option only when non-contiguous HRU are desired
-        RdoPolyArea.Visible = CkNonContiguous.Checked
     End Sub
 
 End Class

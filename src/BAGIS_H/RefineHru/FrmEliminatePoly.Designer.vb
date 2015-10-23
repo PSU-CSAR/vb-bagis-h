@@ -257,7 +257,6 @@ Partial Class FrmEliminatePoly
         Me.RdoPolyArea.TabIndex = 31
         Me.RdoPolyArea.Text = "Area Of Individual Polygon Parts"
         Me.RdoPolyArea.UseVisualStyleBackColor = True
-        Me.RdoPolyArea.Visible = False
         '
         'RadPercentile
         '
