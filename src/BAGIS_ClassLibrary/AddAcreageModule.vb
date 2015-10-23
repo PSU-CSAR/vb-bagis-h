@@ -696,4 +696,19 @@ Public Module AddAcreageModule
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pTable)
         End Try
     End Function
+
+    Public Function BA_GetMinimumArea(ByVal folderPath As String, ByVal filePath As String, ByVal areaUnits As String) As Double
+        Try
+
+        Catch ex As Exception
+
+        Finally
+
+        End Try
+        'First get the unit from the projected coordinate system
+        Dim geoDataSet As IGeoDataset = pFeatureClass
+        Dim pSpRef As ISpatialReference = geoDataSet.SpatialReference
+        Dim projCoordSys As IProjectedCoordinateSystem = pSpRef
+        Dim pLinearUnit As ILinearUnit = projCoordSys.CoordinateUnit
+    End Function
 End Module

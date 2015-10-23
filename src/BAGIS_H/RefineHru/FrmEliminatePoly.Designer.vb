@@ -66,6 +66,10 @@ Partial Class FrmEliminatePoly
         Me.Label4 = New System.Windows.Forms.Label()
         Me.CkRetainAttributes = New System.Windows.Forms.CheckBox()
         Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.TxtParentNonContig = New System.Windows.Forms.TextBox()
+        Me.TxtMinPoly = New System.Windows.Forms.TextBox()
+        Me.Label7 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.PanelArea.SuspendLayout()
@@ -107,7 +111,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblNoOfZones.AutoSize = True
         Me.LblNoOfZones.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblNoOfZones.Location = New System.Drawing.Point(267, 98)
+        Me.LblNoOfZones.Location = New System.Drawing.Point(267, 113)
         Me.LblNoOfZones.Name = "LblNoOfZones"
         Me.LblNoOfZones.Size = New System.Drawing.Size(117, 16)
         Me.LblNoOfZones.TabIndex = 8
@@ -117,7 +121,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblMinZone.AutoSize = True
         Me.LblMinZone.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblMinZone.Location = New System.Drawing.Point(286, 126)
+        Me.LblMinZone.Location = New System.Drawing.Point(286, 138)
         Me.LblMinZone.Name = "LblMinZone"
         Me.LblMinZone.Size = New System.Drawing.Size(98, 16)
         Me.LblMinZone.TabIndex = 9
@@ -127,7 +131,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblMazSize.AutoSize = True
         Me.LblMazSize.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblMazSize.Location = New System.Drawing.Point(282, 153)
+        Me.LblMazSize.Location = New System.Drawing.Point(282, 189)
         Me.LblMazSize.Name = "LblMazSize"
         Me.LblMazSize.Size = New System.Drawing.Size(102, 16)
         Me.LblMazSize.TabIndex = 10
@@ -137,7 +141,7 @@ Partial Class FrmEliminatePoly
         '
         Me.TxtNoZones.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtNoZones.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtNoZones.Location = New System.Drawing.Point(386, 97)
+        Me.TxtNoZones.Location = New System.Drawing.Point(386, 110)
         Me.TxtNoZones.Name = "TxtNoZones"
         Me.TxtNoZones.Size = New System.Drawing.Size(118, 22)
         Me.TxtNoZones.TabIndex = 11
@@ -147,7 +151,7 @@ Partial Class FrmEliminatePoly
         '
         Me.TxtMinZone.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtMinZone.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtMinZone.Location = New System.Drawing.Point(386, 124)
+        Me.TxtMinZone.Location = New System.Drawing.Point(386, 135)
         Me.TxtMinZone.Name = "TxtMinZone"
         Me.TxtMinZone.Size = New System.Drawing.Size(118, 22)
         Me.TxtMinZone.TabIndex = 12
@@ -157,7 +161,7 @@ Partial Class FrmEliminatePoly
         '
         Me.TxtMaxZone.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtMaxZone.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtMaxZone.Location = New System.Drawing.Point(386, 152)
+        Me.TxtMaxZone.Location = New System.Drawing.Point(386, 186)
         Me.TxtMaxZone.Name = "TxtMaxZone"
         Me.TxtMaxZone.Size = New System.Drawing.Size(118, 22)
         Me.TxtMaxZone.TabIndex = 13
@@ -170,16 +174,16 @@ Partial Class FrmEliminatePoly
         Me.Panel1.Controls.Add(Me.RadKm)
         Me.Panel1.Controls.Add(Me.LblAreaUnit)
         Me.Panel1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Panel1.Location = New System.Drawing.Point(397, 180)
+        Me.Panel1.Location = New System.Drawing.Point(395, 214)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(109, 105)
+        Me.Panel1.Size = New System.Drawing.Size(109, 96)
         Me.Panel1.TabIndex = 14
         '
         'RadAcres
         '
         Me.RadAcres.AutoSize = True
         Me.RadAcres.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadAcres.Location = New System.Drawing.Point(16, 79)
+        Me.RadAcres.Location = New System.Drawing.Point(16, 73)
         Me.RadAcres.Name = "RadAcres"
         Me.RadAcres.Size = New System.Drawing.Size(61, 20)
         Me.RadAcres.TabIndex = 3
@@ -191,7 +195,7 @@ Partial Class FrmEliminatePoly
         '
         Me.RadMile.AutoSize = True
         Me.RadMile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadMile.Location = New System.Drawing.Point(16, 53)
+        Me.RadMile.Location = New System.Drawing.Point(16, 49)
         Me.RadMile.Name = "RadMile"
         Me.RadMile.Size = New System.Drawing.Size(81, 20)
         Me.RadMile.TabIndex = 2
@@ -203,7 +207,7 @@ Partial Class FrmEliminatePoly
         '
         Me.RadKm.AutoSize = True
         Me.RadKm.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadKm.Location = New System.Drawing.Point(16, 27)
+        Me.RadKm.Location = New System.Drawing.Point(16, 25)
         Me.RadKm.Name = "RadKm"
         Me.RadKm.Size = New System.Drawing.Size(68, 20)
         Me.RadKm.TabIndex = 1
@@ -544,10 +548,54 @@ Partial Class FrmEliminatePoly
         Me.Label5.TabIndex = 40
         Me.Label5.Text = "Actual No. May Vary"
         '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label6.Location = New System.Drawing.Point(267, 88)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(141, 16)
+        Me.Label6.TabIndex = 41
+        Me.Label6.Text = "Non-contiguous HRU :"
+        '
+        'TxtParentNonContig
+        '
+        Me.TxtParentNonContig.BackColor = System.Drawing.SystemColors.ButtonFace
+        Me.TxtParentNonContig.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtParentNonContig.Location = New System.Drawing.Point(411, 83)
+        Me.TxtParentNonContig.Name = "TxtParentNonContig"
+        Me.TxtParentNonContig.Size = New System.Drawing.Size(93, 22)
+        Me.TxtParentNonContig.TabIndex = 42
+        Me.TxtParentNonContig.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'TxtMinPoly
+        '
+        Me.TxtMinPoly.BackColor = System.Drawing.SystemColors.ButtonFace
+        Me.TxtMinPoly.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtMinPoly.Location = New System.Drawing.Point(386, 161)
+        Me.TxtMinPoly.Name = "TxtMinPoly"
+        Me.TxtMinPoly.Size = New System.Drawing.Size(118, 22)
+        Me.TxtMinPoly.TabIndex = 44
+        Me.TxtMinPoly.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label7.Location = New System.Drawing.Point(267, 164)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(117, 16)
+        Me.Label7.TabIndex = 43
+        Me.Label7.Text = "Min Polygon Size :"
+        '
         'FrmEliminatePoly
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 18.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.Controls.Add(Me.TxtMinPoly)
+        Me.Controls.Add(Me.Label7)
+        Me.Controls.Add(Me.TxtParentNonContig)
+        Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.CkRetainAttributes)
         Me.Controls.Add(Me.Label4)
@@ -642,5 +690,9 @@ Partial Class FrmEliminatePoly
     Friend WithEvents CkRetainAttributes As System.Windows.Forms.CheckBox
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents RdoPolyArea As System.Windows.Forms.RadioButton
+    Friend WithEvents Label6 As System.Windows.Forms.Label
+    Friend WithEvents TxtParentNonContig As System.Windows.Forms.TextBox
+    Friend WithEvents TxtMinPoly As System.Windows.Forms.TextBox
+    Friend WithEvents Label7 As System.Windows.Forms.Label
 
 End Class

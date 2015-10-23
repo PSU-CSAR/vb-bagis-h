@@ -30,6 +30,7 @@ Public Class FrmEliminatePoly
     Dim m_area As Double 'unit always in Square Km
     Dim m_minHRUarea As Double
     Dim m_maxHRUarea As Double
+    Dim m_minPolyArea As Double
     Dim m_deletedHRU As Long
 
     Public Sub New(ByVal hook As Object)
@@ -246,10 +247,32 @@ Public Class FrmEliminatePoly
         'RadMile.Checked = True 'select Sq. Miler radio button by default
         'm_selectedfield = BA_FIELD_AREA_ACRE
 
+        'Does the parent support non-contiguous HRU's?
+        Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, m_lstSelectHruLayersItem.Name)
+        Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
+        For Each anHru In aoi.HruList
+            ' We found the hru the user selected
+            If String.Compare(anHru.Name, m_lstSelectHruLayersItem.Name) = 0 Then
+                TxtParentNonContig.Text = NO
+                If anHru.AllowNonContiguousHru Then TxtParentNonContig.Text = YES
+            End If
+        Next
+
         Dim statResults As BA_DataStatistics
         If BA_GetDataStatistics(hruVecPath, BA_FIELD_AREA_SQKM, statResults) <> 0 Then
-            MessageBox.Show("Can't get data statistics")
+            MessageBox.Show("Can't get data statistics for grid_v")
             Exit Sub
+        End If
+
+        Dim nonContigStatResults As BA_DataStatistics
+        If TxtParentNonContig.Text.Equals(YES) Then
+            Dim zonesVecPath As String = pathName & BA_EnumDescription(PublicPath.HruPolyVector)
+            If BA_GetDataStatistics(zonesVecPath, BA_FIELD_AREA_SQKM, nonContigStatResults) Then
+                MessageBox.Show("Can't get data statistics for polygrid_v")
+            Else
+
+                m_minPolyArea = nonContigStatResults.Minimum
+            End If
         End If
 
         TxtNoZones.Enabled = True
@@ -503,172 +526,165 @@ Public Class FrmEliminatePoly
                 tempm_featureName = m_featureName
             End If
 
-             'if output layer is contiguous only and input layer was non-contig, explode multi-part polygons before proceeding
-            Dim parentHruName As LayerListItem = CType(LstSelectHruLayers.SelectedItem, LayerListItem)  'explicit cast
-            Dim aoi As Aoi = Nothing
-            Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, parentHruName.Name)
             If CkNonContiguous.Checked = False Then
-                aoi = BA_LoadHRUFromXml(hruInputPath)
-                For Each anHru In aoi.HruList
-                    ' We found the hru the user selected
-                    If String.Compare(anHru.Name, parentHruName.Name) = 0 Then
-                        'checking to see if input layer was non-contig
-                        If anHru.AllowNonContiguousHru = True Then
-                            ' We need to explode the polygons before proceeding
-                            Dim success As BA_ReturnCode = BA_MultipartToSinglepart(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
-                        Else
-                            response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
-                        End If
-                    End If
-                Next
+                'checking to see if input layer was non-contig
+                If TxtParentNonContig.Text.Equals(YES) Then
+                    ' We need to explode the polygons before proceeding
+                    Dim success As BA_ReturnCode = BA_MultipartToSinglepart(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+                Else
+                    response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+                End If
             Else
                 response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
             End If
             success2 = BA_AddShapeAreaToAttrib(hruOutputPath2 & "\" & tempm_featureName)
             success2 = BA_GetDataStatistics(hruOutputPath2 & "\" & tempm_featureName, BA_FIELD_AREA_SQKM, statResults)
-            Dim maxiteration As Integer = 3
-            Dim ncount As Integer = 1
-            Do While success2 = 0 And statResults.Minimum <= m_area
-                If BA_File_Exists(hruOutputPath2 & "\" & vName, WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
-                    BA_Remove_ShapefileFromGDB(hruOutputPath2, vName)
-                End If
+                Dim maxiteration As Integer = 3
+                Dim ncount As Integer = 1
+                Do While success2 = 0 And statResults.Minimum <= m_area
+                    If BA_File_Exists(hruOutputPath2 & "\" & vName, WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                        BA_Remove_ShapefileFromGDB(hruOutputPath2, vName)
+                    End If
 
-                'MsgBox("Debug message: Slivers need to be eliminated!")
-                BA_EliminatePoly(hruOutputPath2, tempm_featureName, hruOutputPath2, vName, elim_opt, m_area, BA_FIELD_AREA_SQKM)
-                pStepProg.Step()
+                    'MsgBox("Debug message: Slivers need to be eliminated!")
+                    BA_EliminatePoly(hruOutputPath2, tempm_featureName, hruOutputPath2, vName, elim_opt, m_area, BA_FIELD_AREA_SQKM)
+                    pStepProg.Step()
+
+                    If BA_File_Exists(hruOutputPath2 & "\" & tempm_featureName, WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                        BA_Remove_ShapefileFromGDB(hruOutputPath2, tempm_featureName)
+                    End If
+
+                    statResults.Minimum = m_area + 1
+                    success2 = BA_AddShapeAreaToAttrib(hruOutputPath2 & "\" & vName)
+                    success2 = BA_GetDataStatistics(hruOutputPath2 & "\" & vName, BA_FIELD_AREA_SQKM, statResults)
+
+                    ncount += 1
+                    If ncount > maxiteration Then success2 = 1 'this prevents infinite loops
+
+                    If success2 = 0 And statResults.Minimum <= m_area Then
+                        response = BA_CopyFeatures(hruOutputPath2 & "\" & vName, hruOutputPath2 & "\" & tempm_featureName)
+                    End If
+                Loop
 
                 If BA_File_Exists(hruOutputPath2 & "\" & tempm_featureName, WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
                     BA_Remove_ShapefileFromGDB(hruOutputPath2, tempm_featureName)
                 End If
 
-                statResults.Minimum = m_area + 1
-                success2 = BA_AddShapeAreaToAttrib(hruOutputPath2 & "\" & vName)
-                success2 = BA_GetDataStatistics(hruOutputPath2 & "\" & vName, BA_FIELD_AREA_SQKM, statResults)
+                'update TxtNoZonesRemoved value
+                Dim originalCount As Long = BA_GetFeatureCount(m_featurePath, m_featureName)
+                Dim newcount As Long = BA_GetFeatureCount(hruOutputPath2, vName)
+                TxtNoZonesRemoved.Text = originalCount - newcount
 
-                ncount += 1
-                If ncount > maxiteration Then success2 = 1 'this prevents infinite loops
-
-                If success2 = 0 And statResults.Minimum <= m_area Then
-                    response = BA_CopyFeatures(hruOutputPath2 & "\" & vName, hruOutputPath2 & "\" & tempm_featureName)
+                'add HRUID_CO and HRUID_NC fields to the Vector file
+                If BA_AddCTAndNonCTToAttrib(vOutputPath) <> BA_ReturnCode.Success Then
+                    Throw New Exception("Eliminate Tool: Error adding CT and NonCT to Shape file.")
                 End If
-            Loop
-
-            If BA_File_Exists(hruOutputPath2 & "\" & tempm_featureName, WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
-                BA_Remove_ShapefileFromGDB(hruOutputPath2, tempm_featureName)
-            End If
-
-            'update TxtNoZonesRemoved value
-            Dim originalCount As Long = BA_GetFeatureCount(m_featurePath, m_featureName)
-            Dim newcount As Long = BA_GetFeatureCount(hruOutputPath2, vName)
-            TxtNoZonesRemoved.Text = originalCount - newcount
-
-            'add HRUID_CO and HRUID_NC fields to the Vector file
-            If BA_AddCTAndNonCTToAttrib(vOutputPath) <> BA_ReturnCode.Success Then
-                Throw New Exception("Eliminate Tool: Error adding CT and NonCT to Shape file.")
-            End If
-            pStepProg.Step()
-
-            'Get cell size value from the form
-            Dim fullLayerPath As String = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Surfaces, True) & BA_EnumDescription(MapsFileName.filled_dem_gdb)
-            Dim cellSize As Double
-            Dim rasterStat As IRasterStatistics = BA_GetRasterStatsGDB(fullLayerPath, cellSize)
-            If cellSize <= 0 Then cellSize = 30
-            rasterStat = Nothing
-
-            Dim inFeaturesPath As String = hruOutputPath2 & "\" & vName
-            Dim snapRasterPath As String = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Aoi) & BA_EnumDescription(PublicPath.AoiGrid)
-            'Dim snapRasterPath As String = fullLayerPath
-            Dim outRasterPath As String = hruOutputPath2 & BA_EnumDescription(PublicPath.HruGrid)
-            If CkNonContiguous.Checked Then
-                BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_NC, cellSize, snapRasterPath)
-                'Additional processing to ensure grid_v is compatible with rest of app
-                Dim polyFileName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False)
-                Dim success As BA_ReturnCode = BA_RenameFeatureClassInGDB(hruOutputPath2, vOutputFileName, polyFileName)
-                If success = BA_ReturnCode.Success Then
-                    BA_Dissolve(hruOutputPath2 & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
-                    BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_NC)
-                End If
-
-            Else
-                BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_CO, cellSize, snapRasterPath)
-                BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_CO)
-            End If
-            pStepProg.Step()
-
-            'prepare HRU log file
-            Dim pHru As Hru = BA_CreateHru(TxtHruName.Text, rInputPath, vOutputPath, Nothing, _
-                                           Nothing, CkNonContiguous.Checked)
-            pHru.RetainSourceAttributes = CkRetainAttributes.Checked
-            'add eliminate details to log
-            'the maximum area of the polygons to be deleted in units selected on the form
-            Dim tempArea As Double
-            'the number of polygons that were eliminated
-            Dim tempElimPolygons As Long
-            Dim elimProcess As EliminateProcess = Nothing
-            Dim polyAreaUnits As MeasurementUnit
-            If RadAcres.Checked = True Then
-                polyAreaUnits = MeasurementUnit.Acres
-                tempArea = m_area * BA_SQKm_To_ACRE
-            ElseIf RadKm.Checked = True Then
-                polyAreaUnits = MeasurementUnit.SquareKilometers
-                tempArea = m_area
-            ElseIf RadMile.Checked = True Then
-                polyAreaUnits = MeasurementUnit.SquareMiles
-                tempArea = m_area * BA_SQKm_To_SQMile
-            End If
-            tempElimPolygons = Val(TxtNoZonesRemoved.Text)
-
-            If RadAreaOfAoi.Checked = True Then
-                elimProcess = New EliminateProcess(elim_opt, True, tempArea, polyAreaUnits, tempElimPolygons)
-            Else
-                elimProcess = New EliminateProcess(elim_opt, True, tempArea, CDbl(cboThreshPercnt.SelectedItem), polyAreaUnits, tempElimPolygons)
-            End If
-            pHru.EliminateProcess = elimProcess
-
-            If aoi Is Nothing Then aoi = BA_LoadHRUFromXml(hruInputPath)
-            For Each parentHru As Hru In aoi.HruList
-                ' We found the hru the user selected
-                If String.Compare(parentHru.Name, parentHruName.Name) = 0 Then
-                    pHru.ParentHru = parentHru
-                End If
-            Next
-            pStepProg.Step()
-
-            If CkRetainAttributes.Checked = True And pHru.ParentHru IsNot Nothing Then
-                Dim origHru As Hru = pHru.ParentHru
-                Dim parentPath As String = Nothing
-                Dim ruleFilePath As String = BA_GetHruPathGDB(m_aoi.FilePath, PublicPath.HruDirectory, origHru.Name)
-                If origHru IsNot Nothing AndAlso origHru.ParentHru IsNot Nothing Then
-                    parentPath = origHru.ParentHru.FilePath & GRID
-                End If
-                BA_AddAttributesToHru(m_aoi.FilePath, hruOutputPath2, ruleFilePath, origHru.RuleList, parentPath)
                 pStepProg.Step()
-            End If
 
-            Dim pHruList As IList(Of Hru) = New List(Of Hru)
-            pHruList.Add(pHru)
-            m_aoi.HruList = pHruList
+                'Get cell size value from the form
+                Dim fullLayerPath As String = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Surfaces, True) & BA_EnumDescription(MapsFileName.filled_dem_gdb)
+                Dim cellSize As Double
+                Dim rasterStat As IRasterStatistics = BA_GetRasterStatsGDB(fullLayerPath, cellSize)
+                If cellSize <= 0 Then cellSize = 30
+                rasterStat = Nothing
 
-            Dim xmlOutputPath As String = hruFolderPath & BA_EnumDescription(PublicPath.HruXml)
-            m_aoi.Save(xmlOutputPath)
-            progressDialog2.HideDialog()
-            LoadHruLayers(Nothing)
+                Dim inFeaturesPath As String = hruOutputPath2 & "\" & vName
+                Dim snapRasterPath As String = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Aoi) & BA_EnumDescription(PublicPath.AoiGrid)
+                'Dim snapRasterPath As String = fullLayerPath
+                Dim outRasterPath As String = hruOutputPath2 & BA_EnumDescription(PublicPath.HruGrid)
+                If CkNonContiguous.Checked Then
+                    BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_NC, cellSize, snapRasterPath)
+                    'Additional processing to ensure grid_v is compatible with rest of app
+                    Dim polyFileName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False)
+                    Dim success As BA_ReturnCode = BA_RenameFeatureClassInGDB(hruOutputPath2, vOutputFileName, polyFileName)
+                    If success = BA_ReturnCode.Success Then
+                        BA_Dissolve(hruOutputPath2 & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
+                        BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_NC)
+                    End If
 
-            'Reload Layers in Define Zones dockable window if it's visible
-            'Get handle to Define Zones dockable window so we can check visibility
-            Dim dockWindow As ESRI.ArcGIS.Framework.IDockableWindow
-            Dim dockWinID As UID = New UIDClass()
-            dockWinID.Value = My.ThisAddIn.IDs.frmHruZone
-            dockWindow = My.ArcMap.DockableWindowManager.GetDockableWindow(dockWinID)
-            If dockWindow.IsVisible Then
-                ' Get handle to UI (form) to reload lists
-                Dim dockWindowAddIn = ESRI.ArcGIS.Desktop.AddIns.AddIn.FromID(Of frmHruZone.AddinImpl)(My.ThisAddIn.IDs.frmHruZone)
-                Dim hruZoneForm As frmHruZone = dockWindowAddIn.UI
-                hruZoneForm.ReloadListLayers()
-            End If
+                Else
+                    BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_CO, cellSize, snapRasterPath)
+                    BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_CO)
+                End If
+                pStepProg.Step()
 
-            'Show()
-            MessageBox.Show("New HRU " & TxtHruName.Text & " successfully created", "HRU: " & TxtHruName.Text, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                'prepare HRU log file
+                Dim pHru As Hru = BA_CreateHru(TxtHruName.Text, rInputPath, vOutputPath, Nothing, _
+                                               Nothing, CkNonContiguous.Checked)
+                pHru.RetainSourceAttributes = CkRetainAttributes.Checked
+                'add eliminate details to log
+                'the maximum area of the polygons to be deleted in units selected on the form
+                Dim tempArea As Double
+                'the number of polygons that were eliminated
+                Dim tempElimPolygons As Long
+                Dim elimProcess As EliminateProcess = Nothing
+                Dim polyAreaUnits As MeasurementUnit
+                If RadAcres.Checked = True Then
+                    polyAreaUnits = MeasurementUnit.Acres
+                    tempArea = m_area * BA_SQKm_To_ACRE
+                ElseIf RadKm.Checked = True Then
+                    polyAreaUnits = MeasurementUnit.SquareKilometers
+                    tempArea = m_area
+                ElseIf RadMile.Checked = True Then
+                    polyAreaUnits = MeasurementUnit.SquareMiles
+                    tempArea = m_area * BA_SQKm_To_SQMile
+                End If
+                tempElimPolygons = Val(TxtNoZonesRemoved.Text)
+
+                If RadAreaOfAoi.Checked = True Then
+                    elimProcess = New EliminateProcess(elim_opt, True, tempArea, polyAreaUnits, tempElimPolygons)
+                Else
+                    elimProcess = New EliminateProcess(elim_opt, True, tempArea, CDbl(cboThreshPercnt.SelectedItem), polyAreaUnits, tempElimPolygons)
+                End If
+                pHru.EliminateProcess = elimProcess
+
+                'if output layer is contiguous only and input layer was non-contig, explode multi-part polygons before proceeding
+                Dim parentHruName As LayerListItem = CType(LstSelectHruLayers.SelectedItem, LayerListItem)  'explicit cast
+                Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, parentHruName.Name)
+                Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
+                For Each parentHru As Hru In aoi.HruList
+                    ' We found the hru the user selected
+                    If String.Compare(parentHru.Name, parentHruName.Name) = 0 Then
+                        pHru.ParentHru = parentHru
+                    End If
+                Next
+                pStepProg.Step()
+
+                If CkRetainAttributes.Checked = True And pHru.ParentHru IsNot Nothing Then
+                    Dim origHru As Hru = pHru.ParentHru
+                    Dim parentPath As String = Nothing
+                    Dim ruleFilePath As String = BA_GetHruPathGDB(m_aoi.FilePath, PublicPath.HruDirectory, origHru.Name)
+                    If origHru IsNot Nothing AndAlso origHru.ParentHru IsNot Nothing Then
+                        parentPath = origHru.ParentHru.FilePath & GRID
+                    End If
+                    BA_AddAttributesToHru(m_aoi.FilePath, hruOutputPath2, ruleFilePath, origHru.RuleList, parentPath)
+                    pStepProg.Step()
+                End If
+
+                Dim pHruList As IList(Of Hru) = New List(Of Hru)
+                pHruList.Add(pHru)
+                m_aoi.HruList = pHruList
+
+                Dim xmlOutputPath As String = hruFolderPath & BA_EnumDescription(PublicPath.HruXml)
+                m_aoi.Save(xmlOutputPath)
+                progressDialog2.HideDialog()
+                LoadHruLayers(Nothing)
+
+                'Reload Layers in Define Zones dockable window if it's visible
+                'Get handle to Define Zones dockable window so we can check visibility
+                Dim dockWindow As ESRI.ArcGIS.Framework.IDockableWindow
+                Dim dockWinID As UID = New UIDClass()
+                dockWinID.Value = My.ThisAddIn.IDs.frmHruZone
+                dockWindow = My.ArcMap.DockableWindowManager.GetDockableWindow(dockWinID)
+                If dockWindow.IsVisible Then
+                    ' Get handle to UI (form) to reload lists
+                    Dim dockWindowAddIn = ESRI.ArcGIS.Desktop.AddIns.AddIn.FromID(Of frmHruZone.AddinImpl)(My.ThisAddIn.IDs.frmHruZone)
+                    Dim hruZoneForm As frmHruZone = dockWindowAddIn.UI
+                    hruZoneForm.ReloadListLayers()
+                End If
+
+                'Show()
+                MessageBox.Show("New HRU " & TxtHruName.Text & " successfully created", "HRU: " & TxtHruName.Text, MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
             MessageBox.Show("BtnEliminate_Click() Exception: " & ex.Message)
         Finally
