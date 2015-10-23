@@ -263,24 +263,26 @@ Public Class FrmEliminatePoly
             MessageBox.Show("Can't get data statistics for grid_v")
             Exit Sub
         End If
+        m_minHRUarea = statResults.Minimum  'internal unit is sq km
+        m_maxHRUarea = statResults.Maximum
 
         Dim nonContigStatResults As BA_DataStatistics
         If TxtParentNonContig.Text.Equals(YES) Then
             Dim zonesVecPath As String = pathName & BA_EnumDescription(PublicPath.HruPolyVector)
-            If BA_GetDataStatistics(zonesVecPath, BA_FIELD_AREA_SQKM, nonContigStatResults) Then
-                MessageBox.Show("Can't get data statistics for polygrid_v")
-            Else
-
+            nonContigStatResults = BA_GetAreaStatistics(pathName, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False), BA_FIELD_SHAPE_AREA, _
+                                    MeasurementUnit.SquareKilometers)
+            If nonContigStatResults.Maximum > 0 Then
                 m_minPolyArea = nonContigStatResults.Minimum
+            Else
+                MessageBox.Show("Can't get data statistics for polygrid_v")
             End If
+        Else
+            m_minPolyArea = m_minHRUarea
         End If
 
         TxtNoZones.Enabled = True
         TxtNoZones.Text = statResults.Count
         TxtMinZone.Enabled = True
-
-        m_minHRUarea = statResults.Minimum  'internal unit is sq km
-        m_maxHRUarea = statResults.Maximum
 
         Dim UnitConversionFactor As Double = 1
         If RadAcres.Checked Then
@@ -292,6 +294,7 @@ Public Class FrmEliminatePoly
         TxtMinZone.Text = Format(m_minHRUarea * UnitConversionFactor, "###,###,##0.00000")
         TxtMaxZone.Enabled = True
         TxtMaxZone.Text = Format(m_maxHRUarea * UnitConversionFactor, "###,###,##0.00000")
+        TxtMinPoly.Text = Format(m_minPolyArea * UnitConversionFactor, "###,###,##0.00000")
 
         m_NumRecords = statResults.Count
 
@@ -315,6 +318,7 @@ Public Class FrmEliminatePoly
         If Val(TxtNoZones.Text) > 0 Then
             TxtMinZone.Text = Format(m_minHRUarea, "###,###,##0.00000")
             TxtMaxZone.Text = Format(m_maxHRUarea, "###,###,##0.00000")
+            TxtMinPoly.Text = Format(m_minPolyArea, "###,###,##0.00000")
         End If
         If TxtPolyArea.Text <> "" Then Change_TxtPolyArea(m_area)
     End Sub
@@ -324,6 +328,7 @@ Public Class FrmEliminatePoly
         If Val(TxtNoZones.Text) > 0 Then
             TxtMinZone.Text = Format(m_minHRUarea * BA_SQKm_To_SQMile, "###,###,##0.00000")
             TxtMaxZone.Text = Format(m_maxHRUarea * BA_SQKm_To_SQMile, "###,###,##0.00000")
+            TxtMinPoly.Text = Format(m_minPolyArea * BA_SQKm_To_SQMile, "###,###,##0.00000")
         End If
         If TxtPolyArea.Text <> "" Then Change_TxtPolyArea(m_area)
     End Sub
@@ -333,6 +338,7 @@ Public Class FrmEliminatePoly
         If Val(TxtNoZones.Text) > 0 Then
             TxtMinZone.Text = Format(m_minHRUarea * BA_SQKm_To_ACRE, "###,###,##0.00000")
             TxtMaxZone.Text = Format(m_maxHRUarea * BA_SQKm_To_ACRE, "###,###,##0.00000")
+            TxtMinPoly.Text = Format(m_minPolyArea * BA_SQKm_To_ACRE, "###,###,##0.00000")
         End If
         If TxtPolyArea.Text <> "" Then Change_TxtPolyArea(m_area)
     End Sub
