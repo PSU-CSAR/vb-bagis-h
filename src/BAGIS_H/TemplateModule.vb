@@ -771,7 +771,7 @@ Module TemplateModule
                     If elimProcess1.SelectByPercentile = True Then
                         newElimProcess = New EliminateProcess(elimProcess1.SelectionMethod, True, tempArea, elimProcess1.AreaPercent, polyAreaUnits, tempElimPolygons)
                     Else
-                        newElimProcess = New EliminateProcess(elimProcess1.SelectionMethod, True, tempArea, polyAreaUnits, tempElimPolygons)
+                        newElimProcess = New EliminateProcess(elimProcess1.SelectionMethod, elimProcess1.SelectByHruArea, tempArea, polyAreaUnits, tempElimPolygons, elimProcess1.SelectByPolyArea)
                     End If
                     pHru.EliminateProcess = newElimProcess
                     pHru.RetainSourceAttributes = tempHru.RetainSourceAttributes

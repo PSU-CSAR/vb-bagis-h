@@ -22,36 +22,36 @@ Partial Class FrmHruTabLog
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.TabControl1 = New System.Windows.Forms.TabControl
-        Me.TabPage1 = New System.Windows.Forms.TabPage
-        Me.BtnViewParent = New System.Windows.Forms.Button
-        Me.TxtAppVersion = New System.Windows.Forms.TextBox
-        Me.Label14 = New System.Windows.Forms.Label
-        Me.TxtDateCreated = New System.Windows.Forms.TextBox
-        Me.Label13 = New System.Windows.Forms.Label
-        Me.TxtMaxSize = New System.Windows.Forms.TextBox
-        Me.Label12 = New System.Windows.Forms.Label
-        Me.TxtAverageSize = New System.Windows.Forms.TextBox
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.TxtPolygonCount = New System.Windows.Forms.TextBox
-        Me.TxtNonContiguous = New System.Windows.Forms.TextBox
-        Me.TxtUnits = New System.Windows.Forms.TextBox
-        Me.Label11 = New System.Windows.Forms.Label
-        Me.Label10 = New System.Windows.Forms.Label
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.TxtApplyZones = New System.Windows.Forms.TextBox
-        Me.TxtParentName = New System.Windows.Forms.TextBox
-        Me.TxtHruPath = New System.Windows.Forms.TextBox
-        Me.TxtHruName = New System.Windows.Forms.TextBox
-        Me.TxtAoiPath = New System.Windows.Forms.TextBox
-        Me.TxtAoiName = New System.Windows.Forms.TextBox
-        Me.Label8 = New System.Windows.Forms.Label
-        Me.Label7 = New System.Windows.Forms.Label
-        Me.Label6 = New System.Windows.Forms.Label
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.BtnClose = New System.Windows.Forms.Button
+        Me.TabControl1 = New System.Windows.Forms.TabControl()
+        Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.BtnViewParent = New System.Windows.Forms.Button()
+        Me.TxtAppVersion = New System.Windows.Forms.TextBox()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.TxtDateCreated = New System.Windows.Forms.TextBox()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.TxtMaxSize = New System.Windows.Forms.TextBox()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.TxtAverageSize = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.TxtPolygonCount = New System.Windows.Forms.TextBox()
+        Me.TxtNonContiguous = New System.Windows.Forms.TextBox()
+        Me.TxtUnits = New System.Windows.Forms.TextBox()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.TxtApplyZones = New System.Windows.Forms.TextBox()
+        Me.TxtParentName = New System.Windows.Forms.TextBox()
+        Me.TxtHruPath = New System.Windows.Forms.TextBox()
+        Me.TxtHruName = New System.Windows.Forms.TextBox()
+        Me.TxtAoiPath = New System.Windows.Forms.TextBox()
+        Me.TxtAoiName = New System.Windows.Forms.TextBox()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.BtnClose = New System.Windows.Forms.Button()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.SuspendLayout()
@@ -59,7 +59,7 @@ Partial Class FrmHruTabLog
         'TabControl1
         '
         Me.TabControl1.Controls.Add(Me.TabPage1)
-        Me.TabControl1.Location = New System.Drawing.Point(3, 1)
+        Me.TabControl1.Location = New System.Drawing.Point(5, 1)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
         Me.TabControl1.Size = New System.Drawing.Size(650, 375)

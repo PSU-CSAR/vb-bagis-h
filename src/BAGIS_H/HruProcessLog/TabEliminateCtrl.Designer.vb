@@ -34,8 +34,9 @@ Partial Class TabEliminateCtrl
         Me.LblPolyThreshold = New System.Windows.Forms.Label()
         Me.LblZonesRemoved = New System.Windows.Forms.Label()
         Me.TxtZonesRemoved = New System.Windows.Forms.TextBox()
-        Me.RdoArea = New System.Windows.Forms.RadioButton()
+        Me.RdoHruArea = New System.Windows.Forms.RadioButton()
         Me.RdoPercent = New System.Windows.Forms.RadioButton()
+        Me.RdoPolyParts = New System.Windows.Forms.RadioButton()
         Me.SuspendLayout()
         '
         'TxtSelectionMethod
@@ -138,17 +139,17 @@ Partial Class TabEliminateCtrl
         Me.TxtZonesRemoved.Size = New System.Drawing.Size(158, 20)
         Me.TxtZonesRemoved.TabIndex = 67
         '
-        'RdoArea
+        'RdoHruArea
         '
-        Me.RdoArea.AutoCheck = False
-        Me.RdoArea.AutoSize = True
-        Me.RdoArea.Location = New System.Drawing.Point(191, 6)
-        Me.RdoArea.Name = "RdoArea"
-        Me.RdoArea.Size = New System.Drawing.Size(85, 17)
-        Me.RdoArea.TabIndex = 72
-        Me.RdoArea.TabStop = True
-        Me.RdoArea.Text = "Area of zone"
-        Me.RdoArea.UseVisualStyleBackColor = True
+        Me.RdoHruArea.AutoCheck = False
+        Me.RdoHruArea.AutoSize = True
+        Me.RdoHruArea.Location = New System.Drawing.Point(191, 6)
+        Me.RdoHruArea.Name = "RdoHruArea"
+        Me.RdoHruArea.Size = New System.Drawing.Size(85, 17)
+        Me.RdoHruArea.TabIndex = 72
+        Me.RdoHruArea.TabStop = True
+        Me.RdoHruArea.Text = "Area of zone"
+        Me.RdoHruArea.UseVisualStyleBackColor = True
         '
         'RdoPercent
         '
@@ -162,10 +163,23 @@ Partial Class TabEliminateCtrl
         Me.RdoPercent.Text = "Percentile"
         Me.RdoPercent.UseVisualStyleBackColor = True
         '
+        'RdoPolyParts
+        '
+        Me.RdoPolyParts.AutoCheck = False
+        Me.RdoPolyParts.AutoSize = True
+        Me.RdoPolyParts.Location = New System.Drawing.Point(275, 7)
+        Me.RdoPolyParts.Name = "RdoPolyParts"
+        Me.RdoPolyParts.Size = New System.Drawing.Size(125, 17)
+        Me.RdoPolyParts.TabIndex = 74
+        Me.RdoPolyParts.TabStop = True
+        Me.RdoPolyParts.Text = "Area of polygon parts"
+        Me.RdoPolyParts.UseVisualStyleBackColor = True
+        '
         'TabEliminateCtrl
         '
+        Me.Controls.Add(Me.RdoPolyParts)
         Me.Controls.Add(Me.RdoPercent)
-        Me.Controls.Add(Me.RdoArea)
+        Me.Controls.Add(Me.RdoHruArea)
         Me.Controls.Add(Me.TxtZonesRemoved)
         Me.Controls.Add(Me.LblZonesRemoved)
         Me.Controls.Add(Me.Label5)
@@ -195,8 +209,9 @@ Partial Class TabEliminateCtrl
         TxtZonesRemoved.Text = Format(elimProcess.PolygonsEliminated, "###,###,##0")
         TxtPolyArea.Text = Format(elimProcess.PolygonArea, "###,###,##0.#####")
         TxtUnits.Text = elimProcess.PolygonAreaUnitsText
-        If elimProcess.SelectByPolyArea = True Then
-            RdoArea.Checked = True
+        If elimProcess.SelectByPolyArea = True Or elimProcess.SelectByHruArea = True Then
+            RdoHruArea.Checked = elimProcess.SelectByHruArea
+            RdoPolyParts.Checked = elimProcess.SelectByPolyArea
             LblPercent.Visible = False
             TxtPercent.Visible = False
             LblZonesRemoved.Location = New System.Drawing.Point(1, 105)
@@ -216,6 +231,7 @@ Partial Class TabEliminateCtrl
     Friend WithEvents LblPolyThreshold As System.Windows.Forms.Label
     Friend WithEvents LblZonesRemoved As System.Windows.Forms.Label
     Friend WithEvents TxtZonesRemoved As System.Windows.Forms.TextBox
-    Friend WithEvents RdoArea As System.Windows.Forms.RadioButton
+    Friend WithEvents RdoHruArea As System.Windows.Forms.RadioButton
     Friend WithEvents RdoPercent As System.Windows.Forms.RadioButton
+    Friend WithEvents RdoPolyParts As System.Windows.Forms.RadioButton
 End Class

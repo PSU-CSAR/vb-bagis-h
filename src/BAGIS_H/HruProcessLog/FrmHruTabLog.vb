@@ -71,6 +71,12 @@ Public Class FrmHruTabLog
         TxtAppVersion.Text = aoi.ApplicationVersion
         ' Sort the rules by ruleId
         logHru.RuleList.Sort()
+        'Note: To change the layout of the tabs
+        '  1. Display all files so that you can see the Designer.vb file
+        '  2. Comment out Inherits System.Windows.Forms.TabPage
+        '  3. Enable Inherits System.Windows.Forms.UserControl
+        '  4. The tab should now display as a regular user form; Make your layout changes
+        '  5. Reverse steps 2 and 3 before saving
         For Each pRule In logHru.RuleList
             If TypeOf pRule Is RasterSliceRule Then
                 Dim sliceTab As TabSliceRuleCtrl = New TabSliceRuleCtrl(logHru, pRule, isHruParent)
