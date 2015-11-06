@@ -1328,7 +1328,8 @@ Module HruModule
     End Function
 
     Public Sub BA_GetMeasurementUnitsForAoi(ByVal aoiPath As String, ByRef slopeUnit As SlopeUnit, _
-                                            ByRef elevUnit As MeasurementUnit, ByRef depthUnit As MeasurementUnit)
+                                            ByRef elevUnit As MeasurementUnit, ByRef depthUnit As MeasurementUnit, _
+                                            ByRef prismLayersExist As Boolean)
         'Slope units
         Dim inputFolder As String = BA_GeodatabasePath(aoiPath, GeodatabaseNames.Surfaces)
         Dim inputFile As String = BA_GetBareName(BA_EnumDescription(PublicPath.Slope))
@@ -1367,19 +1368,25 @@ Module HruModule
         'Depth units
         inputFolder = BA_GeodatabasePath(aoiPath, GeodatabaseNames.Prism)
         inputFile = AOIPrismFolderNames.annual.ToString
-        tagsList = BA_ReadMetaData(inputFolder, inputFile, _
-                           LayerType.Raster, BA_XPATH_TAGS)
-        If tagsList IsNot Nothing Then
-            For Each pInnerText As String In tagsList
-                'This is our BAGIS tag
-                If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
-                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
-                    If strUnits IsNot Nothing Then
-                        depthUnit = BA_GetMeasurementUnit(strUnits)
+        If BA_File_Exists(inputFolder & "\" & inputFile, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) Then
+            prismLayersExist = True
+            tagsList = BA_ReadMetaData(inputFolder, inputFile, _
+                               LayerType.Raster, BA_XPATH_TAGS)
+            If tagsList IsNot Nothing Then
+                For Each pInnerText As String In tagsList
+                    'This is our BAGIS tag
+                    If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
+                        Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
+                        If strUnits IsNot Nothing Then
+                            depthUnit = BA_GetMeasurementUnit(strUnits)
+                        End If
+                        Exit For
                     End If
-                    Exit For
-                End If
-            Next
+                Next
+            End If
+        Else
+            prismLayersExist = False
+            depthUnit = MeasurementUnit.Missing
         End If
 
     End Sub
