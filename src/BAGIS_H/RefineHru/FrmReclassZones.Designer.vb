@@ -19,7 +19,7 @@ Partial Class FrmReclassZones
   'Do not modify it using the code editor.
   <System.Diagnostics.DebuggerStepThrough()> _
   Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.BtnAbout = New System.Windows.Forms.Button()
         Me.LblToolTip = New System.Windows.Forms.Label()
         Me.TxtAoiPath = New System.Windows.Forms.TextBox()
@@ -46,6 +46,8 @@ Partial Class FrmReclassZones
         Me.CkRetainAttributes = New System.Windows.Forms.CheckBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
+        Me.TxtParentNonContig = New System.Windows.Forms.TextBox()
+        Me.Label6 = New System.Windows.Forms.Label()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -116,7 +118,7 @@ Partial Class FrmReclassZones
         Me.TxtHruPath.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtHruPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtHruPath.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtHruPath.Location = New System.Drawing.Point(93, 386)
+        Me.TxtHruPath.Location = New System.Drawing.Point(93, 396)
         Me.TxtHruPath.Name = "TxtHruPath"
         Me.TxtHruPath.ReadOnly = True
         Me.TxtHruPath.Size = New System.Drawing.Size(468, 22)
@@ -128,7 +130,7 @@ Partial Class FrmReclassZones
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(16, 389)
+        Me.Label3.Location = New System.Drawing.Point(16, 399)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(71, 16)
         Me.Label3.TabIndex = 57
@@ -147,7 +149,7 @@ Partial Class FrmReclassZones
         'BtnCancel
         '
         Me.BtnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancel.Location = New System.Drawing.Point(290, 417)
+        Me.BtnCancel.Location = New System.Drawing.Point(290, 427)
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.Size = New System.Drawing.Size(94, 30)
         Me.BtnCancel.TabIndex = 55
@@ -158,7 +160,7 @@ Partial Class FrmReclassZones
         '
         Me.BtnGenerateHru.Enabled = False
         Me.BtnGenerateHru.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnGenerateHru.Location = New System.Drawing.Point(402, 417)
+        Me.BtnGenerateHru.Location = New System.Drawing.Point(402, 427)
         Me.BtnGenerateHru.Name = "BtnGenerateHru"
         Me.BtnGenerateHru.Size = New System.Drawing.Size(157, 30)
         Me.BtnGenerateHru.TabIndex = 53
@@ -261,9 +263,9 @@ Partial Class FrmReclassZones
         '
         'OldValue
         '
-        DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.OldValue.DefaultCellStyle = DataGridViewCellStyle3
+        DataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.OldValue.DefaultCellStyle = DataGridViewCellStyle6
         Me.OldValue.HeaderText = "Old Values"
         Me.OldValue.Name = "OldValue"
         Me.OldValue.ReadOnly = True
@@ -292,7 +294,7 @@ Partial Class FrmReclassZones
         Me.CkRetainAttributes.Checked = True
         Me.CkRetainAttributes.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CkRetainAttributes.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkRetainAttributes.Location = New System.Drawing.Point(315, 346)
+        Me.CkRetainAttributes.Location = New System.Drawing.Point(317, 370)
         Me.CkRetainAttributes.Name = "CkRetainAttributes"
         Me.CkRetainAttributes.Size = New System.Drawing.Size(191, 20)
         Me.CkRetainAttributes.TabIndex = 74
@@ -309,7 +311,7 @@ Partial Class FrmReclassZones
         Me.Label4.Size = New System.Drawing.Size(231, 30)
         Me.Label4.TabIndex = 75
         Me.Label4.Text = "Select New Values cell(s) on the left table" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "before clicking on the Update Value(" & _
-    "s)!"
+            "s)!"
         '
         'Label5
         '
@@ -322,8 +324,29 @@ Partial Class FrmReclassZones
         Me.Label5.TabIndex = 76
         Me.Label5.Text = "Add Old Value to be reclassified."
         '
+        'TxtParentNonContig
+        '
+        Me.TxtParentNonContig.BackColor = System.Drawing.SystemColors.ButtonFace
+        Me.TxtParentNonContig.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtParentNonContig.Location = New System.Drawing.Point(474, 344)
+        Me.TxtParentNonContig.Name = "TxtParentNonContig"
+        Me.TxtParentNonContig.Size = New System.Drawing.Size(75, 22)
+        Me.TxtParentNonContig.TabIndex = 78
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label6.Location = New System.Drawing.Point(316, 349)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(161, 16)
+        Me.Label6.TabIndex = 77
+        Me.Label6.Text = "Non-contiguous HRU :"
+        '
         'FrmReclassZones
         '
+        Me.Controls.Add(Me.TxtParentNonContig)
+        Me.Controls.Add(Me.Label6)
         Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.CkRetainAttributes)
@@ -381,5 +404,7 @@ Partial Class FrmReclassZones
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents OldValue As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents NewValues As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents TxtParentNonContig As System.Windows.Forms.TextBox
+    Friend WithEvents Label6 As System.Windows.Forms.Label
 
 End Class

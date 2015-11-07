@@ -30,6 +30,7 @@ Public Class FrmEliminatePoly
     Dim m_area As Double 'unit always in Square Km
     Dim m_minHRUarea As Double
     Dim m_maxHRUarea As Double
+    Dim m_minPolyArea As Double
     Dim m_deletedHRU As Long
 
     Public Sub New(ByVal hook As Object)
@@ -91,6 +92,8 @@ Public Class FrmEliminatePoly
         'TxtMinZone.Enabled = False
         TxtMaxZone.Text = ""
         'TxtMaxZone.Enabled = False
+        TxtMinPoly.Text = ""
+        TxtParentNonContig.Text = ""
 
         RadKm.Checked = True
         m_selectedfield = BA_FIELD_AREA_SQKM
@@ -105,6 +108,7 @@ Public Class FrmEliminatePoly
         RadPercentile.Checked = True
         RadPercentile.Enabled = False
         RadAreaOfAoi.Enabled = False
+        RdoPolyArea.Enabled = False
         BtnGoToMap.Enabled = False
 
         TxtPolyArea.Text = ""
@@ -117,6 +121,7 @@ Public Class FrmEliminatePoly
         TxtHruPath.Text = ""
         'TxtHruPath.Enabled = False
         TxtNoZonesRemoved.Text = ""
+        CkNonContiguous.Checked = False
     End Sub
 
     Private Sub BtnSelectAOI_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnSelectAOI.Click
@@ -246,18 +251,49 @@ Public Class FrmEliminatePoly
         'RadMile.Checked = True 'select Sq. Miler radio button by default
         'm_selectedfield = BA_FIELD_AREA_ACRE
 
+        'Does the parent support non-contiguous HRU's?
+        Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, m_lstSelectHruLayersItem.Name)
+        Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
+        For Each anHru In aoi.HruList
+            ' We found the hru the user selected
+            If anHru.Name.Equals(m_lstSelectHruLayersItem.Name) Then
+                TxtParentNonContig.Text = NO
+                CkNonContiguous.Enabled = False
+                If anHru.AllowNonContiguousHru Then
+                    TxtParentNonContig.Text = YES
+                    CkNonContiguous.Enabled = True
+                End If
+            End If
+        Next
+
         Dim statResults As BA_DataStatistics
         If BA_GetDataStatistics(hruVecPath, BA_FIELD_AREA_SQKM, statResults) <> 0 Then
-            MessageBox.Show("Can't get data statistics")
+            MessageBox.Show("Can't get data statistics for grid_v")
             Exit Sub
+        End If
+        m_minHRUarea = statResults.Minimum  'internal unit is sq km
+        m_maxHRUarea = statResults.Maximum
+
+        Dim nonContigStatResults As BA_DataStatistics
+        If TxtParentNonContig.Text.Equals(YES) Then
+            RdoPolyArea.Enabled = True
+            Dim zonesVecPath As String = pathName & BA_EnumDescription(PublicPath.HruPolyVector)
+            nonContigStatResults = BA_GetAreaStatistics(pathName, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False), BA_FIELD_SHAPE_AREA, _
+                                    MeasurementUnit.SquareKilometers)
+            If nonContigStatResults.Maximum > 0 Then
+                m_minPolyArea = nonContigStatResults.Minimum
+            Else
+                MessageBox.Show("Can't get data statistics for polygrid_v")
+            End If
+        Else
+            RdoPolyArea.Enabled = False
+            RdoPolyArea.Checked = False
+            m_minPolyArea = m_minHRUarea
         End If
 
         TxtNoZones.Enabled = True
         TxtNoZones.Text = statResults.Count
         TxtMinZone.Enabled = True
-
-        m_minHRUarea = statResults.Minimum  'internal unit is sq km
-        m_maxHRUarea = statResults.Maximum
 
         Dim UnitConversionFactor As Double = 1
         If RadAcres.Checked Then
@@ -269,6 +305,7 @@ Public Class FrmEliminatePoly
         TxtMinZone.Text = Format(m_minHRUarea * UnitConversionFactor, "###,###,##0.00000")
         TxtMaxZone.Enabled = True
         TxtMaxZone.Text = Format(m_maxHRUarea * UnitConversionFactor, "###,###,##0.00000")
+        TxtMinPoly.Text = Format(m_minPolyArea * UnitConversionFactor, "###,###,##0.00000")
 
         m_NumRecords = statResults.Count
 
@@ -279,6 +316,8 @@ Public Class FrmEliminatePoly
         RadPercentile.Enabled = True
         RadAreaOfAoi.Enabled = True
         If RadPercentile.Checked = True Then
+            BtnGoToMap.Enabled = False
+        ElseIf RdoPolyArea.Checked = True Then
             BtnGoToMap.Enabled = False
         Else
             BtnGoToMap.Enabled = True
@@ -292,6 +331,7 @@ Public Class FrmEliminatePoly
         If Val(TxtNoZones.Text) > 0 Then
             TxtMinZone.Text = Format(m_minHRUarea, "###,###,##0.00000")
             TxtMaxZone.Text = Format(m_maxHRUarea, "###,###,##0.00000")
+            TxtMinPoly.Text = Format(m_minPolyArea, "###,###,##0.00000")
         End If
         If TxtPolyArea.Text <> "" Then Change_TxtPolyArea(m_area)
     End Sub
@@ -301,6 +341,7 @@ Public Class FrmEliminatePoly
         If Val(TxtNoZones.Text) > 0 Then
             TxtMinZone.Text = Format(m_minHRUarea * BA_SQKm_To_SQMile, "###,###,##0.00000")
             TxtMaxZone.Text = Format(m_maxHRUarea * BA_SQKm_To_SQMile, "###,###,##0.00000")
+            TxtMinPoly.Text = Format(m_minPolyArea * BA_SQKm_To_SQMile, "###,###,##0.00000")
         End If
         If TxtPolyArea.Text <> "" Then Change_TxtPolyArea(m_area)
     End Sub
@@ -310,6 +351,7 @@ Public Class FrmEliminatePoly
         If Val(TxtNoZones.Text) > 0 Then
             TxtMinZone.Text = Format(m_minHRUarea * BA_SQKm_To_ACRE, "###,###,##0.00000")
             TxtMaxZone.Text = Format(m_maxHRUarea * BA_SQKm_To_ACRE, "###,###,##0.00000")
+            TxtMinPoly.Text = Format(m_minPolyArea * BA_SQKm_To_ACRE, "###,###,##0.00000")
         End If
         If TxtPolyArea.Text <> "" Then Change_TxtPolyArea(m_area)
     End Sub
@@ -331,8 +373,20 @@ Public Class FrmEliminatePoly
             PanelPercentile.Visible = False
             PanelArea.Visible = True
             TxtPolyArea.Enabled = True
-            'TxtNoZonesRemoved.Text = ""
             BtnGoToMap.Enabled = True
+        Else
+            PanelPercentile.Visible = True
+            PanelArea.Visible = False
+        End If
+    End Sub
+
+    Private Sub RdoPolyArea_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles RdoPolyArea.CheckedChanged
+        BtnGoToMap.Enabled = False  'Can't use this because don't have vector to display individual polygons
+        If RdoPolyArea.Checked Then
+            PanelPercentile.Visible = False
+            PanelArea.Visible = True
+            TxtPolyArea.Enabled = True
+            'TxtNoZonesRemoved.Text = ""
         Else
             PanelPercentile.Visible = True
             PanelArea.Visible = False
@@ -480,6 +534,7 @@ Public Class FrmEliminatePoly
             Dim vName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False, True)
             Dim rInputPath As String = hruOutputPath2 & BA_EnumDescription(PublicPath.HruGrid)
             Dim vOutputPath As String = hruOutputPath2 & vName
+            Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
 
             If vName(0) = "\" Then
                 vName = vName.Remove(0, 1)
@@ -497,10 +552,18 @@ Public Class FrmEliminatePoly
                 tempm_featureName = m_featureName
             End If
 
-            'eliminate polygons iteratively
-            response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+            'checking to see if input layer was non-contig
+            If TxtParentNonContig.Text.Equals(YES) And RdoPolyArea.Checked = True Then
+                ' We need to explode the polygons before proceeding
+                Dim success As BA_ReturnCode = BA_MultipartToSinglepart(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+            Else
+                ' Proceed using grid_v
+                response = BA_CopyFeatures(m_featurePath & "\" & m_featureName, hruOutputPath2 & "\" & tempm_featureName)
+            End If
+
             success2 = BA_AddShapeAreaToAttrib(hruOutputPath2 & "\" & tempm_featureName)
             success2 = BA_GetDataStatistics(hruOutputPath2 & "\" & tempm_featureName, BA_FIELD_AREA_SQKM, statResults)
+            Dim initPolyCount As Integer = statResults.Count
             Dim maxiteration As Integer = 3
             Dim ncount As Integer = 1
             Do While success2 = 0 And statResults.Minimum <= m_area
@@ -557,16 +620,15 @@ Public Class FrmEliminatePoly
             If CkNonContiguous.Checked Then
                 BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_NC, cellSize, snapRasterPath)
                 'Additional processing to ensure grid_v is compatible with rest of app
-                Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
                 Dim polyFileName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False)
                 Dim success As BA_ReturnCode = BA_RenameFeatureClassInGDB(hruOutputPath2, vOutputFileName, polyFileName)
                 If success = BA_ReturnCode.Success Then
                     BA_Dissolve(hruOutputPath2 & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
-                    BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName)
+                    BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_NC)
                 End If
-
             Else
                 BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_CO, cellSize, snapRasterPath)
+                BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_CO)
             End If
             pStepProg.Step()
 
@@ -578,7 +640,9 @@ Public Class FrmEliminatePoly
             'the maximum area of the polygons to be deleted in units selected on the form
             Dim tempArea As Double
             'the number of polygons that were eliminated
-            Dim tempElimPolygons As Long
+            success2 = BA_GetDataStatistics(hruOutputPath2 & "\" & vName, BA_FIELD_AREA_SQKM, statResults)
+            Dim tempElimPolygons As Long = initPolyCount - statResults.Count
+
             Dim elimProcess As EliminateProcess = Nothing
             Dim polyAreaUnits As MeasurementUnit
             If RadAcres.Checked = True Then
@@ -591,17 +655,16 @@ Public Class FrmEliminatePoly
                 polyAreaUnits = MeasurementUnit.SquareMiles
                 tempArea = m_area * BA_SQKm_To_SQMile
             End If
-            tempElimPolygons = Val(TxtNoZonesRemoved.Text)
 
-            If RadAreaOfAoi.Checked = True Then
-                elimProcess = New EliminateProcess(elim_opt, True, tempArea, polyAreaUnits, tempElimPolygons)
+            If RadPercentile.Checked = True Then
+                elimProcess = New EliminateProcess(elim_opt, RadPercentile.Checked, tempArea, CDbl(cboThreshPercnt.SelectedItem), polyAreaUnits, tempElimPolygons)
             Else
-                elimProcess = New EliminateProcess(elim_opt, True, tempArea, CDbl(cboThreshPercnt.SelectedItem), polyAreaUnits, tempElimPolygons)
+                elimProcess = New EliminateProcess(elim_opt, RadAreaOfAoi.Checked, tempArea, polyAreaUnits, tempElimPolygons, RdoPolyArea.Checked)
             End If
             pHru.EliminateProcess = elimProcess
 
+            'if output layer is contiguous only and input layer was non-contig, explode multi-part polygons before proceeding
             Dim parentHruName As LayerListItem = CType(LstSelectHruLayers.SelectedItem, LayerListItem)  'explicit cast
-
             Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, parentHruName.Name)
             Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
             For Each parentHru As Hru In aoi.HruList
@@ -732,4 +795,5 @@ Public Class FrmEliminatePoly
         Dim toolHelpForm As FrmHelp = New FrmHelp(BA_HelpTopics.Eliminate)
         toolHelpForm.ShowDialog()
     End Sub
+
 End Class

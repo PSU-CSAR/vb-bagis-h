@@ -680,6 +680,7 @@ Module TemplateModule
                     featurePath2 = BA_StandardizePathString(featurePath2)
                     Dim rInputPath As String = hruOutputPath2 & BA_EnumDescription(PublicPath.HruGrid)
                     Dim vOutputPath As String = hruOutputPath2 & vName
+                    Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
 
                     If vName(0) = "\" Then
                         vName = vName.Remove(0, 1)
@@ -730,16 +731,16 @@ Module TemplateModule
                     If tempHru.AllowNonContiguousHru Then
                         BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_NC, cellSize, snapRasterPath)
                         'Additional processing to ensure grid_v is compatible with rest of app
-                        Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
                         Dim polyFileName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False)
                         Dim success As BA_ReturnCode = BA_RenameFeatureClassInGDB(hruOutputPath2, vOutputFileName, polyFileName)
                         If success = BA_ReturnCode.Success Then
                             BA_Dissolve(hruOutputPath2 & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
-                            BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName)
+                            BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_NC)
                         End If
 
                     Else
                         BA_Feature2RasterGP(inFeaturesPath, outRasterPath, BA_FIELD_HRUID_CO, cellSize, snapRasterPath)
+                        BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_CO)
                     End If
                     pStepProg.Step()
 
@@ -770,7 +771,7 @@ Module TemplateModule
                     If elimProcess1.SelectByPercentile = True Then
                         newElimProcess = New EliminateProcess(elimProcess1.SelectionMethod, True, tempArea, elimProcess1.AreaPercent, polyAreaUnits, tempElimPolygons)
                     Else
-                        newElimProcess = New EliminateProcess(elimProcess1.SelectionMethod, True, tempArea, polyAreaUnits, tempElimPolygons)
+                        newElimProcess = New EliminateProcess(elimProcess1.SelectionMethod, elimProcess1.SelectByHruArea, tempArea, polyAreaUnits, tempElimPolygons, elimProcess1.SelectByPolyArea)
                     End If
                     pHru.EliminateProcess = newElimProcess
                     pHru.RetainSourceAttributes = tempHru.RetainSourceAttributes

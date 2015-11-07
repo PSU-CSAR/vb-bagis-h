@@ -63,7 +63,8 @@ Public Class FrmToolsDataUnits
                 Dim slopeUnit As SlopeUnit
                 Dim elevUnit As MeasurementUnit
                 Dim depthUnit As MeasurementUnit    'prism data
-                BA_GetMeasurementUnitsForAoi(DataPath, slopeUnit, elevUnit, depthUnit)
+                Dim prismLayersExist As Boolean = False
+                BA_GetMeasurementUnitsForAoi(DataPath, slopeUnit, elevUnit, depthUnit, prismLayersExist)
                 'This List tracks any missing units so we can warn the user
                 Dim missingList As IList(Of String) = New List(Of String)
                 If elevUnit = BAGIS_ClassLibrary.MeasurementUnit.Missing Then
@@ -78,12 +79,14 @@ Public Class FrmToolsDataUnits
                 Else
                     CboSlopeUnits.SelectedItem = BA_EnumDescription(slopeUnit)
                 End If
-                If depthUnit = BAGIS_ClassLibrary.MeasurementUnit.Missing Then
+                If (depthUnit = MeasurementUnit.Missing And prismLayersExist) Then
                     missingList.Add("Depth units")
                     CboDepthUnits.SelectedItem = BA_EnumDescription(DEPTH_UNIT)
                 Else
                     CboDepthUnits.SelectedItem = BA_EnumDescription(depthUnit)
                 End If
+                LblDepthUnits.Visible = prismLayersExist
+                CboDepthUnits.Visible = prismLayersExist
 
                 'Warning message that units are missing
                 If missingList.Count > 0 Then
@@ -157,8 +160,8 @@ Public Class FrmToolsDataUnits
                               sb.ToString, BA_BAGIS_TAG_PREFIX.Length)
         End If
 
-        'We need to update the depth units
-        If CboDepthUnits.SelectedIndex > -1 Then
+        'We need to update the depth units; Won't be visible if prism.gdb doesn't exist
+        If CboDepthUnits.Visible AndAlso CboDepthUnits.SelectedIndex > -1 Then
             inputFolder = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Prism)
             inputFile = AOIPrismFolderNames.annual.ToString
             Dim sb As StringBuilder = New StringBuilder

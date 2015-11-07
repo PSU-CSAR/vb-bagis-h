@@ -219,22 +219,6 @@ Module HruModule
         Return BA_ReturnCode.Success
     End Function
 
-    ' Populates an Aoi object, including any child HRU's, from an XML file
-    Public Function BA_LoadHRUFromXml(ByVal hruPath As String) As Aoi
-        Dim xmlInputPath As String = hruPath & BA_EnumDescription(PublicPath.HruXml)
-        If BA_File_ExistsWindowsIO(xmlInputPath) Then
-            Dim obj As Object = SerializableData.Load(xmlInputPath, GetType(Aoi))
-            If obj IsNot Nothing Then
-                Dim pAoi As Aoi = CType(obj, Aoi)
-                Return pAoi
-            Else
-                Return Nothing
-            End If
-        Else
-            Return Nothing
-        End If
-    End Function
-
     ' Creates an INumberRemap object from an array of ReclassItems. Assumes the reclass items
     ' are sorted as mapRanges must be added to an INumberRemap object in order
     Public Function BA_GetReclassRemap(ByVal reclassItems() As ReclassItem) As INumberRemap
@@ -1088,10 +1072,13 @@ Module HruModule
 
         Dim vOutputFileName As String = BA_GetBareName(vOutputPath)
         If allowNonContiguous = False Then
-            'Delete initial grid so we can overwrite it
+            'Delete initial grid so we can overwrite it, if it exists
             Dim gridName As String = BA_EnumDescription(PublicPath.HruGrid)
-            gridName = gridName.Remove(0, 1) 'remove the backslash
-            Dim retVal As Integer = BA_RemoveRasterFromGDB(hruOutputPath, gridName)
+            Dim retVal As Integer = 1
+            If BA_File_Exists(hruOutputPath & gridName, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) Then
+                gridName = gridName.Remove(0, 1) 'remove the backslash
+                retVal = BA_RemoveRasterFromGDB(hruOutputPath, gridName)
+            End If
 
             If retVal = 1 Then
                 'Convert the feature class to raster in final grid file
@@ -1099,16 +1086,19 @@ Module HruModule
                 success = BA_Feature2RasterGP(vOutputPath, outRasterPath, BA_FIELD_HRUID_CO, cellSize, snapRasterPath)
                 If success = BA_ReturnCode.Success Then
                     'Ensure that the grid_code in grid_v matches the grid that was generated during BA_Feature2RasterGP
-                    BA_UpdateGridCodeForContig(hruOutputPath, vOutputFileName)
+                    BA_UpdateRequiredColumns(hruOutputPath, vOutputFileName, BA_FIELD_HRUID_CO)
                 End If
             End If
         Else
             Dim polyFileName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruPolyVector), False)
+            If BA_File_Exists(hruOutputPath & "\" & polyFileName, WorkspaceType.Geodatabase, esriDatasetType.esriDTFeatureClass) Then
+                BA_Remove_ShapefileFromGDB(hruOutputPath, polyFileName)
+            End If
             success = BA_RenameFeatureClassInGDB(hruOutputPath, vOutputFileName, polyFileName)
             If success = BA_ReturnCode.Success Then
                 success = BA_Dissolve(hruOutputPath & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
                 If success = BA_ReturnCode.Success Then
-                    BA_UpdateRequiredColumns(hruOutputPath, vOutputFileName)
+                    BA_UpdateRequiredColumns(hruOutputPath, vOutputFileName, BA_FIELD_HRUID_NC)
                 End If
             End If
         End If
@@ -1134,10 +1124,9 @@ Module HruModule
         End If
     End Function
 
-    ' Copy values from hruid_nc to grid_code field, and from OBJECT_ID to Id field 
-    ' for compability with rest of app; Used for non-contig zones where we have to 
-    ' dissolve/regenerate the vector layer
-    Public Sub BA_UpdateRequiredColumns(ByVal featClassPath, ByVal featClassName)
+    ' Copy values from hruid_nc/hruid_co to grid_code field, and from OBJECT_ID to Id field 
+    ' for compability with rest of app;
+    Public Sub BA_UpdateRequiredColumns(ByVal featClassPath As String, ByVal featClassName As String, ByVal hruIdColumn As String)
         Dim fc As IFeatureClass = Nothing
         Dim pCursor As IFeatureCursor = Nothing
         Dim pFeature As IFeature = Nothing
@@ -1149,6 +1138,7 @@ Module HruModule
             If idxGridCd < 0 Then
                 idxGridCd = fc.FindField(BA_FIELD_GRIDCODE)
             End If
+            ' Updating this field for compatibility with BAGIS-P models
             Dim idxId As Integer = fc.FindField(BA_FIELD_ID)
 
             If idxGridCd < 0 Then
@@ -1172,64 +1162,22 @@ Module HruModule
             End If
 
 
-            Dim idxNc As Short = fc.FindField(BA_FIELD_HRUID_NC)
+            'Dim idxNc As Short = fc.FindField(BA_FIELD_HRUID_NC)
+            Dim idxHruId As Short = fc.FindField(hruIdColumn)
             Dim idxObjId As Short = fc.FindField(BA_FIELD_OBJECT_ID)
 
             pCursor = fc.Update(Nothing, False)
             pFeature = pCursor.NextFeature
             Do While Not pFeature Is Nothing
-                pFeature.Value(idxGridCd) = pFeature.Value(idxNc)
-                pFeature.Value(idxId) = pFeature.Value(idxObjId)
+                pFeature.Value(idxGridCd) = pFeature.Value(idxHruId)
+                'Set ID column to same value as hru id for compatibility with BAGIS-P
+                'pFeature.Value(idxId) = pFeature.Value(idxObjId)
+                pFeature.Value(idxId) = pFeature.Value(idxHruId)
                 pCursor.UpdateFeature(pFeature)
                 pFeature = pCursor.NextFeature
             Loop
         Catch ex As Exception
             MsgBox("BA_UpdateRequiredColumns Exception" & ex.Message)
-        Finally
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(fc)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pCursor)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pFeature)
-        End Try
-
-    End Sub
-
-    ' Copy values from hruid_co to grid_code field 
-    ' for compability with rest of app; Used for contig zones where we have to 
-    ' dissolve/regenerate the grid layer
-    Public Sub BA_UpdateGridCodeForContig(ByVal featClassPath, ByVal featClassName)
-        Dim fc As IFeatureClass = Nothing
-        Dim pCursor As IFeatureCursor = Nothing
-        Dim pFeature As IFeature = Nothing
-
-        Try
-            fc = BA_OpenFeatureClassFromGDB(featClassPath, featClassName)
-            Dim idxGridCd As Integer = fc.FindField(BA_FIELD_GRIDCODE_GDB)
-            'Try alternate name for grid_code for compatibility with later versions of ArcMap
-            If idxGridCd < 0 Then
-                idxGridCd = fc.FindField(BA_FIELD_GRIDCODE)
-            End If
-
-            If idxGridCd < 0 Then
-                Dim pFieldCont As IFieldEdit = New Field
-                With pFieldCont
-                    .Type_2 = esriFieldType.esriFieldTypeInteger
-                    .Name_2 = BA_FIELD_GRIDCODE_GDB
-                End With
-                fc.AddField(pFieldCont)
-                idxGridCd = fc.FindField(BA_FIELD_GRIDCODE_GDB)
-            End If
-
-            Dim idxCo As Short = fc.FindField(BA_FIELD_HRUID_CO)
-
-            pCursor = fc.Update(Nothing, False)
-            pFeature = pCursor.NextFeature
-            Do While Not pFeature Is Nothing
-                pFeature.Value(idxGridCd) = pFeature.Value(idxCo)
-                pCursor.UpdateFeature(pFeature)
-                pFeature = pCursor.NextFeature
-            Loop
-        Catch ex As Exception
-            MsgBox("BA_UpdateGridCodeForContig Exception" & ex.Message)
         Finally
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(fc)
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pCursor)
@@ -1380,7 +1328,8 @@ Module HruModule
     End Function
 
     Public Sub BA_GetMeasurementUnitsForAoi(ByVal aoiPath As String, ByRef slopeUnit As SlopeUnit, _
-                                            ByRef elevUnit As MeasurementUnit, ByRef depthUnit As MeasurementUnit)
+                                            ByRef elevUnit As MeasurementUnit, ByRef depthUnit As MeasurementUnit, _
+                                            ByRef prismLayersExist As Boolean)
         'Slope units
         Dim inputFolder As String = BA_GeodatabasePath(aoiPath, GeodatabaseNames.Surfaces)
         Dim inputFile As String = BA_GetBareName(BA_EnumDescription(PublicPath.Slope))
@@ -1419,19 +1368,25 @@ Module HruModule
         'Depth units
         inputFolder = BA_GeodatabasePath(aoiPath, GeodatabaseNames.Prism)
         inputFile = AOIPrismFolderNames.annual.ToString
-        tagsList = BA_ReadMetaData(inputFolder, inputFile, _
-                           LayerType.Raster, BA_XPATH_TAGS)
-        If tagsList IsNot Nothing Then
-            For Each pInnerText As String In tagsList
-                'This is our BAGIS tag
-                If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
-                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
-                    If strUnits IsNot Nothing Then
-                        depthUnit = BA_GetMeasurementUnit(strUnits)
+        If BA_File_Exists(inputFolder & "\" & inputFile, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) Then
+            prismLayersExist = True
+            tagsList = BA_ReadMetaData(inputFolder, inputFile, _
+                               LayerType.Raster, BA_XPATH_TAGS)
+            If tagsList IsNot Nothing Then
+                For Each pInnerText As String In tagsList
+                    'This is our BAGIS tag
+                    If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
+                        Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
+                        If strUnits IsNot Nothing Then
+                            depthUnit = BA_GetMeasurementUnit(strUnits)
+                        End If
+                        Exit For
                     End If
-                    Exit For
-                End If
-            Next
+                Next
+            End If
+        Else
+            prismLayersExist = False
+            depthUnit = MeasurementUnit.Missing
         End If
 
     End Sub

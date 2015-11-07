@@ -37,6 +37,7 @@ Partial Class FrmEliminatePoly
         Me.LblAreaUnit = New System.Windows.Forms.Label()
         Me.LlbMerge = New System.Windows.Forms.Label()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.RdoPolyArea = New System.Windows.Forms.RadioButton()
         Me.RadPercentile = New System.Windows.Forms.RadioButton()
         Me.RadAreaOfAoi = New System.Windows.Forms.RadioButton()
         Me.BtnGoToMap = New System.Windows.Forms.Button()
@@ -64,6 +65,11 @@ Partial Class FrmEliminatePoly
         Me.TxtAOIPath = New System.Windows.Forms.TextBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.CkRetainAttributes = New System.Windows.Forms.CheckBox()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.TxtParentNonContig = New System.Windows.Forms.TextBox()
+        Me.TxtMinPoly = New System.Windows.Forms.TextBox()
+        Me.Label7 = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.PanelArea.SuspendLayout()
@@ -105,7 +111,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblNoOfZones.AutoSize = True
         Me.LblNoOfZones.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblNoOfZones.Location = New System.Drawing.Point(267, 98)
+        Me.LblNoOfZones.Location = New System.Drawing.Point(267, 113)
         Me.LblNoOfZones.Name = "LblNoOfZones"
         Me.LblNoOfZones.Size = New System.Drawing.Size(117, 16)
         Me.LblNoOfZones.TabIndex = 8
@@ -115,7 +121,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblMinZone.AutoSize = True
         Me.LblMinZone.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblMinZone.Location = New System.Drawing.Point(286, 126)
+        Me.LblMinZone.Location = New System.Drawing.Point(286, 138)
         Me.LblMinZone.Name = "LblMinZone"
         Me.LblMinZone.Size = New System.Drawing.Size(98, 16)
         Me.LblMinZone.TabIndex = 9
@@ -125,7 +131,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblMazSize.AutoSize = True
         Me.LblMazSize.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblMazSize.Location = New System.Drawing.Point(282, 153)
+        Me.LblMazSize.Location = New System.Drawing.Point(282, 189)
         Me.LblMazSize.Name = "LblMazSize"
         Me.LblMazSize.Size = New System.Drawing.Size(102, 16)
         Me.LblMazSize.TabIndex = 10
@@ -135,7 +141,7 @@ Partial Class FrmEliminatePoly
         '
         Me.TxtNoZones.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtNoZones.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtNoZones.Location = New System.Drawing.Point(386, 97)
+        Me.TxtNoZones.Location = New System.Drawing.Point(386, 110)
         Me.TxtNoZones.Name = "TxtNoZones"
         Me.TxtNoZones.Size = New System.Drawing.Size(118, 22)
         Me.TxtNoZones.TabIndex = 11
@@ -145,7 +151,7 @@ Partial Class FrmEliminatePoly
         '
         Me.TxtMinZone.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtMinZone.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtMinZone.Location = New System.Drawing.Point(386, 124)
+        Me.TxtMinZone.Location = New System.Drawing.Point(386, 135)
         Me.TxtMinZone.Name = "TxtMinZone"
         Me.TxtMinZone.Size = New System.Drawing.Size(118, 22)
         Me.TxtMinZone.TabIndex = 12
@@ -155,7 +161,7 @@ Partial Class FrmEliminatePoly
         '
         Me.TxtMaxZone.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtMaxZone.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtMaxZone.Location = New System.Drawing.Point(386, 152)
+        Me.TxtMaxZone.Location = New System.Drawing.Point(386, 186)
         Me.TxtMaxZone.Name = "TxtMaxZone"
         Me.TxtMaxZone.Size = New System.Drawing.Size(118, 22)
         Me.TxtMaxZone.TabIndex = 13
@@ -168,16 +174,16 @@ Partial Class FrmEliminatePoly
         Me.Panel1.Controls.Add(Me.RadKm)
         Me.Panel1.Controls.Add(Me.LblAreaUnit)
         Me.Panel1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Panel1.Location = New System.Drawing.Point(397, 180)
+        Me.Panel1.Location = New System.Drawing.Point(395, 214)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(109, 105)
+        Me.Panel1.Size = New System.Drawing.Size(109, 96)
         Me.Panel1.TabIndex = 14
         '
         'RadAcres
         '
         Me.RadAcres.AutoSize = True
         Me.RadAcres.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadAcres.Location = New System.Drawing.Point(16, 79)
+        Me.RadAcres.Location = New System.Drawing.Point(16, 73)
         Me.RadAcres.Name = "RadAcres"
         Me.RadAcres.Size = New System.Drawing.Size(61, 20)
         Me.RadAcres.TabIndex = 3
@@ -189,7 +195,7 @@ Partial Class FrmEliminatePoly
         '
         Me.RadMile.AutoSize = True
         Me.RadMile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadMile.Location = New System.Drawing.Point(16, 53)
+        Me.RadMile.Location = New System.Drawing.Point(16, 49)
         Me.RadMile.Name = "RadMile"
         Me.RadMile.Size = New System.Drawing.Size(81, 20)
         Me.RadMile.TabIndex = 2
@@ -201,7 +207,7 @@ Partial Class FrmEliminatePoly
         '
         Me.RadKm.AutoSize = True
         Me.RadKm.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RadKm.Location = New System.Drawing.Point(16, 27)
+        Me.RadKm.Location = New System.Drawing.Point(16, 25)
         Me.RadKm.Name = "RadKm"
         Me.RadKm.Size = New System.Drawing.Size(68, 20)
         Me.RadKm.TabIndex = 1
@@ -231,13 +237,26 @@ Partial Class FrmEliminatePoly
         '
         'Panel2
         '
+        Me.Panel2.Controls.Add(Me.RdoPolyArea)
         Me.Panel2.Controls.Add(Me.RadPercentile)
         Me.Panel2.Controls.Add(Me.RadAreaOfAoi)
         Me.Panel2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Panel2.Location = New System.Drawing.Point(28, 214)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(219, 35)
+        Me.Panel2.Size = New System.Drawing.Size(225, 62)
         Me.Panel2.TabIndex = 16
+        '
+        'RdoPolyArea
+        '
+        Me.RdoPolyArea.AutoSize = True
+        Me.RdoPolyArea.Enabled = False
+        Me.RdoPolyArea.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.RdoPolyArea.Location = New System.Drawing.Point(9, 36)
+        Me.RdoPolyArea.Name = "RdoPolyArea"
+        Me.RdoPolyArea.Size = New System.Drawing.Size(218, 20)
+        Me.RdoPolyArea.TabIndex = 31
+        Me.RdoPolyArea.Text = "Area Of Individual Polygon Parts"
+        Me.RdoPolyArea.UseVisualStyleBackColor = True
         '
         'RadPercentile
         '
@@ -266,7 +285,7 @@ Partial Class FrmEliminatePoly
         'BtnGoToMap
         '
         Me.BtnGoToMap.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnGoToMap.Location = New System.Drawing.Point(239, 222)
+        Me.BtnGoToMap.Location = New System.Drawing.Point(243, 222)
         Me.BtnGoToMap.Name = "BtnGoToMap"
         Me.BtnGoToMap.Size = New System.Drawing.Size(141, 24)
         Me.BtnGoToMap.TabIndex = 31
@@ -278,7 +297,7 @@ Partial Class FrmEliminatePoly
         Me.PanelArea.Controls.Add(Me.LblPolygonArea)
         Me.PanelArea.Controls.Add(Me.TxtPolyArea)
         Me.PanelArea.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.PanelArea.Location = New System.Drawing.Point(43, 255)
+        Me.PanelArea.Location = New System.Drawing.Point(43, 276)
         Me.PanelArea.Name = "PanelArea"
         Me.PanelArea.Size = New System.Drawing.Size(337, 32)
         Me.PanelArea.TabIndex = 17
@@ -307,7 +326,7 @@ Partial Class FrmEliminatePoly
         Me.PanelPercentile.Controls.Add(Me.LblThesholdPercentile)
         Me.PanelPercentile.Controls.Add(Me.cboThreshPercnt)
         Me.PanelPercentile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.PanelPercentile.Location = New System.Drawing.Point(56, 258)
+        Me.PanelPercentile.Location = New System.Drawing.Point(56, 279)
         Me.PanelPercentile.Name = "PanelPercentile"
         Me.PanelPercentile.Size = New System.Drawing.Size(298, 33)
         Me.PanelPercentile.TabIndex = 18
@@ -334,7 +353,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblHRUPath.AutoSize = True
         Me.LblHRUPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblHRUPath.Location = New System.Drawing.Point(10, 396)
+        Me.LblHRUPath.Location = New System.Drawing.Point(11, 422)
         Me.LblHRUPath.Name = "LblHRUPath"
         Me.LblHRUPath.Size = New System.Drawing.Size(71, 16)
         Me.LblHRUPath.TabIndex = 19
@@ -344,7 +363,7 @@ Partial Class FrmEliminatePoly
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(9, 362)
+        Me.Label3.Location = New System.Drawing.Point(10, 390)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(138, 16)
         Me.Label3.TabIndex = 23
@@ -353,7 +372,7 @@ Partial Class FrmEliminatePoly
         'TxtHruName
         '
         Me.TxtHruName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtHruName.Location = New System.Drawing.Point(153, 359)
+        Me.TxtHruName.Location = New System.Drawing.Point(154, 387)
         Me.TxtHruName.Name = "TxtHruName"
         Me.TxtHruName.Size = New System.Drawing.Size(100, 22)
         Me.TxtHruName.TabIndex = 22
@@ -363,16 +382,16 @@ Partial Class FrmEliminatePoly
         Me.LlbRemoved.AutoSize = True
         Me.LlbRemoved.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LlbRemoved.ForeColor = System.Drawing.Color.Red
-        Me.LlbRemoved.Location = New System.Drawing.Point(10, 334)
+        Me.LlbRemoved.Location = New System.Drawing.Point(11, 360)
         Me.LlbRemoved.Name = "LlbRemoved"
-        Me.LlbRemoved.Size = New System.Drawing.Size(155, 16)
+        Me.LlbRemoved.Size = New System.Drawing.Size(218, 16)
         Me.LlbRemoved.TabIndex = 24
-        Me.LlbRemoved.Text = "No. Of Zones Removed :"
+        Me.LlbRemoved.Text = "Estimated No. Of Zones Removed :"
         '
         'BtnEliminate
         '
         Me.BtnEliminate.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnEliminate.Location = New System.Drawing.Point(386, 423)
+        Me.BtnEliminate.Location = New System.Drawing.Point(388, 449)
         Me.BtnEliminate.Name = "BtnEliminate"
         Me.BtnEliminate.Size = New System.Drawing.Size(108, 31)
         Me.BtnEliminate.TabIndex = 25
@@ -383,7 +402,7 @@ Partial Class FrmEliminatePoly
         '
         Me.LblMerge.AutoSize = True
         Me.LblMerge.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblMerge.Location = New System.Drawing.Point(10, 308)
+        Me.LblMerge.Location = New System.Drawing.Point(10, 326)
         Me.LblMerge.Name = "LblMerge"
         Me.LblMerge.Size = New System.Drawing.Size(223, 16)
         Me.LblMerge.TabIndex = 26
@@ -394,7 +413,7 @@ Partial Class FrmEliminatePoly
         Me.Panel5.Controls.Add(Me.RadLength)
         Me.Panel5.Controls.Add(Me.RadArea)
         Me.Panel5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Panel5.Location = New System.Drawing.Point(239, 299)
+        Me.Panel5.Location = New System.Drawing.Point(239, 317)
         Me.Panel5.Name = "Panel5"
         Me.Panel5.Size = New System.Drawing.Size(265, 34)
         Me.Panel5.TabIndex = 27
@@ -428,7 +447,7 @@ Partial Class FrmEliminatePoly
         Me.TxtHruPath.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtHruPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtHruPath.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtHruPath.Location = New System.Drawing.Point(85, 393)
+        Me.TxtHruPath.Location = New System.Drawing.Point(86, 419)
         Me.TxtHruPath.Name = "TxtHruPath"
         Me.TxtHruPath.Size = New System.Drawing.Size(412, 22)
         Me.TxtHruPath.TabIndex = 28
@@ -438,7 +457,7 @@ Partial Class FrmEliminatePoly
         Me.TxtNoZonesRemoved.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtNoZonesRemoved.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtNoZonesRemoved.ForeColor = System.Drawing.Color.Red
-        Me.TxtNoZonesRemoved.Location = New System.Drawing.Point(171, 331)
+        Me.TxtNoZonesRemoved.Location = New System.Drawing.Point(228, 358)
         Me.TxtNoZonesRemoved.Name = "TxtNoZonesRemoved"
         Me.TxtNoZonesRemoved.Size = New System.Drawing.Size(67, 22)
         Me.TxtNoZonesRemoved.TabIndex = 29
@@ -457,7 +476,7 @@ Partial Class FrmEliminatePoly
         '
         Me.CkNonContiguous.AutoSize = True
         Me.CkNonContiguous.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkNonContiguous.Location = New System.Drawing.Point(270, 350)
+        Me.CkNonContiguous.Location = New System.Drawing.Point(271, 378)
         Me.CkNonContiguous.Name = "CkNonContiguous"
         Me.CkNonContiguous.Size = New System.Drawing.Size(210, 20)
         Me.CkNonContiguous.TabIndex = 34
@@ -467,7 +486,7 @@ Partial Class FrmEliminatePoly
         'BtnCancel
         '
         Me.BtnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancel.Location = New System.Drawing.Point(260, 423)
+        Me.BtnCancel.Location = New System.Drawing.Point(262, 449)
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.Size = New System.Drawing.Size(108, 31)
         Me.BtnCancel.TabIndex = 35
@@ -510,17 +529,73 @@ Partial Class FrmEliminatePoly
         Me.CkRetainAttributes.Checked = True
         Me.CkRetainAttributes.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CkRetainAttributes.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkRetainAttributes.Location = New System.Drawing.Point(270, 369)
+        Me.CkRetainAttributes.Location = New System.Drawing.Point(271, 397)
         Me.CkRetainAttributes.Name = "CkRetainAttributes"
         Me.CkRetainAttributes.Size = New System.Drawing.Size(191, 20)
         Me.CkRetainAttributes.TabIndex = 39
         Me.CkRetainAttributes.Text = "Retain source attributes"
         Me.CkRetainAttributes.UseVisualStyleBackColor = True
         '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label5.ForeColor = System.Drawing.Color.Red
+        Me.Label5.Location = New System.Drawing.Point(306, 360)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(129, 16)
+        Me.Label5.TabIndex = 40
+        Me.Label5.Text = "Actual No. May Vary"
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label6.Location = New System.Drawing.Point(267, 88)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(141, 16)
+        Me.Label6.TabIndex = 41
+        Me.Label6.Text = "Non-contiguous HRU :"
+        '
+        'TxtParentNonContig
+        '
+        Me.TxtParentNonContig.BackColor = System.Drawing.SystemColors.ButtonFace
+        Me.TxtParentNonContig.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtParentNonContig.Location = New System.Drawing.Point(411, 83)
+        Me.TxtParentNonContig.Name = "TxtParentNonContig"
+        Me.TxtParentNonContig.Size = New System.Drawing.Size(93, 22)
+        Me.TxtParentNonContig.TabIndex = 42
+        Me.TxtParentNonContig.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'TxtMinPoly
+        '
+        Me.TxtMinPoly.BackColor = System.Drawing.SystemColors.ButtonFace
+        Me.TxtMinPoly.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtMinPoly.Location = New System.Drawing.Point(386, 161)
+        Me.TxtMinPoly.Name = "TxtMinPoly"
+        Me.TxtMinPoly.Size = New System.Drawing.Size(118, 22)
+        Me.TxtMinPoly.TabIndex = 44
+        Me.TxtMinPoly.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label7.Location = New System.Drawing.Point(267, 164)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(117, 16)
+        Me.Label7.TabIndex = 43
+        Me.Label7.Text = "Min Polygon Size :"
+        '
         'FrmEliminatePoly
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 18.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.Controls.Add(Me.TxtMinPoly)
+        Me.Controls.Add(Me.Label7)
+        Me.Controls.Add(Me.TxtParentNonContig)
+        Me.Controls.Add(Me.Label6)
+        Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.CkRetainAttributes)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.TxtAOIPath)
@@ -554,7 +629,7 @@ Partial Class FrmEliminatePoly
         Me.Controls.Add(Me.BtnSelectAOI)
         Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Name = "FrmEliminatePoly"
-        Me.Size = New System.Drawing.Size(520, 460)
+        Me.Size = New System.Drawing.Size(520, 490)
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout()
         Me.Panel2.ResumeLayout(False)
@@ -612,5 +687,11 @@ Partial Class FrmEliminatePoly
     Friend WithEvents TxtAOIPath As System.Windows.Forms.TextBox
     Friend WithEvents Label4 As System.Windows.Forms.Label
     Friend WithEvents CkRetainAttributes As System.Windows.Forms.CheckBox
+    Friend WithEvents Label5 As System.Windows.Forms.Label
+    Friend WithEvents RdoPolyArea As System.Windows.Forms.RadioButton
+    Friend WithEvents Label6 As System.Windows.Forms.Label
+    Friend WithEvents TxtParentNonContig As System.Windows.Forms.TextBox
+    Friend WithEvents TxtMinPoly As System.Windows.Forms.TextBox
+    Friend WithEvents Label7 As System.Windows.Forms.Label
 
 End Class

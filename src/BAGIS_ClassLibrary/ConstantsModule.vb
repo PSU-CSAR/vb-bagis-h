@@ -81,6 +81,7 @@
     Public Const BA_FIELD_AWDB_ID As String = "awdb_id"
     Public Const BA_FIELD_TIMBER_ELEV As String = "TIMBER_ELEV"
     Public Const BA_FIELD_AREA As String = "AREA"
+    Public Const BA_FIELD_SHAPE_AREA As String = "Shape_Area"
 
     'mapframe
     Public Const BA_MAPS_DEFAULT_MAP_NAME As String = "Basin Analysis"

@@ -128,11 +128,12 @@ Public Class frmHruZone
                 Dim slopeUnit As SlopeUnit
                 Dim elevUnit As MeasurementUnit
                 Dim depthUnit As MeasurementUnit    'prism data
-                BA_GetMeasurementUnitsForAoi(m_aoi.FilePath, slopeUnit, elevUnit, depthUnit)
+                Dim prismLayersExist As Boolean = False
+                BA_GetMeasurementUnitsForAoi(m_aoi.FilePath, slopeUnit, elevUnit, depthUnit, prismLayersExist)
                 If slopeUnit = slopeUnit.Missing Or _
                    elevUnit = MeasurementUnit.Missing Or _
-                   depthUnit = MeasurementUnit.Missing Then
-                    Dim frmDataUnits As FrmDataUnits = New FrmDataUnits(m_aoi, slopeUnit, elevUnit, depthUnit)
+                   (depthUnit = MeasurementUnit.Missing And prismLayersExist) Then
+                    Dim frmDataUnits As FrmDataUnits = New FrmDataUnits(m_aoi, slopeUnit, elevUnit, depthUnit, prismLayersExist)
                     frmDataUnits.ShowDialog()
                 End If
 
