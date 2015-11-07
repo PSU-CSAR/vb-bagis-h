@@ -34,8 +34,8 @@ Public Class BtnReclassZones
         dockWindow.Show(aboutToShow)
         ' Set dimensions of dockable window
         Dim windowPos As ESRI.ArcGIS.Framework.IWindowPosition = CType(dockWindow, ESRI.ArcGIS.Framework.IWindowPosition)
-        windowPos.Height = 475
-        windowPos.Width = 577
+        windowPos.Height = 500
+        windowPos.Width = 587
 
     End Sub
 

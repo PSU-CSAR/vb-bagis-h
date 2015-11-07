@@ -354,15 +354,6 @@ Public Class FrmReclassZones
                     If success = BA_ReturnCode.Success Then
                         reclassRule = New RasterReclassRule(item.Name, BA_FIELD_VALUE, item.Value, 0)
                         reclassRule.ReclassItems = reclassItems
-                        Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, item.Name)
-                        Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
-                        Dim parentHru As Hru = Nothing
-                        For Each pHru In aoi.HruList
-                            ' We found the parent hru
-                            If String.Compare(pHru.Name, item.Name) = 0 Then
-                                parentHru = pHru
-                            End If
-                        Next
                         pStepProg.Step()
 
                         Dim rInputPath As String = hruOutputPath2 & BA_EnumDescription(PublicPath.HruGrid)
@@ -370,20 +361,39 @@ Public Class FrmReclassZones
                         Dim vReturnVal As Short = BA_Raster2PolygonShapefileFromPath(rInputPath, vOutputPath, False)
 
                         'add HRUID_CO and HRUID_NC fields to the Vector file
-                        If BA_AddCTAndNonCTToAttrib(vOutputPath) <> BA_ReturnCode.Success Then
-                            Throw New Exception("Error adding CT and NonCT to Shape file.")
-                        End If
-                        If parentHru.AllowNonContiguousHru Then
-                            BA_UpdateRequiredColumns(hruOutputPath2, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False), BA_FIELD_HRUID_NC)
-                        Else
-                            BA_UpdateRequiredColumns(hruOutputPath2, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False), BA_FIELD_HRUID_CO)
-                        End If
+                        'If BA_AddCTAndNonCTToAttrib(vOutputPath) <> BA_ReturnCode.Success Then
+                        '    Throw New Exception("Error adding CT and NonCT to Shape file.")
+                        'End If
+                        'If TxtParentNonContig.Text.Equals(YES) Then
+                        '    BA_UpdateRequiredColumns(hruOutputPath2, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False), BA_FIELD_HRUID_NC)
+
+                        'Else
+                        '    BA_UpdateRequiredColumns(hruOutputPath2, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False), BA_FIELD_HRUID_CO)
+                        'End If
+
+                        ' Filled DEM Path
+                        Dim layerPath As String = m_aoi.FilePath & "\" & BA_EnumDescription(GeodatabaseNames.Surfaces)
+                        Dim fullLayerPath As String = layerPath & "\" & BA_EnumDescription(MapsFileName.filled_dem_gdb)
+                        'get raster resolution
+                        Dim cellSize As Double
+                        Dim rasterStat As IRasterStatistics = BA_GetRasterStatsGDB(fullLayerPath, cellSize)
+                        Dim allowNonContiguous As Boolean = False
+                        If TxtParentNonContig.Text.Equals(YES) Then allowNonContiguous = True
+                        success = BA_ProcessNonContiguousGrids(allowNonContiguous, vOutputPath, hruOutputPath2, cellSize, snapRasterPath)
 
                         If success = BA_ReturnCode.Success Then
                             pStepProg.Step()
 
-
                             ' Placeholder for rules
+                            Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, item.Name)
+                            Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
+                            Dim parentHru As Hru = Nothing
+                            For Each nextHru As Hru In aoi.HruList
+                                ' We found the parent hru
+                                If String.Compare(nextHru.Name, item.Name) = 0 Then
+                                    parentHru = nextHru
+                                End If
+                            Next
                             Dim rules As List(Of BAGIS_ClassLibrary.IRule) = New List(Of BAGIS_ClassLibrary.IRule)
                             Dim pHru As Hru = BA_CreateHru(TxtNewHruName.Text, rInputPath, vOutputPath, Nothing, _
                                                            rules, parentHru.AllowNonContiguousHru)
@@ -631,6 +641,19 @@ Public Class FrmReclassZones
                         End If
                         Exit For
                     End If
+                End If
+            Next
+            'Does the parent support non-contiguous HRU's? This property is always inherited
+            Dim hruInputPath As String = BA_GetHruPath(m_aoi.FilePath, PublicPath.HruDirectory, selItem.Name)
+            Dim aoi As Aoi = BA_LoadHRUFromXml(hruInputPath)
+            For Each anHru In aoi.HruList
+                ' We found the hru the user selected
+                If anHru.Name.Equals(selItem.Name) Then
+                    TxtParentNonContig.Text = NO
+                    If anHru.AllowNonContiguousHru Then
+                        TxtParentNonContig.Text = YES
+                    End If
+                    Exit For
                 End If
             Next
         Catch ex As Exception
