@@ -659,7 +659,6 @@ Partial Class FrmSlopeTemplate
         Me.Controls.Add(Me.LblToolTip)
         Me.Controls.Add(Me.BtnAbout)
         Me.Controls.Add(Me.Panel1)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "FrmSlopeTemplate"
         Me.ShowIcon = False
         Me.Text = "Template - Slope"

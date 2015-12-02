@@ -22,41 +22,41 @@ Partial Class FrmLandUseTemplate
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.TxtRuleId = New System.Windows.Forms.TextBox
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.TxtFilterWidth = New System.Windows.Forms.TextBox
-        Me.TxtFilterHeight = New System.Windows.Forms.TextBox
-        Me.TxtIterations = New System.Windows.Forms.TextBox
-        Me.BtnApply = New System.Windows.Forms.Button
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.GrdLandUse = New System.Windows.Forms.DataGridView
-        Me.OldValues = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.OldDescr = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.NewValues = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.NewDescr = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.LblRasterLayers = New System.Windows.Forms.Label
-        Me.Label9 = New System.Windows.Forms.Label
-        Me.CboOptions = New System.Windows.Forms.ComboBox
-        Me.Label13 = New System.Windows.Forms.Label
-        Me.PnlGrid = New System.Windows.Forms.Panel
-        Me.PnlButtons = New System.Windows.Forms.Panel
-        Me.BtnDeleteTemplate = New System.Windows.Forms.Button
-        Me.BtnCancel = New System.Windows.Forms.Button
-        Me.TxtRasterLayer = New System.Windows.Forms.TextBox
-        Me.TxtReclassField = New System.Windows.Forms.TextBox
-        Me.CkDefault = New System.Windows.Forms.CheckBox
-        Me.BtnSelectLyr = New System.Windows.Forms.Button
-        Me.TxtMissingValue = New System.Windows.Forms.TextBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.BtnOldValues = New System.Windows.Forms.Button
-        Me.BtnClear = New System.Windows.Forms.Button
-        Me.LblToolTip = New System.Windows.Forms.Label
-        Me.BtnAbout = New System.Windows.Forms.Button
-        Me.PnlOptions = New System.Windows.Forms.Panel
-        Me.TxtTemplatesFile = New System.Windows.Forms.TextBox
-        Me.LblTemplatesFile = New System.Windows.Forms.Label
+        Me.TxtRuleId = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.TxtFilterWidth = New System.Windows.Forms.TextBox()
+        Me.TxtFilterHeight = New System.Windows.Forms.TextBox()
+        Me.TxtIterations = New System.Windows.Forms.TextBox()
+        Me.BtnApply = New System.Windows.Forms.Button()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.GrdLandUse = New System.Windows.Forms.DataGridView()
+        Me.OldValues = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.OldDescr = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.NewValues = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.NewDescr = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.LblRasterLayers = New System.Windows.Forms.Label()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.CboOptions = New System.Windows.Forms.ComboBox()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.PnlGrid = New System.Windows.Forms.Panel()
+        Me.PnlButtons = New System.Windows.Forms.Panel()
+        Me.BtnDeleteTemplate = New System.Windows.Forms.Button()
+        Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.TxtRasterLayer = New System.Windows.Forms.TextBox()
+        Me.TxtReclassField = New System.Windows.Forms.TextBox()
+        Me.CkDefault = New System.Windows.Forms.CheckBox()
+        Me.BtnSelectLyr = New System.Windows.Forms.Button()
+        Me.TxtMissingValue = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.BtnOldValues = New System.Windows.Forms.Button()
+        Me.BtnClear = New System.Windows.Forms.Button()
+        Me.LblToolTip = New System.Windows.Forms.Label()
+        Me.BtnAbout = New System.Windows.Forms.Button()
+        Me.PnlOptions = New System.Windows.Forms.Panel()
+        Me.TxtTemplatesFile = New System.Windows.Forms.TextBox()
+        Me.LblTemplatesFile = New System.Windows.Forms.Label()
         CType(Me.GrdLandUse, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PnlGrid.SuspendLayout()
         Me.PnlButtons.SuspendLayout()
@@ -420,7 +420,6 @@ Partial Class FrmLandUseTemplate
         Me.Controls.Add(Me.LblToolTip)
         Me.Controls.Add(Me.BtnAbout)
         Me.Controls.Add(Me.PnlGrid)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "FrmLandUseTemplate"
         Me.ShowIcon = False
         Me.Text = "Template - Land Use"

@@ -23,7 +23,7 @@ Partial Class FrmHruRasterReclassRule
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.BtnCancel = New System.Windows.Forms.Button()
         Me.LstAoiRasterLayers = New System.Windows.Forms.ListBox()
         Me.BtnApply = New System.Windows.Forms.Button()
@@ -48,6 +48,7 @@ Partial Class FrmHruRasterReclassRule
         Me.LblMean = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.GrpReclass = New System.Windows.Forms.GroupBox()
+        Me.BtnId = New System.Windows.Forms.Button()
         Me.DataGridView1 = New System.Windows.Forms.DataGridView()
         Me.OldValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.NewValues = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -67,7 +68,6 @@ Partial Class FrmHruRasterReclassRule
         Me.LblRasterLayers = New System.Windows.Forms.Label()
         Me.BtnAbout = New System.Windows.Forms.Button()
         Me.LblToolTip = New System.Windows.Forms.Label()
-        Me.BtnId = New System.Windows.Forms.Button()
         Me.GrpLayerType.SuspendLayout()
         Me.PnlStatistics.SuspendLayout()
         Me.GrpReclass.SuspendLayout()
@@ -330,6 +330,16 @@ Partial Class FrmHruRasterReclassRule
         Me.GrpReclass.Text = "Reclass"
         Me.GrpReclass.Visible = False
         '
+        'BtnId
+        '
+        Me.BtnId.Enabled = False
+        Me.BtnId.Location = New System.Drawing.Point(137, 47)
+        Me.BtnId.Name = "BtnId"
+        Me.BtnId.Size = New System.Drawing.Size(60, 25)
+        Me.BtnId.TabIndex = 24
+        Me.BtnId.Text = "ID"
+        Me.BtnId.UseVisualStyleBackColor = True
+        '
         'DataGridView1
         '
         Me.DataGridView1.AllowUserToAddRows = False
@@ -343,9 +353,9 @@ Partial Class FrmHruRasterReclassRule
         '
         'OldValue
         '
-        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.OldValue.DefaultCellStyle = DataGridViewCellStyle2
+        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.OldValue.DefaultCellStyle = DataGridViewCellStyle1
         Me.OldValue.HeaderText = "Old Values"
         Me.OldValue.Name = "OldValue"
         Me.OldValue.ReadOnly = True
@@ -522,16 +532,6 @@ Partial Class FrmHruRasterReclassRule
         Me.LblToolTip.TabIndex = 53
         Me.LblToolTip.Text = "Use a reclassified raster to define zones"
         '
-        'BtnId
-        '
-        Me.BtnId.Enabled = False
-        Me.BtnId.Location = New System.Drawing.Point(137, 47)
-        Me.BtnId.Name = "BtnId"
-        Me.BtnId.Size = New System.Drawing.Size(60, 25)
-        Me.BtnId.TabIndex = 24
-        Me.BtnId.Text = "ID"
-        Me.BtnId.UseVisualStyleBackColor = True
-        '
         'FrmHruRasterReclassRule
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -548,7 +548,6 @@ Partial Class FrmHruRasterReclassRule
         Me.Controls.Add(Me.TxtRuleId)
         Me.Controls.Add(Me.GrpSlice)
         Me.Controls.Add(Me.LblRasterLayers)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "FrmHruRasterReclassRule"
         Me.ShowIcon = False
         Me.Text = "FrmHruRasterReclassRule"

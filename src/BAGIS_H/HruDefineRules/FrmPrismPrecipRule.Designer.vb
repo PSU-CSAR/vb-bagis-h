@@ -447,7 +447,6 @@ Partial Class FrmPrismPrecipRule
         Me.Controls.Add(Me.LblFrom)
         Me.Controls.Add(Me.CboPrecipType)
         Me.Controls.Add(Me.Label1)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Location = New System.Drawing.Point(200, 200)
         Me.Name = "FrmPrismPrecipRule"
         Me.ShowIcon = False
