@@ -35,7 +35,7 @@ Public Class FrmDownloadAoiMenu
 
         'Set the user name and password from a text file that is NOT in source countrol
         'Note: Developers will have to change this to a path valid on their machine
-        Dim filePath As String = "C:\Docs\Lesley\Repository\vb\BAGIS_H\branches\lbross\src\BAGIS_H\GoldenTicket.txt"
+        Dim filePath As String = BA_GetSettingsPath() & "\BAGIS\GoldenTicket.txt"
         '@ToDo: In the future, this comes from user input
         Try
             ' Create an instance of StreamReader to read from a file.
