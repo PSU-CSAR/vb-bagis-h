@@ -461,6 +461,13 @@ Public Class FrmEliminatePoly
     End Sub
 
     Private Sub BtnEliminate_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnEliminate.Click
+        Dim hruNameError As String = BA_ValidateHruName(TxtHruName.Text)
+        If hruNameError IsNot Nothing Then
+            MessageBox.Show(hruNameError)
+            TxtHruName.Focus()
+            Exit Sub
+        End If
+
         Dim elim_opt As String = "AREA"
         If RadLength.Checked Then
             elim_opt = "LENGTH"
