@@ -1,7 +1,7 @@
 ﻿Public Module ConstantsModule
 
     'Class library version; Update with each change to class library
-    Public Const BA_CLASS_LIBRARY_VERSION As String = "L034"
+    Public Const BA_CLASS_LIBRARY_VERSION As String = "L036"
 
     ' Used with BA_QueryAttributeTable to customize query
     Public Const BA_STRING_ATTRIBUTE As String = "string_attribute"
@@ -177,6 +177,31 @@
     Public Const BA_Resample_Bilinear = "BILINEAR"
     Public Const BA_Resample_Cubic = "CUBIC"
     Public Const BA_Resample_Majority = "MAJORITY"
+
+    'eBAGIS task status
+    Public Const BA_Task_Staging = "STAGING"
+    Public Const BA_Task_Started = "STARTED"
+    Public Const BA_Task_Pending = "PENDING"
+    Public Const BA_Task_Failure = "FAILURE"
+    Public Const BA_Task_Success = "SUCCESS"
+    Public Const BA_Task_Timed_Out = "TIMED OUT"
+
+    'eBAGIS mime types
+    Public Const BA_Mime_Zip = "application/zip"
+    Public Const BA_Mime_Json = "application/json"
+    Public Const BA_Mime_Compressed_Zip = "application/x-zip-compressed"
+
+    'eBAGIS task types
+    Public Const BA_TASK_UPLOAD As String = "Upload"
+    Public Const BA_TASK_DOWNLOAD As String = "Download"
+
+    'eBAGIS download status
+    Public Const BA_Download_Processing As String = "Processing"
+    Public Const BA_Download_Ready As String = "Ready"
+    Public Const BA_Download_Download_Started As String = "Started"
+    Public Const BA_Download_Complete As String = "Complete"
+
+
 End Module
 
 
