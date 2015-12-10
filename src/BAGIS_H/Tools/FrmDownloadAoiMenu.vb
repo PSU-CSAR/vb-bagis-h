@@ -683,7 +683,7 @@ Public Class FrmDownloadAoiMenu
                     Dim contentType As String = WebservicesModule.BA_GetResponseContentType(url, hruExt.EbagisToken.token)
                     Dim strMessage As String = Nothing
 
-                    If contentType = BA_Mime_Zip Then
+                    If contentType = BA_Mime_Compressed_Zip Then
                         Dim success As BA_ReturnCode = Me.DownloadFile(url)
                         Exit Sub
                     Else

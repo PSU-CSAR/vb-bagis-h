@@ -189,6 +189,7 @@
     'eBAGIS mime types
     Public Const BA_Mime_Zip = "application/zip"
     Public Const BA_Mime_Json = "application/json"
+    Public Const BA_Mime_Compressed_Zip = "application/x-zip-compressed"
 
     'eBAGIS task types
     Public Const BA_TASK_UPLOAD As String = "Upload"
