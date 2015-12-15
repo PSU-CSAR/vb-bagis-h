@@ -3,6 +3,7 @@ Imports ESRI.ArcGIS.Catalog
 Imports ESRI.ArcGIS.GISClient
 Imports System.Text
 Imports ESRI.ArcGIS.esriSystem
+Imports BAGIS_ClassLibrary
 
 
 Public Class FrmWebservices

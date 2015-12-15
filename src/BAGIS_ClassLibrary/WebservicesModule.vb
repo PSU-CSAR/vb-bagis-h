@@ -1,5 +1,4 @@
-﻿Imports BAGIS_ClassLibrary
-Imports System.Text
+﻿Imports System.Text
 Imports System.Web
 Imports ESRI.ArcGIS.Geodatabase
 Imports ESRI.ArcGIS.Geometry
@@ -10,7 +9,7 @@ Imports ESRI.ArcGIS.DataSourcesRaster
 Imports System.Net
 Imports System.Timers
 
-Module WebservicesModule
+Public Module WebservicesModule
 
     Public Function BA_ClipFeatureService(ByVal clipFilePath As String, ByVal webServiceUrl As String, _
                                           ByVal newFilePath As String, ByVal aoiFolder As String) As BA_ReturnCode
@@ -517,6 +516,7 @@ Module WebservicesModule
             'Put token in header
             myWebClient.Headers(HttpRequestHeader.Authorization) = cred
             myWebClient.DownloadFile(url, filePath)
+            Return BA_ReturnCode.Success
         Catch ex As Exception
             Debug.Print("BA_DownloadFile: " & ex.Message)
             Return BA_ReturnCode.UnknownError
