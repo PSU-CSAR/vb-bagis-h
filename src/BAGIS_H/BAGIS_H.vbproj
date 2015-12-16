@@ -284,7 +284,6 @@
     <Compile Include="Tools\BtnSlopeConverter.vb" />
     <Compile Include="Tools\BtnSnodas.vb" />
     <Compile Include="Tools\BtnToolsDataUnits.vb" />
-    <Compile Include="Tools\BtnWebServices.vb" />
     <Compile Include="Tools\FrmDownloadAoiMenu.Designer.vb">
       <DependentUpon>FrmDownloadAoiMenu.vb</DependentUpon>
     </Compile>
@@ -527,12 +526,6 @@
     <Compile Include="Tools\FrmUploadAoi.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Tools\FrmWebservices.Designer.vb">
-      <DependentUpon>FrmWebservices.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Tools\FrmWebservices.vb">
-      <SubType>Form</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Help\FrmHelp.resx">
@@ -681,9 +674,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmUploadAoi.resx">
       <DependentUpon>FrmUploadAoi.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tools\FrmWebservices.resx">
-      <DependentUpon>FrmWebservices.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
