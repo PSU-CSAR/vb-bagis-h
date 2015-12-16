@@ -870,7 +870,6 @@
     <AddInContent Include="Images\BtnToolsDataUnits.png" />
     <AddInContent Include="Images\BtnSnodas.png" />
     <AddInContent Include="Images\BtnFileModify.png" />
-    <AddInContent Include="Images\BtnWebServices.png" />
     <AddInContent Include="Images\BtnDownloadAoi.png" />
     <Content Include="Other\LogTemplate.htm" />
   </ItemGroup>
