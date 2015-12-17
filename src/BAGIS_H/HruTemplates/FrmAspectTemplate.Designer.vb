@@ -22,22 +22,22 @@ Partial Class FrmAspectTemplate
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.CboDirections = New System.Windows.Forms.ComboBox()
-        Me.TxtRuleId = New System.Windows.Forms.TextBox()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.TxtFilterWidth = New System.Windows.Forms.TextBox()
-        Me.TxtFilterHeight = New System.Windows.Forms.TextBox()
-        Me.TxtIterations = New System.Windows.Forms.TextBox()
-        Me.BtnCancel = New System.Windows.Forms.Button()
-        Me.BtnApply = New System.Windows.Forms.Button()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.BtnAbout = New System.Windows.Forms.Button()
-        Me.LblToolTip = New System.Windows.Forms.Label()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.Label11 = New System.Windows.Forms.Label()
+        Me.Label1 = New System.Windows.Forms.Label
+        Me.CboDirections = New System.Windows.Forms.ComboBox
+        Me.TxtRuleId = New System.Windows.Forms.TextBox
+        Me.Label2 = New System.Windows.Forms.Label
+        Me.Label3 = New System.Windows.Forms.Label
+        Me.Label4 = New System.Windows.Forms.Label
+        Me.TxtFilterWidth = New System.Windows.Forms.TextBox
+        Me.TxtFilterHeight = New System.Windows.Forms.TextBox
+        Me.TxtIterations = New System.Windows.Forms.TextBox
+        Me.BtnCancel = New System.Windows.Forms.Button
+        Me.BtnApply = New System.Windows.Forms.Button
+        Me.Label5 = New System.Windows.Forms.Label
+        Me.BtnAbout = New System.Windows.Forms.Button
+        Me.LblToolTip = New System.Windows.Forms.Label
+        Me.Label6 = New System.Windows.Forms.Label
+        Me.Label11 = New System.Windows.Forms.Label
         Me.SuspendLayout()
         '
         'Label1
@@ -217,6 +217,7 @@ Partial Class FrmAspectTemplate
         Me.Controls.Add(Me.TxtRuleId)
         Me.Controls.Add(Me.CboDirections)
         Me.Controls.Add(Me.Label1)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "FrmAspectTemplate"
         Me.ShowIcon = False
         Me.Text = "Template - Aspect"

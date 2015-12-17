@@ -1441,6 +1441,7 @@ Public Module MapsModule
             'pFeatureCursor = pTableSort.Rows
 
             pRow = pCursor.NextRow
+            Dim hruIndex As Integer = pTable.FindField("Profile_area_params.HRU_ID")
             Dim fieldIndex As Integer = pTable.FindField(fieldName)
             'Do While Not pRow Is Nothing
             '    Debug.Print("{0}, {1}", pRow.Value(hruIndex), pRow.Value(fieldIndex))

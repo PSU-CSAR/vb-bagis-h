@@ -22,34 +22,34 @@ Partial Class FrmDAFlowRule
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.RadBtnByHRUNo = New System.Windows.Forms.RadioButton()
-        Me.RadBtnByRowCol = New System.Windows.Forms.RadioButton()
-        Me.BtnCancel = New System.Windows.Forms.Button()
-        Me.BtnApply = New System.Windows.Forms.Button()
-        Me.RadBtnByHRUDimension = New System.Windows.Forms.RadioButton()
-        Me.PanHRUNumber = New System.Windows.Forms.Panel()
-        Me.Label7 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.TxtHRUNumber = New System.Windows.Forms.TextBox()
-        Me.PanRowCol = New System.Windows.Forms.Panel()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.TxtRow = New System.Windows.Forms.TextBox()
-        Me.TxtCol = New System.Windows.Forms.TextBox()
-        Me.PanXYSize = New System.Windows.Forms.Panel()
-        Me.RadBtnUnknown = New System.Windows.Forms.RadioButton()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.RadBtnMile = New System.Windows.Forms.RadioButton()
-        Me.RadBtnFoot = New System.Windows.Forms.RadioButton()
-        Me.RadBtnMeter = New System.Windows.Forms.RadioButton()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.TxtYSize = New System.Windows.Forms.TextBox()
-        Me.TxtXSize = New System.Windows.Forms.TextBox()
-        Me.TxtRuleID = New System.Windows.Forms.TextBox()
-        Me.BtnTest = New System.Windows.Forms.Button()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.BtnAbout = New System.Windows.Forms.Button()
+        Me.RadBtnByHRUNo = New System.Windows.Forms.RadioButton
+        Me.RadBtnByRowCol = New System.Windows.Forms.RadioButton
+        Me.BtnCancel = New System.Windows.Forms.Button
+        Me.BtnApply = New System.Windows.Forms.Button
+        Me.RadBtnByHRUDimension = New System.Windows.Forms.RadioButton
+        Me.PanHRUNumber = New System.Windows.Forms.Panel
+        Me.Label7 = New System.Windows.Forms.Label
+        Me.Label3 = New System.Windows.Forms.Label
+        Me.TxtHRUNumber = New System.Windows.Forms.TextBox
+        Me.PanRowCol = New System.Windows.Forms.Panel
+        Me.Label2 = New System.Windows.Forms.Label
+        Me.Label1 = New System.Windows.Forms.Label
+        Me.TxtRow = New System.Windows.Forms.TextBox
+        Me.TxtCol = New System.Windows.Forms.TextBox
+        Me.PanXYSize = New System.Windows.Forms.Panel
+        Me.RadBtnUnknown = New System.Windows.Forms.RadioButton
+        Me.Label6 = New System.Windows.Forms.Label
+        Me.RadBtnMile = New System.Windows.Forms.RadioButton
+        Me.RadBtnFoot = New System.Windows.Forms.RadioButton
+        Me.RadBtnMeter = New System.Windows.Forms.RadioButton
+        Me.Label5 = New System.Windows.Forms.Label
+        Me.Label4 = New System.Windows.Forms.Label
+        Me.TxtYSize = New System.Windows.Forms.TextBox
+        Me.TxtXSize = New System.Windows.Forms.TextBox
+        Me.TxtRuleID = New System.Windows.Forms.TextBox
+        Me.BtnTest = New System.Windows.Forms.Button
+        Me.Label8 = New System.Windows.Forms.Label
+        Me.BtnAbout = New System.Windows.Forms.Button
         Me.PanHRUNumber.SuspendLayout()
         Me.PanRowCol.SuspendLayout()
         Me.PanXYSize.SuspendLayout()
@@ -347,9 +347,9 @@ Partial Class FrmDAFlowRule
         Me.Controls.Add(Me.RadBtnByRowCol)
         Me.Controls.Add(Me.RadBtnByHRUNo)
         Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Margin = New System.Windows.Forms.Padding(4)
         Me.Name = "FrmDAFlowRule"
-        Me.ShowIcon = False
         Me.Text = "DAFlow-Type Zones"
         Me.PanHRUNumber.ResumeLayout(False)
         Me.PanHRUNumber.PerformLayout()

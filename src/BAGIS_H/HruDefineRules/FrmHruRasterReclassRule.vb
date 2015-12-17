@@ -743,11 +743,10 @@ Public Class FrmHruRasterReclassRule
             RdoEqInterval.Checked = False
             TxtNumberZones.Text = "10"
             TxtBaseZone.Text = "1"
+            BtnCancel.Location = New Point(280, 273)
+            BtnApply.Location = New Point(350, 273)
             GrpReclass.Visible = False
             GrpSlice.Visible = True
-            Dim posY As Integer = GrpSlice.Location.Y + 150
-            BtnCancel.Location = New Point(BtnCancel.Location.X, posY)
-            BtnApply.Location = New Point(BtnApply.Location.X, posY)
             RdoPrism.Visible = True
         Else
             LblToolTip.Text = "Use a reclassified raster to define zones"
@@ -757,6 +756,8 @@ Public Class FrmHruRasterReclassRule
             'CboReclassField.Items.Clear()
             'CboReclassField.ResetText()
             DataGridView1.Rows.Clear()
+            BtnCancel.Location = New Point(280, 449)
+            BtnApply.Location = New Point(350, 449)
             BtnApply.Enabled = False
             BtnUnique.Enabled = False
             BtnLoad.Enabled = False
