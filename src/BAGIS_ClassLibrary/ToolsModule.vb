@@ -1345,18 +1345,6 @@ Public Module ToolsModule
         End If
     End Function
 
-    Public Function BA_Copy(ByVal inData As String, ByVal outData As String) As BA_ReturnCode
-        Dim tool As Copy = New Copy
-        tool.in_data = inData
-        tool.out_data = outData
-        'No snapRasterPath because not a spatial analyst tool
-        If Execute_Geoprocessing(tool, False, Nothing) = 1 Then
-            Return BA_ReturnCode.Success
-        Else
-            Return BA_ReturnCode.UnknownError
-        End If
-    End Function
-
 End Module
 
 

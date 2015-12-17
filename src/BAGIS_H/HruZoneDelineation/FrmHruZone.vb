@@ -708,13 +708,6 @@ Public Class frmHruZone
             Exit Sub
         End If
 
-        Dim hruNameError As String = BA_ValidateHruName(TxtNewHruName.Text)
-        If hruNameError IsNot Nothing Then
-            MessageBox.Show(hruNameError)
-            TxtNewHruName.Focus()
-            Exit Sub
-        End If
-
         ' Create/configure a step progressor
         Dim stepCount As Integer = 7 + m_pendingRules.Count
         Dim pStepProg As IStepProgressor = Nothing

@@ -298,12 +298,6 @@ Public Class FrmReclassZones
     End Sub
 
     Private Sub BtnGenerateHru_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnGenerateHru.Click
-        Dim hruNameError As String = BA_ValidateHruName(TxtNewHruName.Text)
-        If hruNameError IsNot Nothing Then
-            MessageBox.Show(hruNameError)
-            TxtNewHruName.Focus()
-            Exit Sub
-        End If
 
         ' Create/configure a step progressor
         Dim stepCount As Integer = 7
