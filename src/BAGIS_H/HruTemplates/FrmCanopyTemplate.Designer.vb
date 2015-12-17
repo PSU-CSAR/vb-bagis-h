@@ -22,57 +22,57 @@ Partial Class FrmCanopyTemplate
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Me.TxtRuleId = New System.Windows.Forms.TextBox()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.TxtPreWidth = New System.Windows.Forms.TextBox()
-        Me.TxtPreHeight = New System.Windows.Forms.TextBox()
-        Me.TxtPreIterations = New System.Windows.Forms.TextBox()
-        Me.BtnCancel = New System.Windows.Forms.Button()
-        Me.BtnApply = New System.Windows.Forms.Button()
-        Me.Label5 = New System.Windows.Forms.Label()
-        Me.TxtPostIterations = New System.Windows.Forms.TextBox()
-        Me.TxtPostHeight = New System.Windows.Forms.TextBox()
-        Me.TxtPostWidth = New System.Windows.Forms.TextBox()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.Label7 = New System.Windows.Forms.Label()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.Label9 = New System.Windows.Forms.Label()
-        Me.Label10 = New System.Windows.Forms.Label()
-        Me.Label11 = New System.Windows.Forms.Label()
-        Me.LblToolTip = New System.Windows.Forms.Label()
-        Me.BtnAbout = New System.Windows.Forms.Button()
-        Me.PnlMain = New System.Windows.Forms.Panel()
-        Me.BtnDeleteTemplate = New System.Windows.Forms.Button()
-        Me.LblUnits = New System.Windows.Forms.Label()
-        Me.Label12 = New System.Windows.Forms.Label()
-        Me.PnlReclass = New System.Windows.Forms.Panel()
-        Me.BtnReclass = New System.Windows.Forms.Button()
-        Me.TxtClasses = New System.Windows.Forms.TextBox()
-        Me.Label15 = New System.Windows.Forms.Label()
-        Me.TxtMaxValue = New System.Windows.Forms.TextBox()
-        Me.Label14 = New System.Windows.Forms.Label()
-        Me.TxtMinValue = New System.Windows.Forms.TextBox()
-        Me.Label13 = New System.Windows.Forms.Label()
-        Me.GrdCanopy = New System.Windows.Forms.DataGridView()
-        Me.FromValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.ToValues = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.OutputValues = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.PnlOptions = New System.Windows.Forms.Panel()
-        Me.LblReclassField = New System.Windows.Forms.Label()
-        Me.BtnSelectLyr = New System.Windows.Forms.Button()
-        Me.LblRasterLayer = New System.Windows.Forms.Label()
-        Me.TxtReclassField = New System.Windows.Forms.TextBox()
-        Me.TxtRasterLayer = New System.Windows.Forms.TextBox()
-        Me.LblOptions = New System.Windows.Forms.Label()
-        Me.CboOptions = New System.Windows.Forms.ComboBox()
-        Me.TxtTemplatesFile = New System.Windows.Forms.TextBox()
-        Me.CkDefault = New System.Windows.Forms.CheckBox()
-        Me.LblTemplatesFile = New System.Windows.Forms.Label()
+        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle
+        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle
+        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle
+        Me.TxtRuleId = New System.Windows.Forms.TextBox
+        Me.Label2 = New System.Windows.Forms.Label
+        Me.Label3 = New System.Windows.Forms.Label
+        Me.Label4 = New System.Windows.Forms.Label
+        Me.TxtPreWidth = New System.Windows.Forms.TextBox
+        Me.TxtPreHeight = New System.Windows.Forms.TextBox
+        Me.TxtPreIterations = New System.Windows.Forms.TextBox
+        Me.BtnCancel = New System.Windows.Forms.Button
+        Me.BtnApply = New System.Windows.Forms.Button
+        Me.Label5 = New System.Windows.Forms.Label
+        Me.TxtPostIterations = New System.Windows.Forms.TextBox
+        Me.TxtPostHeight = New System.Windows.Forms.TextBox
+        Me.TxtPostWidth = New System.Windows.Forms.TextBox
+        Me.Label6 = New System.Windows.Forms.Label
+        Me.Label7 = New System.Windows.Forms.Label
+        Me.Label8 = New System.Windows.Forms.Label
+        Me.Label9 = New System.Windows.Forms.Label
+        Me.Label10 = New System.Windows.Forms.Label
+        Me.Label11 = New System.Windows.Forms.Label
+        Me.LblToolTip = New System.Windows.Forms.Label
+        Me.BtnAbout = New System.Windows.Forms.Button
+        Me.PnlMain = New System.Windows.Forms.Panel
+        Me.BtnDeleteTemplate = New System.Windows.Forms.Button
+        Me.LblUnits = New System.Windows.Forms.Label
+        Me.Label12 = New System.Windows.Forms.Label
+        Me.PnlReclass = New System.Windows.Forms.Panel
+        Me.BtnReclass = New System.Windows.Forms.Button
+        Me.TxtClasses = New System.Windows.Forms.TextBox
+        Me.Label15 = New System.Windows.Forms.Label
+        Me.TxtMaxValue = New System.Windows.Forms.TextBox
+        Me.Label14 = New System.Windows.Forms.Label
+        Me.TxtMinValue = New System.Windows.Forms.TextBox
+        Me.Label13 = New System.Windows.Forms.Label
+        Me.GrdCanopy = New System.Windows.Forms.DataGridView
+        Me.FromValue = New System.Windows.Forms.DataGridViewTextBoxColumn
+        Me.ToValues = New System.Windows.Forms.DataGridViewTextBoxColumn
+        Me.OutputValues = New System.Windows.Forms.DataGridViewTextBoxColumn
+        Me.PnlOptions = New System.Windows.Forms.Panel
+        Me.TxtTemplatesFile = New System.Windows.Forms.TextBox
+        Me.CkDefault = New System.Windows.Forms.CheckBox
+        Me.LblTemplatesFile = New System.Windows.Forms.Label
+        Me.LblReclassField = New System.Windows.Forms.Label
+        Me.BtnSelectLyr = New System.Windows.Forms.Button
+        Me.LblRasterLayer = New System.Windows.Forms.Label
+        Me.TxtReclassField = New System.Windows.Forms.TextBox
+        Me.TxtRasterLayer = New System.Windows.Forms.TextBox
+        Me.LblOptions = New System.Windows.Forms.Label
+        Me.CboOptions = New System.Windows.Forms.ComboBox
         Me.PnlMain.SuspendLayout()
         Me.PnlReclass.SuspendLayout()
         CType(Me.GrdCanopy, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -425,24 +425,24 @@ Partial Class FrmCanopyTemplate
         '
         Me.GrdCanopy.AllowUserToAddRows = False
         Me.GrdCanopy.AllowUserToDeleteRows = False
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.GrdCanopy.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
+        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle13.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.GrdCanopy.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle13
         Me.GrdCanopy.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GrdCanopy.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.FromValue, Me.ToValues, Me.OutputValues})
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.GrdCanopy.DefaultCellStyle = DataGridViewCellStyle3
+        DataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle15.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.GrdCanopy.DefaultCellStyle = DataGridViewCellStyle15
         Me.GrdCanopy.Location = New System.Drawing.Point(186, 80)
         Me.GrdCanopy.Name = "GrdCanopy"
         Me.GrdCanopy.Size = New System.Drawing.Size(270, 220)
@@ -450,9 +450,9 @@ Partial Class FrmCanopyTemplate
         '
         'FromValue
         '
-        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.FromValue.DefaultCellStyle = DataGridViewCellStyle2
+        DataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle14.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.FromValue.DefaultCellStyle = DataGridViewCellStyle14
         Me.FromValue.HeaderText = "From"
         Me.FromValue.Name = "FromValue"
         Me.FromValue.ReadOnly = True
@@ -483,6 +483,39 @@ Partial Class FrmCanopyTemplate
         Me.PnlOptions.Name = "PnlOptions"
         Me.PnlOptions.Size = New System.Drawing.Size(485, 50)
         Me.PnlOptions.TabIndex = 80
+        '
+        'TxtTemplatesFile
+        '
+        Me.TxtTemplatesFile.BackColor = System.Drawing.SystemColors.ButtonFace
+        Me.TxtTemplatesFile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtTemplatesFile.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.TxtTemplatesFile.Location = New System.Drawing.Point(110, 37)
+        Me.TxtTemplatesFile.Name = "TxtTemplatesFile"
+        Me.TxtTemplatesFile.ReadOnly = True
+        Me.TxtTemplatesFile.Size = New System.Drawing.Size(371, 22)
+        Me.TxtTemplatesFile.TabIndex = 80
+        Me.TxtTemplatesFile.TabStop = False
+        '
+        'CkDefault
+        '
+        Me.CkDefault.AutoSize = True
+        Me.CkDefault.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CkDefault.Location = New System.Drawing.Point(8, 113)
+        Me.CkDefault.Name = "CkDefault"
+        Me.CkDefault.Size = New System.Drawing.Size(108, 20)
+        Me.CkDefault.TabIndex = 72
+        Me.CkDefault.Text = "Set as default"
+        Me.CkDefault.UseVisualStyleBackColor = True
+        '
+        'LblTemplatesFile
+        '
+        Me.LblTemplatesFile.AutoSize = True
+        Me.LblTemplatesFile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LblTemplatesFile.Location = New System.Drawing.Point(4, 40)
+        Me.LblTemplatesFile.Name = "LblTemplatesFile"
+        Me.LblTemplatesFile.Size = New System.Drawing.Size(111, 16)
+        Me.LblTemplatesFile.TabIndex = 79
+        Me.LblTemplatesFile.Text = "Templates file:"
         '
         'LblReclassField
         '
@@ -551,39 +584,6 @@ Partial Class FrmCanopyTemplate
         Me.CboOptions.Size = New System.Drawing.Size(130, 24)
         Me.CboOptions.TabIndex = 52
         '
-        'TxtTemplatesFile
-        '
-        Me.TxtTemplatesFile.BackColor = System.Drawing.SystemColors.ButtonFace
-        Me.TxtTemplatesFile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtTemplatesFile.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtTemplatesFile.Location = New System.Drawing.Point(110, 37)
-        Me.TxtTemplatesFile.Name = "TxtTemplatesFile"
-        Me.TxtTemplatesFile.ReadOnly = True
-        Me.TxtTemplatesFile.Size = New System.Drawing.Size(371, 22)
-        Me.TxtTemplatesFile.TabIndex = 80
-        Me.TxtTemplatesFile.TabStop = False
-        '
-        'CkDefault
-        '
-        Me.CkDefault.AutoSize = True
-        Me.CkDefault.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkDefault.Location = New System.Drawing.Point(8, 113)
-        Me.CkDefault.Name = "CkDefault"
-        Me.CkDefault.Size = New System.Drawing.Size(108, 20)
-        Me.CkDefault.TabIndex = 72
-        Me.CkDefault.Text = "Set as default"
-        Me.CkDefault.UseVisualStyleBackColor = True
-        '
-        'LblTemplatesFile
-        '
-        Me.LblTemplatesFile.AutoSize = True
-        Me.LblTemplatesFile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblTemplatesFile.Location = New System.Drawing.Point(4, 40)
-        Me.LblTemplatesFile.Name = "LblTemplatesFile"
-        Me.LblTemplatesFile.Size = New System.Drawing.Size(111, 16)
-        Me.LblTemplatesFile.TabIndex = 79
-        Me.LblTemplatesFile.Text = "Templates file:"
-        '
         'FrmCanopyTemplate
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -596,6 +596,7 @@ Partial Class FrmCanopyTemplate
         Me.Controls.Add(Me.PnlMain)
         Me.Controls.Add(Me.LblToolTip)
         Me.Controls.Add(Me.BtnAbout)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "FrmCanopyTemplate"
         Me.ShowIcon = False
         Me.Text = "Template - Canopy"
