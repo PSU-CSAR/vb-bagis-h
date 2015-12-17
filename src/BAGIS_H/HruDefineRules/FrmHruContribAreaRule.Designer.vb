@@ -357,7 +357,6 @@ Partial Class FrmHruContribAreaRule
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.LblMinFlowValue)
         Me.Controls.Add(Me.Label1)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "FrmHruContribAreaRule"
         Me.ShowIcon = False
         Me.Text = "Contributing Area"
