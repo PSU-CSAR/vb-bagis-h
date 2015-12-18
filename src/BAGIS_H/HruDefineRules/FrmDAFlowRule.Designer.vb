@@ -22,34 +22,34 @@ Partial Class FrmDAFlowRule
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.RadBtnByHRUNo = New System.Windows.Forms.RadioButton
-        Me.RadBtnByRowCol = New System.Windows.Forms.RadioButton
-        Me.BtnCancel = New System.Windows.Forms.Button
-        Me.BtnApply = New System.Windows.Forms.Button
-        Me.RadBtnByHRUDimension = New System.Windows.Forms.RadioButton
-        Me.PanHRUNumber = New System.Windows.Forms.Panel
-        Me.Label7 = New System.Windows.Forms.Label
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.TxtHRUNumber = New System.Windows.Forms.TextBox
-        Me.PanRowCol = New System.Windows.Forms.Panel
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.TxtRow = New System.Windows.Forms.TextBox
-        Me.TxtCol = New System.Windows.Forms.TextBox
-        Me.PanXYSize = New System.Windows.Forms.Panel
-        Me.RadBtnUnknown = New System.Windows.Forms.RadioButton
-        Me.Label6 = New System.Windows.Forms.Label
-        Me.RadBtnMile = New System.Windows.Forms.RadioButton
-        Me.RadBtnFoot = New System.Windows.Forms.RadioButton
-        Me.RadBtnMeter = New System.Windows.Forms.RadioButton
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.TxtYSize = New System.Windows.Forms.TextBox
-        Me.TxtXSize = New System.Windows.Forms.TextBox
-        Me.TxtRuleID = New System.Windows.Forms.TextBox
-        Me.BtnTest = New System.Windows.Forms.Button
-        Me.Label8 = New System.Windows.Forms.Label
-        Me.BtnAbout = New System.Windows.Forms.Button
+        Me.RadBtnByHRUNo = New System.Windows.Forms.RadioButton()
+        Me.RadBtnByRowCol = New System.Windows.Forms.RadioButton()
+        Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.BtnApply = New System.Windows.Forms.Button()
+        Me.RadBtnByHRUDimension = New System.Windows.Forms.RadioButton()
+        Me.PanHRUNumber = New System.Windows.Forms.Panel()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.TxtHRUNumber = New System.Windows.Forms.TextBox()
+        Me.PanRowCol = New System.Windows.Forms.Panel()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.TxtRow = New System.Windows.Forms.TextBox()
+        Me.TxtCol = New System.Windows.Forms.TextBox()
+        Me.PanXYSize = New System.Windows.Forms.Panel()
+        Me.RadBtnUnknown = New System.Windows.Forms.RadioButton()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.RadBtnMile = New System.Windows.Forms.RadioButton()
+        Me.RadBtnFoot = New System.Windows.Forms.RadioButton()
+        Me.RadBtnMeter = New System.Windows.Forms.RadioButton()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.TxtYSize = New System.Windows.Forms.TextBox()
+        Me.TxtXSize = New System.Windows.Forms.TextBox()
+        Me.TxtRuleID = New System.Windows.Forms.TextBox()
+        Me.BtnTest = New System.Windows.Forms.Button()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.BtnAbout = New System.Windows.Forms.Button()
         Me.PanHRUNumber.SuspendLayout()
         Me.PanRowCol.SuspendLayout()
         Me.PanXYSize.SuspendLayout()
@@ -58,10 +58,10 @@ Partial Class FrmDAFlowRule
         'RadBtnByHRUNo
         '
         Me.RadBtnByHRUNo.AutoSize = True
-        Me.RadBtnByHRUNo.Location = New System.Drawing.Point(13, 113)
+        Me.RadBtnByHRUNo.Location = New System.Drawing.Point(13, 145)
         Me.RadBtnByHRUNo.Margin = New System.Windows.Forms.Padding(4)
         Me.RadBtnByHRUNo.Name = "RadBtnByHRUNo"
-        Me.RadBtnByHRUNo.Size = New System.Drawing.Size(165, 20)
+        Me.RadBtnByHRUNo.Size = New System.Drawing.Size(240, 29)
         Me.RadBtnByHRUNo.TabIndex = 0
         Me.RadBtnByHRUNo.Text = "By the number of HRUs"
         Me.RadBtnByHRUNo.UseVisualStyleBackColor = True
@@ -69,30 +69,30 @@ Partial Class FrmDAFlowRule
         'RadBtnByRowCol
         '
         Me.RadBtnByRowCol.AutoSize = True
-        Me.RadBtnByRowCol.Location = New System.Drawing.Point(13, 206)
+        Me.RadBtnByRowCol.Location = New System.Drawing.Point(13, 274)
         Me.RadBtnByRowCol.Margin = New System.Windows.Forms.Padding(4)
         Me.RadBtnByRowCol.Name = "RadBtnByRowCol"
-        Me.RadBtnByRowCol.Size = New System.Drawing.Size(242, 20)
+        Me.RadBtnByRowCol.Size = New System.Drawing.Size(356, 29)
         Me.RadBtnByRowCol.TabIndex = 1
         Me.RadBtnByRowCol.Text = "By the numbers of rows and columns"
         Me.RadBtnByRowCol.UseVisualStyleBackColor = True
         '
         'BtnCancel
         '
-        Me.BtnCancel.Location = New System.Drawing.Point(147, 259)
+        Me.BtnCancel.Location = New System.Drawing.Point(296, 380)
         Me.BtnCancel.Margin = New System.Windows.Forms.Padding(4)
         Me.BtnCancel.Name = "BtnCancel"
-        Me.BtnCancel.Size = New System.Drawing.Size(100, 28)
+        Me.BtnCancel.Size = New System.Drawing.Size(100, 35)
         Me.BtnCancel.TabIndex = 2
         Me.BtnCancel.Text = "Cancel"
         Me.BtnCancel.UseVisualStyleBackColor = True
         '
         'BtnApply
         '
-        Me.BtnApply.Location = New System.Drawing.Point(255, 259)
+        Me.BtnApply.Location = New System.Drawing.Point(404, 380)
         Me.BtnApply.Margin = New System.Windows.Forms.Padding(4)
         Me.BtnApply.Name = "BtnApply"
-        Me.BtnApply.Size = New System.Drawing.Size(100, 28)
+        Me.BtnApply.Size = New System.Drawing.Size(100, 35)
         Me.BtnApply.TabIndex = 3
         Me.BtnApply.Text = "Apply"
         Me.BtnApply.UseVisualStyleBackColor = True
@@ -104,7 +104,7 @@ Partial Class FrmDAFlowRule
         Me.RadBtnByHRUDimension.Location = New System.Drawing.Point(13, 36)
         Me.RadBtnByHRUDimension.Margin = New System.Windows.Forms.Padding(4)
         Me.RadBtnByHRUDimension.Name = "RadBtnByHRUDimension"
-        Me.RadBtnByHRUDimension.Size = New System.Drawing.Size(182, 20)
+        Me.RadBtnByHRUDimension.Size = New System.Drawing.Size(263, 29)
         Me.RadBtnByHRUDimension.TabIndex = 6
         Me.RadBtnByHRUDimension.TabStop = True
         Me.RadBtnByHRUDimension.Text = "By the dimensions of HRU"
@@ -112,40 +112,39 @@ Partial Class FrmDAFlowRule
         '
         'PanHRUNumber
         '
-        Me.PanHRUNumber.Controls.Add(Me.Label7)
         Me.PanHRUNumber.Controls.Add(Me.Label3)
         Me.PanHRUNumber.Controls.Add(Me.TxtHRUNumber)
-        Me.PanHRUNumber.Location = New System.Drawing.Point(30, 130)
+        Me.PanHRUNumber.Location = New System.Drawing.Point(42, 178)
         Me.PanHRUNumber.Name = "PanHRUNumber"
-        Me.PanHRUNumber.Size = New System.Drawing.Size(325, 69)
+        Me.PanHRUNumber.Size = New System.Drawing.Size(325, 37)
         Me.PanHRUNumber.TabIndex = 8
         '
         'Label7
         '
         Me.Label7.AutoSize = True
         Me.Label7.ForeColor = System.Drawing.Color.Red
-        Me.Label7.Location = New System.Drawing.Point(7, 29)
+        Me.Label7.Location = New System.Drawing.Point(47, 218)
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(305, 32)
+        Me.Label7.Size = New System.Drawing.Size(434, 50)
         Me.Label7.TabIndex = 5
-        Me.Label7.Text = "This is an estimated number. The actual number is" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "affected by the shape of the A" & _
-            "OI."
+        Me.Label7.Text = "This is an estimated number. The actual number " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "is affected by the shape of the " & _
+    "AOI."
         '
         'Label3
         '
         Me.Label3.AutoSize = True
         Me.Label3.Location = New System.Drawing.Point(7, 7)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(135, 16)
+        Me.Label3.Size = New System.Drawing.Size(197, 25)
         Me.Label3.TabIndex = 4
         Me.Label3.Text = "Estimated # of HRUs:"
         '
         'TxtHRUNumber
         '
         Me.TxtHRUNumber.AcceptsReturn = True
-        Me.TxtHRUNumber.Location = New System.Drawing.Point(148, 4)
+        Me.TxtHRUNumber.Location = New System.Drawing.Point(207, 3)
         Me.TxtHRUNumber.Name = "TxtHRUNumber"
-        Me.TxtHRUNumber.Size = New System.Drawing.Size(100, 22)
+        Me.TxtHRUNumber.Size = New System.Drawing.Size(100, 30)
         Me.TxtHRUNumber.TabIndex = 3
         '
         'PanRowCol
@@ -154,41 +153,41 @@ Partial Class FrmDAFlowRule
         Me.PanRowCol.Controls.Add(Me.Label1)
         Me.PanRowCol.Controls.Add(Me.TxtRow)
         Me.PanRowCol.Controls.Add(Me.TxtCol)
-        Me.PanRowCol.Location = New System.Drawing.Point(30, 225)
+        Me.PanRowCol.Location = New System.Drawing.Point(30, 302)
         Me.PanRowCol.Name = "PanRowCol"
-        Me.PanRowCol.Size = New System.Drawing.Size(325, 27)
+        Me.PanRowCol.Size = New System.Drawing.Size(414, 37)
         Me.PanRowCol.TabIndex = 9
         '
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(170, 2)
+        Me.Label2.Location = New System.Drawing.Point(218, 5)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(82, 16)
+        Me.Label2.Size = New System.Drawing.Size(125, 25)
         Me.Label2.TabIndex = 7
         Me.Label2.Text = "# of Row (Y):"
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(7, 2)
+        Me.Label1.Location = New System.Drawing.Point(5, 5)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(74, 16)
+        Me.Label1.Size = New System.Drawing.Size(118, 25)
         Me.Label1.TabIndex = 6
         Me.Label1.Text = "# of Col (X):"
         '
         'TxtRow
         '
-        Me.TxtRow.Location = New System.Drawing.Point(258, 2)
+        Me.TxtRow.Location = New System.Drawing.Point(346, 2)
         Me.TxtRow.Name = "TxtRow"
-        Me.TxtRow.Size = New System.Drawing.Size(60, 22)
+        Me.TxtRow.Size = New System.Drawing.Size(60, 30)
         Me.TxtRow.TabIndex = 5
         '
         'TxtCol
         '
-        Me.TxtCol.Location = New System.Drawing.Point(84, 2)
+        Me.TxtCol.Location = New System.Drawing.Point(128, 2)
         Me.TxtCol.Name = "TxtCol"
-        Me.TxtCol.Size = New System.Drawing.Size(60, 22)
+        Me.TxtCol.Size = New System.Drawing.Size(60, 30)
         Me.TxtCol.TabIndex = 4
         '
         'PanXYSize
@@ -202,17 +201,17 @@ Partial Class FrmDAFlowRule
         Me.PanXYSize.Controls.Add(Me.Label4)
         Me.PanXYSize.Controls.Add(Me.TxtYSize)
         Me.PanXYSize.Controls.Add(Me.TxtXSize)
-        Me.PanXYSize.Location = New System.Drawing.Point(30, 54)
+        Me.PanXYSize.Location = New System.Drawing.Point(30, 68)
         Me.PanXYSize.Name = "PanXYSize"
-        Me.PanXYSize.Size = New System.Drawing.Size(325, 52)
+        Me.PanXYSize.Size = New System.Drawing.Size(451, 70)
         Me.PanXYSize.TabIndex = 10
         '
         'RadBtnUnknown
         '
         Me.RadBtnUnknown.AutoSize = True
-        Me.RadBtnUnknown.Location = New System.Drawing.Point(232, 29)
+        Me.RadBtnUnknown.Location = New System.Drawing.Point(326, 37)
         Me.RadBtnUnknown.Name = "RadBtnUnknown"
-        Me.RadBtnUnknown.Size = New System.Drawing.Size(81, 20)
+        Me.RadBtnUnknown.Size = New System.Drawing.Size(119, 29)
         Me.RadBtnUnknown.TabIndex = 16
         Me.RadBtnUnknown.TabStop = True
         Me.RadBtnUnknown.Text = "Unknown"
@@ -221,18 +220,18 @@ Partial Class FrmDAFlowRule
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(7, 31)
+        Me.Label6.Location = New System.Drawing.Point(7, 37)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(34, 16)
+        Me.Label6.Size = New System.Drawing.Size(52, 25)
         Me.Label6.TabIndex = 15
         Me.Label6.Text = "Unit:"
         '
         'RadBtnMile
         '
         Me.RadBtnMile.AutoSize = True
-        Me.RadBtnMile.Location = New System.Drawing.Point(170, 29)
+        Me.RadBtnMile.Location = New System.Drawing.Point(240, 37)
         Me.RadBtnMile.Name = "RadBtnMile"
-        Me.RadBtnMile.Size = New System.Drawing.Size(58, 20)
+        Me.RadBtnMile.Size = New System.Drawing.Size(83, 29)
         Me.RadBtnMile.TabIndex = 14
         Me.RadBtnMile.Text = "Miles"
         Me.RadBtnMile.UseVisualStyleBackColor = True
@@ -240,9 +239,9 @@ Partial Class FrmDAFlowRule
         'RadBtnFoot
         '
         Me.RadBtnFoot.AutoSize = True
-        Me.RadBtnFoot.Location = New System.Drawing.Point(112, 29)
+        Me.RadBtnFoot.Location = New System.Drawing.Point(161, 36)
         Me.RadBtnFoot.Name = "RadBtnFoot"
-        Me.RadBtnFoot.Size = New System.Drawing.Size(53, 20)
+        Me.RadBtnFoot.Size = New System.Drawing.Size(76, 29)
         Me.RadBtnFoot.TabIndex = 13
         Me.RadBtnFoot.Text = "Feet"
         Me.RadBtnFoot.UseVisualStyleBackColor = True
@@ -251,9 +250,9 @@ Partial Class FrmDAFlowRule
         '
         Me.RadBtnMeter.AutoSize = True
         Me.RadBtnMeter.Checked = True
-        Me.RadBtnMeter.Location = New System.Drawing.Point(42, 29)
+        Me.RadBtnMeter.Location = New System.Drawing.Point(61, 37)
         Me.RadBtnMeter.Name = "RadBtnMeter"
-        Me.RadBtnMeter.Size = New System.Drawing.Size(67, 20)
+        Me.RadBtnMeter.Size = New System.Drawing.Size(97, 29)
         Me.RadBtnMeter.TabIndex = 12
         Me.RadBtnMeter.TabStop = True
         Me.RadBtnMeter.Text = "Meters" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
@@ -262,9 +261,9 @@ Partial Class FrmDAFlowRule
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(168, 7)
+        Me.Label5.Location = New System.Drawing.Point(190, 7)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(49, 16)
+        Me.Label5.Size = New System.Drawing.Size(75, 25)
         Me.Label5.TabIndex = 11
         Me.Label5.Text = "Y Size:"
         '
@@ -273,35 +272,35 @@ Partial Class FrmDAFlowRule
         Me.Label4.AutoSize = True
         Me.Label4.Location = New System.Drawing.Point(7, 7)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(48, 16)
+        Me.Label4.Size = New System.Drawing.Size(76, 25)
         Me.Label4.TabIndex = 10
         Me.Label4.Text = "X Size:"
         '
         'TxtYSize
         '
-        Me.TxtYSize.Location = New System.Drawing.Point(223, 4)
+        Me.TxtYSize.Location = New System.Drawing.Point(267, 4)
         Me.TxtYSize.Name = "TxtYSize"
-        Me.TxtYSize.Size = New System.Drawing.Size(95, 22)
+        Me.TxtYSize.Size = New System.Drawing.Size(95, 30)
         Me.TxtYSize.TabIndex = 9
         '
         'TxtXSize
         '
-        Me.TxtXSize.Location = New System.Drawing.Point(61, 4)
+        Me.TxtXSize.Location = New System.Drawing.Point(85, 4)
         Me.TxtXSize.Name = "TxtXSize"
-        Me.TxtXSize.Size = New System.Drawing.Size(95, 22)
+        Me.TxtXSize.Size = New System.Drawing.Size(95, 30)
         Me.TxtXSize.TabIndex = 8
         '
         'TxtRuleID
         '
-        Me.TxtRuleID.Location = New System.Drawing.Point(12, 258)
+        Me.TxtRuleID.Location = New System.Drawing.Point(13, 378)
         Me.TxtRuleID.Name = "TxtRuleID"
-        Me.TxtRuleID.Size = New System.Drawing.Size(46, 22)
+        Me.TxtRuleID.Size = New System.Drawing.Size(46, 30)
         Me.TxtRuleID.TabIndex = 11
         Me.TxtRuleID.Visible = False
         '
         'BtnTest
         '
-        Me.BtnTest.Location = New System.Drawing.Point(30, 259)
+        Me.BtnTest.Location = New System.Drawing.Point(140, 380)
         Me.BtnTest.Name = "BtnTest"
         Me.BtnTest.Size = New System.Drawing.Size(85, 28)
         Me.BtnTest.TabIndex = 12
@@ -313,27 +312,30 @@ Partial Class FrmDAFlowRule
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.Location = New System.Drawing.Point(12, 13)
+        Me.Label8.Location = New System.Drawing.Point(9, 11)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(249, 16)
+        Me.Label8.Size = New System.Drawing.Size(349, 25)
         Me.Label8.TabIndex = 13
         Me.Label8.Text = "Generate DAFlow Type Grid Zones"
         '
         'BtnAbout
         '
         Me.BtnAbout.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnAbout.Location = New System.Drawing.Point(267, 7)
+        Me.BtnAbout.Location = New System.Drawing.Point(361, 6)
         Me.BtnAbout.Name = "BtnAbout"
-        Me.BtnAbout.Size = New System.Drawing.Size(105, 28)
+        Me.BtnAbout.Size = New System.Drawing.Size(140, 35)
         Me.BtnAbout.TabIndex = 50
         Me.BtnAbout.Text = "Tell me more"
         Me.BtnAbout.UseVisualStyleBackColor = True
         '
         'FrmDAFlowRule
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(381, 299)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(144.0!, 144.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
+        Me.AutoSize = True
+        Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ClientSize = New System.Drawing.Size(519, 421)
+        Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.BtnAbout)
         Me.Controls.Add(Me.Label8)
         Me.Controls.Add(Me.BtnTest)

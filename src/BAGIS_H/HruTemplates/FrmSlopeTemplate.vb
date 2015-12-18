@@ -104,16 +104,15 @@ Public Class FrmSlopeTemplate
         'BtnSelectLyr.Visible = False
         PnlOptions.Visible = False
         PnlReclass.Visible = False
-        Dim pointA As Drawing.Point = New Drawing.Point(4, 42)
+        Dim pointA As Drawing.Point = New Drawing.Point(4, LblToolTip.Location.Y + 30)
         LblOptions.Location = pointA
         Me.Controls.Add(LblOptions)
-        Dim pointB As Drawing.Point = New Drawing.Point(4, 62)
+        Dim pointB As Drawing.Point = New Drawing.Point(4, LblOptions.Location.Y + 30)
         CboOptions.Location = pointB
         Me.Controls.Add(CboOptions)
-        Dim pointC As Drawing.Point = New Drawing.Point(4, 87)
+        Dim pointC As Drawing.Point = New Drawing.Point(4, CboOptions.Location.Y + 30)
         PnlMain.Location = pointC
         BtnDeleteTemplate.Visible = False
-        Me.Height = 520
     End Sub
 
     Private Sub BtnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnCancel.Click
