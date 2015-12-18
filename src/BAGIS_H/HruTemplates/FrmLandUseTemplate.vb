@@ -21,8 +21,6 @@ Public Class FrmLandUseTemplate
     Private Shared m_DefaultTemplateName As String = "Option 1"
     Private Shared m_DefaultFilterHeightWidth As String = "5"
     Private Shared m_DefaultFilterIterations As String = "5"
-    Private writeHeight As Integer = 430
-    Private readOnlyHeight As Integer = writeHeight - 70
     Private m_missing As Integer
     Private m_readOnly As Boolean
     Private idxFromValue As Integer = 0
@@ -535,15 +533,14 @@ Public Class FrmLandUseTemplate
         Dim startingY As Integer = LblToolTip.Location.Y
         Dim pnlOptionsPoint As Drawing.Point = PnlOptions.Location
         Dim pnlGridPoint As Drawing.Point = PnlGrid.Location
-        PnlOptions.Height = 50
-        pnlOptionsPoint.Y = startingY + 25
+        PnlOptions.Height = PnlOptions.Height * 0.45
+        pnlOptionsPoint.Y = startingY + 35
         PnlOptions.Location = pnlOptionsPoint
-        pnlGridPoint.Y = startingY + 75
+        pnlGridPoint.Y = startingY + 110
         PnlGrid.Location = pnlGridPoint
         GrdLandUse.ReadOnly = True
         GrdLandUse.AllowUserToAddRows = False
         GrdLandUse.AllowUserToDeleteRows = False
-        Me.Height = readOnlyHeight
     End Sub
 
     Private Sub CboOptions_SelectedValueChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles CboOptions.SelectedValueChanged

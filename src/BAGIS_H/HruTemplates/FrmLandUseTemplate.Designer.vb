@@ -22,41 +22,41 @@ Partial Class FrmLandUseTemplate
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.TxtRuleId = New System.Windows.Forms.TextBox
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.TxtFilterWidth = New System.Windows.Forms.TextBox
-        Me.TxtFilterHeight = New System.Windows.Forms.TextBox
-        Me.TxtIterations = New System.Windows.Forms.TextBox
-        Me.BtnApply = New System.Windows.Forms.Button
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.GrdLandUse = New System.Windows.Forms.DataGridView
-        Me.OldValues = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.OldDescr = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.NewValues = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.NewDescr = New System.Windows.Forms.DataGridViewTextBoxColumn
-        Me.LblRasterLayers = New System.Windows.Forms.Label
-        Me.Label9 = New System.Windows.Forms.Label
-        Me.CboOptions = New System.Windows.Forms.ComboBox
-        Me.Label13 = New System.Windows.Forms.Label
-        Me.PnlGrid = New System.Windows.Forms.Panel
-        Me.PnlButtons = New System.Windows.Forms.Panel
-        Me.BtnDeleteTemplate = New System.Windows.Forms.Button
-        Me.BtnCancel = New System.Windows.Forms.Button
-        Me.TxtRasterLayer = New System.Windows.Forms.TextBox
-        Me.TxtReclassField = New System.Windows.Forms.TextBox
-        Me.CkDefault = New System.Windows.Forms.CheckBox
-        Me.BtnSelectLyr = New System.Windows.Forms.Button
-        Me.TxtMissingValue = New System.Windows.Forms.TextBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.BtnOldValues = New System.Windows.Forms.Button
-        Me.BtnClear = New System.Windows.Forms.Button
-        Me.LblToolTip = New System.Windows.Forms.Label
-        Me.BtnAbout = New System.Windows.Forms.Button
-        Me.PnlOptions = New System.Windows.Forms.Panel
-        Me.TxtTemplatesFile = New System.Windows.Forms.TextBox
-        Me.LblTemplatesFile = New System.Windows.Forms.Label
+        Me.TxtRuleId = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.TxtFilterWidth = New System.Windows.Forms.TextBox()
+        Me.TxtFilterHeight = New System.Windows.Forms.TextBox()
+        Me.TxtIterations = New System.Windows.Forms.TextBox()
+        Me.BtnApply = New System.Windows.Forms.Button()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.GrdLandUse = New System.Windows.Forms.DataGridView()
+        Me.OldValues = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.OldDescr = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.NewValues = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.NewDescr = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.LblRasterLayers = New System.Windows.Forms.Label()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.CboOptions = New System.Windows.Forms.ComboBox()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.PnlGrid = New System.Windows.Forms.Panel()
+        Me.PnlButtons = New System.Windows.Forms.Panel()
+        Me.BtnDeleteTemplate = New System.Windows.Forms.Button()
+        Me.BtnCancel = New System.Windows.Forms.Button()
+        Me.TxtRasterLayer = New System.Windows.Forms.TextBox()
+        Me.TxtReclassField = New System.Windows.Forms.TextBox()
+        Me.CkDefault = New System.Windows.Forms.CheckBox()
+        Me.BtnSelectLyr = New System.Windows.Forms.Button()
+        Me.TxtMissingValue = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.BtnOldValues = New System.Windows.Forms.Button()
+        Me.BtnClear = New System.Windows.Forms.Button()
+        Me.LblToolTip = New System.Windows.Forms.Label()
+        Me.BtnAbout = New System.Windows.Forms.Button()
+        Me.PnlOptions = New System.Windows.Forms.Panel()
+        Me.TxtTemplatesFile = New System.Windows.Forms.TextBox()
+        Me.LblTemplatesFile = New System.Windows.Forms.Label()
         CType(Me.GrdLandUse, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PnlGrid.SuspendLayout()
         Me.PnlButtons.SuspendLayout()
@@ -66,7 +66,7 @@ Partial Class FrmLandUseTemplate
         'TxtRuleId
         '
         Me.TxtRuleId.Enabled = False
-        Me.TxtRuleId.Location = New System.Drawing.Point(273, 205)
+        Me.TxtRuleId.Location = New System.Drawing.Point(273, 210)
         Me.TxtRuleId.Name = "TxtRuleId"
         Me.TxtRuleId.Size = New System.Drawing.Size(45, 20)
         Me.TxtRuleId.TabIndex = 27
@@ -76,7 +76,7 @@ Partial Class FrmLandUseTemplate
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(0, 179)
+        Me.Label2.Location = New System.Drawing.Point(0, 183)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(86, 16)
         Me.Label2.TabIndex = 28
@@ -86,7 +86,7 @@ Partial Class FrmLandUseTemplate
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(166, 178)
+        Me.Label3.Location = New System.Drawing.Point(166, 183)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(57, 16)
         Me.Label3.TabIndex = 29
@@ -96,7 +96,7 @@ Partial Class FrmLandUseTemplate
         '
         Me.Label4.AutoSize = True
         Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(301, 178)
+        Me.Label4.Location = New System.Drawing.Point(301, 183)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(76, 16)
         Me.Label4.TabIndex = 30
@@ -105,7 +105,7 @@ Partial Class FrmLandUseTemplate
         'TxtFilterWidth
         '
         Me.TxtFilterWidth.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtFilterWidth.Location = New System.Drawing.Point(80, 176)
+        Me.TxtFilterWidth.Location = New System.Drawing.Point(80, 181)
         Me.TxtFilterWidth.Name = "TxtFilterWidth"
         Me.TxtFilterWidth.Size = New System.Drawing.Size(80, 22)
         Me.TxtFilterWidth.TabIndex = 31
@@ -113,7 +113,7 @@ Partial Class FrmLandUseTemplate
         'TxtFilterHeight
         '
         Me.TxtFilterHeight.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtFilterHeight.Location = New System.Drawing.Point(217, 176)
+        Me.TxtFilterHeight.Location = New System.Drawing.Point(217, 181)
         Me.TxtFilterHeight.Name = "TxtFilterHeight"
         Me.TxtFilterHeight.Size = New System.Drawing.Size(80, 22)
         Me.TxtFilterHeight.TabIndex = 32
@@ -121,7 +121,7 @@ Partial Class FrmLandUseTemplate
         'TxtIterations
         '
         Me.TxtIterations.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtIterations.Location = New System.Drawing.Point(371, 175)
+        Me.TxtIterations.Location = New System.Drawing.Point(371, 179)
         Me.TxtIterations.Name = "TxtIterations"
         Me.TxtIterations.Size = New System.Drawing.Size(80, 22)
         Me.TxtIterations.TabIndex = 33
@@ -142,7 +142,7 @@ Partial Class FrmLandUseTemplate
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label5.ForeColor = System.Drawing.Color.Red
-        Me.Label5.Location = New System.Drawing.Point(0, 201)
+        Me.Label5.Location = New System.Drawing.Point(3, 243)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(267, 16)
         Me.Label5.TabIndex = 36
@@ -154,7 +154,7 @@ Partial Class FrmLandUseTemplate
         Me.GrdLandUse.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.OldValues, Me.OldDescr, Me.NewValues, Me.NewDescr})
         Me.GrdLandUse.Location = New System.Drawing.Point(1, 4)
         Me.GrdLandUse.Name = "GrdLandUse"
-        Me.GrdLandUse.Size = New System.Drawing.Size(524, 165)
+        Me.GrdLandUse.Size = New System.Drawing.Size(524, 169)
         Me.GrdLandUse.TabIndex = 37
         '
         'OldValues
@@ -209,7 +209,7 @@ Partial Class FrmLandUseTemplate
         '
         Me.CboOptions.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CboOptions.FormattingEnabled = True
-        Me.CboOptions.Location = New System.Drawing.Point(4, 23)
+        Me.CboOptions.Location = New System.Drawing.Point(4, 26)
         Me.CboOptions.Name = "CboOptions"
         Me.CboOptions.Size = New System.Drawing.Size(110, 24)
         Me.CboOptions.TabIndex = 54
@@ -236,9 +236,9 @@ Partial Class FrmLandUseTemplate
         Me.PnlGrid.Controls.Add(Me.TxtRuleId)
         Me.PnlGrid.Controls.Add(Me.TxtIterations)
         Me.PnlGrid.Controls.Add(Me.Label5)
-        Me.PnlGrid.Location = New System.Drawing.Point(15, 179)
+        Me.PnlGrid.Location = New System.Drawing.Point(15, 183)
         Me.PnlGrid.Name = "PnlGrid"
-        Me.PnlGrid.Size = New System.Drawing.Size(537, 235)
+        Me.PnlGrid.Size = New System.Drawing.Size(537, 273)
         Me.PnlGrid.TabIndex = 56
         '
         'PnlButtons
@@ -246,9 +246,9 @@ Partial Class FrmLandUseTemplate
         Me.PnlButtons.Controls.Add(Me.BtnDeleteTemplate)
         Me.PnlButtons.Controls.Add(Me.BtnApply)
         Me.PnlButtons.Controls.Add(Me.BtnCancel)
-        Me.PnlButtons.Location = New System.Drawing.Point(315, 199)
+        Me.PnlButtons.Location = New System.Drawing.Point(323, 232)
         Me.PnlButtons.Name = "PnlButtons"
-        Me.PnlButtons.Size = New System.Drawing.Size(212, 35)
+        Me.PnlButtons.Size = New System.Drawing.Size(212, 36)
         Me.PnlButtons.TabIndex = 55
         '
         'BtnDeleteTemplate
@@ -274,7 +274,7 @@ Partial Class FrmLandUseTemplate
         'TxtRasterLayer
         '
         Me.TxtRasterLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtRasterLayer.Location = New System.Drawing.Point(130, 25)
+        Me.TxtRasterLayer.Location = New System.Drawing.Point(130, 28)
         Me.TxtRasterLayer.Name = "TxtRasterLayer"
         Me.TxtRasterLayer.ReadOnly = True
         Me.TxtRasterLayer.Size = New System.Drawing.Size(110, 22)
@@ -283,7 +283,7 @@ Partial Class FrmLandUseTemplate
         'TxtReclassField
         '
         Me.TxtReclassField.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtReclassField.Location = New System.Drawing.Point(257, 25)
+        Me.TxtReclassField.Location = New System.Drawing.Point(257, 28)
         Me.TxtReclassField.Name = "TxtReclassField"
         Me.TxtReclassField.ReadOnly = True
         Me.TxtReclassField.Size = New System.Drawing.Size(110, 22)
@@ -293,7 +293,7 @@ Partial Class FrmLandUseTemplate
         '
         Me.CkDefault.AutoSize = True
         Me.CkDefault.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkDefault.Location = New System.Drawing.Point(4, 53)
+        Me.CkDefault.Location = New System.Drawing.Point(4, 57)
         Me.CkDefault.Name = "CkDefault"
         Me.CkDefault.Size = New System.Drawing.Size(108, 20)
         Me.CkDefault.TabIndex = 62
@@ -303,7 +303,7 @@ Partial Class FrmLandUseTemplate
         'BtnSelectLyr
         '
         Me.BtnSelectLyr.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnSelectLyr.Location = New System.Drawing.Point(4, 79)
+        Me.BtnSelectLyr.Location = New System.Drawing.Point(4, 81)
         Me.BtnSelectLyr.Name = "BtnSelectLyr"
         Me.BtnSelectLyr.Size = New System.Drawing.Size(100, 25)
         Me.BtnSelectLyr.TabIndex = 63
@@ -313,7 +313,7 @@ Partial Class FrmLandUseTemplate
         'TxtMissingValue
         '
         Me.TxtMissingValue.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtMissingValue.Location = New System.Drawing.Point(378, 25)
+        Me.TxtMissingValue.Location = New System.Drawing.Point(378, 28)
         Me.TxtMissingValue.Name = "TxtMissingValue"
         Me.TxtMissingValue.Size = New System.Drawing.Size(110, 22)
         Me.TxtMissingValue.TabIndex = 65
@@ -331,7 +331,7 @@ Partial Class FrmLandUseTemplate
         'BtnOldValues
         '
         Me.BtnOldValues.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnOldValues.Location = New System.Drawing.Point(112, 79)
+        Me.BtnOldValues.Location = New System.Drawing.Point(112, 81)
         Me.BtnOldValues.Name = "BtnOldValues"
         Me.BtnOldValues.Size = New System.Drawing.Size(100, 25)
         Me.BtnOldValues.TabIndex = 66
@@ -341,7 +341,7 @@ Partial Class FrmLandUseTemplate
         'BtnClear
         '
         Me.BtnClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnClear.Location = New System.Drawing.Point(222, 79)
+        Me.BtnClear.Location = New System.Drawing.Point(222, 81)
         Me.BtnClear.Name = "BtnClear"
         Me.BtnClear.Size = New System.Drawing.Size(100, 25)
         Me.BtnClear.TabIndex = 67
@@ -363,7 +363,7 @@ Partial Class FrmLandUseTemplate
         Me.BtnAbout.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnAbout.Location = New System.Drawing.Point(430, 7)
         Me.BtnAbout.Name = "BtnAbout"
-        Me.BtnAbout.Size = New System.Drawing.Size(105, 28)
+        Me.BtnAbout.Size = New System.Drawing.Size(105, 29)
         Me.BtnAbout.TabIndex = 68
         Me.BtnAbout.Text = "Tell me more"
         Me.BtnAbout.UseVisualStyleBackColor = True
@@ -382,9 +382,9 @@ Partial Class FrmLandUseTemplate
         Me.PnlOptions.Controls.Add(Me.Label1)
         Me.PnlOptions.Controls.Add(Me.CkDefault)
         Me.PnlOptions.Controls.Add(Me.BtnSelectLyr)
-        Me.PnlOptions.Location = New System.Drawing.Point(13, 64)
+        Me.PnlOptions.Location = New System.Drawing.Point(13, 65)
         Me.PnlOptions.Name = "PnlOptions"
-        Me.PnlOptions.Size = New System.Drawing.Size(539, 110)
+        Me.PnlOptions.Size = New System.Drawing.Size(539, 113)
         Me.PnlOptions.TabIndex = 70
         '
         'TxtTemplatesFile
@@ -392,7 +392,7 @@ Partial Class FrmLandUseTemplate
         Me.TxtTemplatesFile.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtTemplatesFile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtTemplatesFile.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtTemplatesFile.Location = New System.Drawing.Point(120, 42)
+        Me.TxtTemplatesFile.Location = New System.Drawing.Point(120, 43)
         Me.TxtTemplatesFile.Name = "TxtTemplatesFile"
         Me.TxtTemplatesFile.ReadOnly = True
         Me.TxtTemplatesFile.Size = New System.Drawing.Size(415, 22)
@@ -403,7 +403,7 @@ Partial Class FrmLandUseTemplate
         '
         Me.LblTemplatesFile.AutoSize = True
         Me.LblTemplatesFile.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblTemplatesFile.Location = New System.Drawing.Point(14, 45)
+        Me.LblTemplatesFile.Location = New System.Drawing.Point(14, 46)
         Me.LblTemplatesFile.Name = "LblTemplatesFile"
         Me.LblTemplatesFile.Size = New System.Drawing.Size(111, 16)
         Me.LblTemplatesFile.TabIndex = 72
@@ -411,9 +411,11 @@ Partial Class FrmLandUseTemplate
         '
         'FrmLandUseTemplate
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(554, 416)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
+        Me.AutoSize = True
+        Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ClientSize = New System.Drawing.Size(554, 455)
         Me.Controls.Add(Me.TxtTemplatesFile)
         Me.Controls.Add(Me.LblTemplatesFile)
         Me.Controls.Add(Me.PnlOptions)
