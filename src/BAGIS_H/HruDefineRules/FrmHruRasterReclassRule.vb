@@ -749,6 +749,7 @@ Public Class FrmHruRasterReclassRule
             BtnCancel.Location = New Point(BtnCancel.Location.X, posY)
             BtnApply.Location = New Point(BtnApply.Location.X, posY)
             RdoPrism.Visible = True
+            RdoDem.Visible = True
         Else
             LblToolTip.Text = "Use a reclassified raster to define zones"
             Me.Text = m_rasterReclassCaption
@@ -763,6 +764,7 @@ Public Class FrmHruRasterReclassRule
             GrpSlice.Visible = False
             GrpReclass.Visible = True
             RdoPrism.Visible = False
+            RdoDem.Visible = False
             PnlStatistics.Visible = False
             'LblDiscrete.Location = New Point(160, 62)
             LblDiscrete.Visible = True
