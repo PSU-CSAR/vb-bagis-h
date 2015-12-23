@@ -95,10 +95,11 @@ Partial Class frmHruZone
         '
         Me.LstHruLayers.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LstHruLayers.FormattingEnabled = True
+        Me.LstHruLayers.HorizontalScrollbar = True
         Me.LstHruLayers.ItemHeight = 16
         Me.LstHruLayers.Location = New System.Drawing.Point(192, 39)
         Me.LstHruLayers.Name = "LstHruLayers"
-        Me.LstHruLayers.Size = New System.Drawing.Size(226, 100)
+        Me.LstHruLayers.Size = New System.Drawing.Size(226, 132)
         Me.LstHruLayers.TabIndex = 6
         '
         'BtnViewLayerLog
@@ -164,9 +165,9 @@ Partial Class frmHruZone
         Me.GrpRules.Controls.Add(Me.BtnDefineRule)
         Me.GrpRules.Controls.Add(Me.BtnUpdateRule)
         Me.GrpRules.Controls.Add(Me.LblRuleType)
-        Me.GrpRules.Location = New System.Drawing.Point(12, 221)
+        Me.GrpRules.Location = New System.Drawing.Point(12, 229)
         Me.GrpRules.Name = "GrpRules"
-        Me.GrpRules.Size = New System.Drawing.Size(640, 317)
+        Me.GrpRules.Size = New System.Drawing.Size(640, 319)
         Me.GrpRules.TabIndex = 15
         Me.GrpRules.TabStop = False
         '
@@ -176,7 +177,7 @@ Partial Class frmHruZone
         Me.CkRetainAttributes.Checked = True
         Me.CkRetainAttributes.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CkRetainAttributes.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkRetainAttributes.Location = New System.Drawing.Point(351, 28)
+        Me.CkRetainAttributes.Location = New System.Drawing.Point(351, 38)
         Me.CkRetainAttributes.Name = "CkRetainAttributes"
         Me.CkRetainAttributes.Size = New System.Drawing.Size(191, 20)
         Me.CkRetainAttributes.TabIndex = 35
@@ -188,7 +189,7 @@ Partial Class frmHruZone
         Me.TxtLayerLocation.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtLayerLocation.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtLayerLocation.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtLayerLocation.Location = New System.Drawing.Point(165, 51)
+        Me.TxtLayerLocation.Location = New System.Drawing.Point(165, 61)
         Me.TxtLayerLocation.Name = "TxtLayerLocation"
         Me.TxtLayerLocation.ReadOnly = True
         Me.TxtLayerLocation.Size = New System.Drawing.Size(470, 22)
@@ -198,7 +199,7 @@ Partial Class frmHruZone
         '
         Me.CkNonContiguous.AutoSize = True
         Me.CkNonContiguous.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkNonContiguous.Location = New System.Drawing.Point(351, 9)
+        Me.CkNonContiguous.Location = New System.Drawing.Point(351, 19)
         Me.CkNonContiguous.Name = "CkNonContiguous"
         Me.CkNonContiguous.Size = New System.Drawing.Size(218, 20)
         Me.CkNonContiguous.TabIndex = 33
@@ -209,7 +210,7 @@ Partial Class frmHruZone
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(69, 54)
+        Me.Label1.Location = New System.Drawing.Point(69, 64)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(99, 16)
         Me.Label1.TabIndex = 31
@@ -238,7 +239,7 @@ Partial Class frmHruZone
         DataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText
         DataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
         Me.GridViewRules.DefaultCellStyle = DataGridViewCellStyle14
-        Me.GridViewRules.Location = New System.Drawing.Point(6, 144)
+        Me.GridViewRules.Location = New System.Drawing.Point(6, 154)
         Me.GridViewRules.Name = "GridViewRules"
         DataGridViewCellStyle15.BackColor = System.Drawing.Color.White
         Me.GridViewRules.RowsDefaultCellStyle = DataGridViewCellStyle15
@@ -296,7 +297,7 @@ Partial Class frmHruZone
         '
         Me.BtnRunRule.Enabled = False
         Me.BtnRunRule.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnRunRule.Location = New System.Drawing.Point(146, 111)
+        Me.BtnRunRule.Location = New System.Drawing.Point(146, 121)
         Me.BtnRunRule.Name = "BtnRunRule"
         Me.BtnRunRule.Size = New System.Drawing.Size(104, 27)
         Me.BtnRunRule.TabIndex = 34
@@ -327,7 +328,7 @@ Partial Class frmHruZone
         Me.CboRuleType.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CboRuleType.FormattingEnabled = True
         Me.CboRuleType.Items.AddRange(New Object() {"Contributing Area", "DAFlow-Type Zones", "PRISM Precipitation", "Raster Reclass (Continuous data)", "Raster Reclass (Discrete data)", "Raster Slice", "Template - Aspect", "Template - Canopy", "Template - Land Use", "Template - Slope"})
-        Me.CboRuleType.Location = New System.Drawing.Point(146, 79)
+        Me.CboRuleType.Location = New System.Drawing.Point(146, 89)
         Me.CboRuleType.Name = "CboRuleType"
         Me.CboRuleType.Size = New System.Drawing.Size(220, 24)
         Me.CboRuleType.TabIndex = 28
@@ -336,7 +337,7 @@ Partial Class frmHruZone
         '
         Me.LblOutputHruName.AutoSize = True
         Me.LblOutputHruName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblOutputHruName.Location = New System.Drawing.Point(36, 16)
+        Me.LblOutputHruName.Location = New System.Drawing.Point(36, 26)
         Me.LblOutputHruName.Name = "LblOutputHruName"
         Me.LblOutputHruName.Size = New System.Drawing.Size(140, 16)
         Me.LblOutputHruName.TabIndex = 26
@@ -346,7 +347,7 @@ Partial Class frmHruZone
         '
         Me.TxtNewHruName.Enabled = False
         Me.TxtNewHruName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtNewHruName.Location = New System.Drawing.Point(180, 13)
+        Me.TxtNewHruName.Location = New System.Drawing.Point(180, 23)
         Me.TxtNewHruName.Name = "TxtNewHruName"
         Me.TxtNewHruName.Size = New System.Drawing.Size(143, 22)
         Me.TxtNewHruName.TabIndex = 25
@@ -355,7 +356,7 @@ Partial Class frmHruZone
         '
         Me.BtnDeleteRule.Enabled = False
         Me.BtnDeleteRule.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnDeleteRule.Location = New System.Drawing.Point(262, 111)
+        Me.BtnDeleteRule.Location = New System.Drawing.Point(262, 121)
         Me.BtnDeleteRule.Name = "BtnDeleteRule"
         Me.BtnDeleteRule.Size = New System.Drawing.Size(100, 27)
         Me.BtnDeleteRule.TabIndex = 23
@@ -366,7 +367,7 @@ Partial Class frmHruZone
         '
         Me.BtnDefineRule.Enabled = False
         Me.BtnDefineRule.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnDefineRule.Location = New System.Drawing.Point(374, 77)
+        Me.BtnDefineRule.Location = New System.Drawing.Point(374, 87)
         Me.BtnDefineRule.Name = "BtnDefineRule"
         Me.BtnDefineRule.Size = New System.Drawing.Size(100, 27)
         Me.BtnDefineRule.TabIndex = 22
@@ -377,7 +378,7 @@ Partial Class frmHruZone
         '
         Me.BtnUpdateRule.Enabled = False
         Me.BtnUpdateRule.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUpdateRule.Location = New System.Drawing.Point(374, 111)
+        Me.BtnUpdateRule.Location = New System.Drawing.Point(374, 121)
         Me.BtnUpdateRule.Name = "BtnUpdateRule"
         Me.BtnUpdateRule.Size = New System.Drawing.Size(100, 27)
         Me.BtnUpdateRule.TabIndex = 17
@@ -388,7 +389,7 @@ Partial Class frmHruZone
         '
         Me.LblRuleType.AutoSize = True
         Me.LblRuleType.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblRuleType.Location = New System.Drawing.Point(69, 82)
+        Me.LblRuleType.Location = New System.Drawing.Point(69, 92)
         Me.LblRuleType.Name = "LblRuleType"
         Me.LblRuleType.Size = New System.Drawing.Size(74, 16)
         Me.LblRuleType.TabIndex = 17
@@ -415,7 +416,7 @@ Partial Class frmHruZone
         Me.PnlApplyRules.Controls.Add(Me.RadApplyRulesAll)
         Me.PnlApplyRules.Controls.Add(Me.LstSelectedZones)
         Me.PnlApplyRules.Controls.Add(Me.LblTemplateHru)
-        Me.PnlApplyRules.Location = New System.Drawing.Point(31, 145)
+        Me.PnlApplyRules.Location = New System.Drawing.Point(31, 158)
         Me.PnlApplyRules.Name = "PnlApplyRules"
         Me.PnlApplyRules.Size = New System.Drawing.Size(618, 70)
         Me.PnlApplyRules.TabIndex = 28
@@ -458,7 +459,7 @@ Partial Class frmHruZone
         '
         Me.BtnGenerateHru.Enabled = False
         Me.BtnGenerateHru.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnGenerateHru.Location = New System.Drawing.Point(510, 541)
+        Me.BtnGenerateHru.Location = New System.Drawing.Point(510, 551)
         Me.BtnGenerateHru.Name = "BtnGenerateHru"
         Me.BtnGenerateHru.Size = New System.Drawing.Size(125, 30)
         Me.BtnGenerateHru.TabIndex = 34
@@ -500,7 +501,7 @@ Partial Class frmHruZone
         'BtnCancel
         '
         Me.BtnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancel.Location = New System.Drawing.Point(386, 541)
+        Me.BtnCancel.Location = New System.Drawing.Point(386, 551)
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.Size = New System.Drawing.Size(108, 30)
         Me.BtnCancel.TabIndex = 55
@@ -523,6 +524,7 @@ Partial Class frmHruZone
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoScroll = True
+        Me.Controls.Add(Me.LstHruLayers)
         Me.Controls.Add(Me.BtnRenameLayer)
         Me.Controls.Add(Me.BtnCancel)
         Me.Controls.Add(Me.TxtAoiPath)
@@ -534,11 +536,10 @@ Partial Class frmHruZone
         Me.Controls.Add(Me.BtnViewLayer)
         Me.Controls.Add(Me.BtnViewLayerLog)
         Me.Controls.Add(Me.LblHruLayers)
-        Me.Controls.Add(Me.LstHruLayers)
         Me.Controls.Add(Me.BtnSelectAoi)
         Me.Margin = New System.Windows.Forms.Padding(0)
         Me.Name = "frmHruZone"
-        Me.Size = New System.Drawing.Size(665, 575)
+        Me.Size = New System.Drawing.Size(665, 587)
         Me.GrpRules.ResumeLayout(False)
         Me.GrpRules.PerformLayout()
         CType(Me.GridViewRules, System.ComponentModel.ISupportInitialize).EndInit()

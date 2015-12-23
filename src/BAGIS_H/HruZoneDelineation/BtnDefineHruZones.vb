@@ -81,8 +81,8 @@ Public Class BtnDefineHruZones
             dockWindow.Show(aboutToShow)
             ' Set dimensions of dockable window
             Dim windowPos As ESRI.ArcGIS.Framework.IWindowPosition = CType(dockWindow, ESRI.ArcGIS.Framework.IWindowPosition)
-            windowPos.Height = 605
-            windowPos.Width = 675
+            windowPos.Height = 655
+            windowPos.Width = 680
         Else
             Windows.Forms.MessageBox.Show("Spatial Analyst is required for HRU delineation and is not available.")
         End If

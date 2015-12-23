@@ -83,11 +83,12 @@ Partial Class FrmSequentialId
         '
         Me.LstSelectHruLayers.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LstSelectHruLayers.FormattingEnabled = True
+        Me.LstSelectHruLayers.HorizontalScrollbar = True
         Me.LstSelectHruLayers.ItemHeight = 16
         Me.LstSelectHruLayers.Location = New System.Drawing.Point(142, 105)
         Me.LstSelectHruLayers.Name = "LstSelectHruLayers"
         Me.LstSelectHruLayers.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple
-        Me.LstSelectHruLayers.Size = New System.Drawing.Size(140, 100)
+        Me.LstSelectHruLayers.Size = New System.Drawing.Size(140, 116)
         Me.LstSelectHruLayers.TabIndex = 61
         '
         'Label3
@@ -114,7 +115,7 @@ Partial Class FrmSequentialId
         'BtnCancel
         '
         Me.BtnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancel.Location = New System.Drawing.Point(442, 241)
+        Me.BtnCancel.Location = New System.Drawing.Point(442, 262)
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.Size = New System.Drawing.Size(129, 30)
         Me.BtnCancel.TabIndex = 66
@@ -125,7 +126,7 @@ Partial Class FrmSequentialId
         '
         Me.BtnApply.Enabled = False
         Me.BtnApply.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnApply.Location = New System.Drawing.Point(588, 241)
+        Me.BtnApply.Location = New System.Drawing.Point(588, 262)
         Me.BtnApply.Name = "BtnApply"
         Me.BtnApply.Size = New System.Drawing.Size(128, 30)
         Me.BtnApply.TabIndex = 65
@@ -157,7 +158,7 @@ Partial Class FrmSequentialId
         Me.CkMakeCopy.Checked = True
         Me.CkMakeCopy.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CkMakeCopy.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkMakeCopy.Location = New System.Drawing.Point(15, 249)
+        Me.CkMakeCopy.Location = New System.Drawing.Point(15, 270)
         Me.CkMakeCopy.Name = "CkMakeCopy"
         Me.CkMakeCopy.Size = New System.Drawing.Size(324, 20)
         Me.CkMakeCopy.TabIndex = 69
@@ -169,20 +170,20 @@ Partial Class FrmSequentialId
         Me.TextBox1.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.TextBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox1.Location = New System.Drawing.Point(15, 215)
+        Me.TextBox1.Location = New System.Drawing.Point(15, 236)
         Me.TextBox1.Multiline = True
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.ReadOnly = True
         Me.TextBox1.Size = New System.Drawing.Size(337, 35)
         Me.TextBox1.TabIndex = 70
         Me.TextBox1.Text = "Note: The existing HRU zones layers will be overwritten" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "with the new layer with " & _
-    "sequential HRU ID numbers."
+            "sequential HRU ID numbers."
         '
         'FrmSequentialId
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(728, 282)
+        Me.ClientSize = New System.Drawing.Size(728, 302)
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.CkMakeCopy)
         Me.Controls.Add(Me.LblToolTip)

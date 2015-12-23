@@ -119,10 +119,11 @@ Partial Class FrmUseTemplate
         '
         Me.LstHruLayers.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LstHruLayers.FormattingEnabled = True
+        Me.LstHruLayers.HorizontalScrollbar = True
         Me.LstHruLayers.ItemHeight = 16
         Me.LstHruLayers.Location = New System.Drawing.Point(165, 75)
         Me.LstHruLayers.Name = "LstHruLayers"
-        Me.LstHruLayers.Size = New System.Drawing.Size(143, 100)
+        Me.LstHruLayers.Size = New System.Drawing.Size(143, 116)
         Me.LstHruLayers.TabIndex = 68
         '
         'BtnGenerateHru
@@ -151,7 +152,7 @@ Partial Class FrmUseTemplate
         Me.TxtErrorMsg.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtErrorMsg.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtErrorMsg.ForeColor = System.Drawing.Color.Red
-        Me.TxtErrorMsg.Location = New System.Drawing.Point(130, 182)
+        Me.TxtErrorMsg.Location = New System.Drawing.Point(130, 204)
         Me.TxtErrorMsg.Multiline = True
         Me.TxtErrorMsg.Name = "TxtErrorMsg"
         Me.TxtErrorMsg.ReadOnly = True
@@ -164,7 +165,7 @@ Partial Class FrmUseTemplate
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(-1, 180)
+        Me.Label3.Location = New System.Drawing.Point(-1, 202)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(119, 16)
         Me.Label3.TabIndex = 75
