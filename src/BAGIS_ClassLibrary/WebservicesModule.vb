@@ -438,15 +438,36 @@ Public Module WebservicesModule
 
         Try
             resT = CType(reqT.GetResponse(), HttpWebResponse)
-
-            'Convert the JSON response to StoredAoiArray object
-            Dim storedAois As StoredAoiArray = New StoredAoiArray
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(storedAois.[GetType]())
-            storedAois = CType(ser.ReadObject(resT.GetResponseStream), StoredAoiArray)
-            'Populate Dictionary from storedAois array
-            For Each sAoi As StoredAoi In storedAois.results
-                aoiDictionary.Add(sAoi.name, sAoi)
-            Next
+            Dim resString As String = Nothing
+            Using source As System.IO.Stream = resT.GetResponseStream
+                Using sr As System.IO.StreamReader = New System.IO.StreamReader(source)
+                    resString = sr.ReadToEnd
+                End Using
+            End Using
+            'Convert the JSON response to StoredAoiArray object (response is paginated)
+            Dim byteArray As Byte() = Encoding.UTF8.GetBytes(resString)
+            Using copyStream As System.IO.MemoryStream = New System.IO.MemoryStream(byteArray)
+                If resString.IndexOf("results") > -1 Then
+                    Dim storedAoiArray As StoredAoiArray = New StoredAoiArray
+                    Dim ser1 As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(storedAoiArray.[GetType]())
+                    storedAoiArray = CType(ser1.ReadObject(copyStream), StoredAoiArray)
+                    If storedAoiArray IsNot Nothing AndAlso storedAoiArray.results IsNot Nothing Then
+                        'Populate Dictionary from storedAois array
+                        For Each sAoi As StoredAoi In storedAoiArray.results
+                            aoiDictionary.Add(sAoi.name, sAoi)
+                        Next
+                    End If
+                    'If pagination is not enabled, the results are returned in a different format
+                Else
+                    Dim storedAois As List(Of StoredAoi) = New List(Of StoredAoi)
+                    Dim ser2 As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(storedAois.[GetType]())
+                    storedAois = CType(ser2.ReadObject(copyStream), List(Of StoredAoi))
+                    'Populate Dictionary from storedAois array
+                    For Each sAoi As StoredAoi In storedAois
+                        aoiDictionary.Add(sAoi.name, sAoi)
+                    Next
+                End If
+            End Using
         Catch ex As WebException
             Debug.Print("BA_List_Aoi Exception: " & ex.Message)
         End Try
