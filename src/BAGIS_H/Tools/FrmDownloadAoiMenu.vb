@@ -212,7 +212,11 @@ Public Class FrmDownloadAoiMenu
             'Set reference to HruExtension
             Dim hruExt As HruExtension = HruExtension.GetExtension
             Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token)
-            RefreshGrid(storedAois)
+            If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
+                RefreshGrid(storedAois)
+            Else
+                MessageBox.Show("No stored AOIs were found on this server")
+            End If
         End If
         BtnList.Enabled = True
     End Sub
@@ -227,7 +231,7 @@ Public Class FrmDownloadAoiMenu
                 .Cells(idxAoiName).Value = kvp.Value.name
                 .Cells(idxDateUploaded).Value = kvp.Value.DateCreated.ToString("MM-dd-yyyy")
                 .Cells(idxAuthor).Value = kvp.Value.created_by.username
-                '.Cells(3).Value = False
+                .Cells(3).Value = False
                 .Cells(idxComment).Value = kvp.Value.comment
                 .Cells(idxDownloadUrl).Value = kvp.Value.url
             End With
