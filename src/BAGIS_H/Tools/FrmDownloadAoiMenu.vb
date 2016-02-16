@@ -107,11 +107,13 @@ Public Class FrmDownloadAoiMenu
                     'Make sure the selected aoi isn't already being downloaded
                     Dim aoiName As String = Convert.ToString(pRow.Cells(idxAoiName).Value)
                     For Each tRow As DataGridViewRow In GrdTasks.Rows
-                        Dim aoiTask As String = Convert.ToString(tRow.Cells(idxTaskAoi).Value)
-                        If aoiName.Equals(aoiTask) Then
-                            MessageBox.Show(aoiName & " is already being downloaded.")
-                            pRow.Cells(idxDownload).Value = False
-                            Exit Sub
+                        If Convert.ToString(tRow.Cells(idxTaskType).Value).Equals(BA_TASK_DOWNLOAD) Then
+                            Dim aoiTask As String = Convert.ToString(tRow.Cells(idxTaskAoi).Value)
+                            If aoiName.Equals(aoiTask) Then
+                                MessageBox.Show(aoiName & " is already being downloaded.")
+                                pRow.Cells(idxDownload).Value = False
+                                Exit Sub
+                            End If
                         End If
                     Next
                 End If
@@ -505,10 +507,10 @@ Public Class FrmDownloadAoiMenu
                 archive.CreateArchive(parentFolder & zipName)
                 If File.Exists(TxtUploadPath.Text & tempFile) = False Then
                     ' Create a file to write to.
-                    Dim sw As StreamWriter = File.CreateText(TxtUploadPath.Text & tempFile)
-                    sw.WriteLine("Temporary file for uploading an aoi")
-                    sw.Flush()
-                    sw.Close()
+                    Using sw As StreamWriter = File.CreateText(TxtUploadPath.Text & tempFile)
+                        sw.WriteLine("Temporary file for uploading an aoi")
+                        sw.Flush()
+                    End Using
                 End If
                 'archive api requires file at the root to correctly set relative paths within archive
                 archive.AddFile(TxtUploadPath.Text & tempFile)
@@ -708,5 +710,35 @@ Public Class FrmDownloadAoiMenu
         Catch ex As WebException
             Debug.Print("DownloadTimer.Tick Exception: " & ex.Message)
         End Try
+    End Sub
+
+    Private Sub GrdTasks_SelectionChanged(sender As Object, e As System.EventArgs) Handles GrdTasks.SelectionChanged
+        Dim rows As DataGridViewSelectedRowCollection = GrdTasks.SelectedRows()
+        If rows.Count = 1 Then
+            BtnCancelTask.Enabled = True
+        End If
+    End Sub
+
+    Private Sub BtnCancelTask_Click(sender As System.Object, e As System.EventArgs) Handles BtnCancelTask.Click
+        Dim rows As DataGridViewSelectedRowCollection = GrdTasks.SelectedRows()
+        For Each aRow As DataGridViewRow In rows
+            If aRow.Cells(idxTaskType).Equals(BA_TASK_UPLOAD) Then
+                'Uploads
+                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Staging) Then
+                    'File is being zipped; not sent to server yet
+                    'aRow.Cells(idxComment).Value = BA_Download_Cancelled
+                    'Can't do anything; GUI is locked when zipping under way
+                End If
+            Else
+                'Downloads
+                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Staging) Then
+                    'File is being zipped; not sent to server yet
+                    'aRow.Cells(idxComment).Value = BA_Download_Cancelled
+                    'Can't do anything; GUI is locked when zipping under way
+                End If
+
+            End If
+        Next
+        Application.DoEvents()
     End Sub
 End Class

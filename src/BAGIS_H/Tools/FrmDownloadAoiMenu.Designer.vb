@@ -72,6 +72,7 @@ Partial Class FrmDownloadAoiMenu
         Me.BtnTaskLog = New System.Windows.Forms.Button()
         Me.BtnUpdateStatus = New System.Windows.Forms.Button()
         Me.DownloadTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.BtnCancelTask = New System.Windows.Forms.Button()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -180,13 +181,12 @@ Partial Class FrmDownloadAoiMenu
         '
         'TxtBasinsDb
         '
-        Me.TxtBasinsDb.Enabled = False
         Me.TxtBasinsDb.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtBasinsDb.Location = New System.Drawing.Point(143, 6)
         Me.TxtBasinsDb.Name = "TxtBasinsDb"
         Me.TxtBasinsDb.Size = New System.Drawing.Size(350, 22)
         Me.TxtBasinsDb.TabIndex = 73
-        Me.TxtBasinsDb.Text = "https://ebagis.geog.pdx.edu/api/rest/"
+        Me.TxtBasinsDb.Text = "https://test.ebagis.geog.pdx.edu/api/rest/"
         '
         'Label7
         '
@@ -446,11 +446,23 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.DownloadTimer.Interval = 10000
         '
+        'BtnCancelTask
+        '
+        Me.BtnCancelTask.Enabled = False
+        Me.BtnCancelTask.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnCancelTask.Location = New System.Drawing.Point(425, 246)
+        Me.BtnCancelTask.Name = "BtnCancelTask"
+        Me.BtnCancelTask.Size = New System.Drawing.Size(120, 30)
+        Me.BtnCancelTask.TabIndex = 89
+        Me.BtnCancelTask.Text = "Cancel task"
+        Me.BtnCancelTask.UseVisualStyleBackColor = True
+        '
         'FrmDownloadAoiMenu
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(928, 572)
+        Me.Controls.Add(Me.BtnCancelTask)
         Me.Controls.Add(Me.BtnUpdateStatus)
         Me.Controls.Add(Me.BtnTaskLog)
         Me.Controls.Add(Me.BtnUpload)
@@ -518,4 +530,5 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents LocalFolder As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents DownloadStatus As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents DownloadTimer As System.Windows.Forms.Timer
+    Friend WithEvents BtnCancelTask As System.Windows.Forms.Button
 End Class
