@@ -401,31 +401,34 @@ Public Class FrmDownloadAoiMenu
     End Function
 
     Friend Function DownloadFile(ByVal url As String) As BA_ReturnCode
-        ' Using WebClient for built-in file download functionality
-        Dim myWebClient As New WebClient()
+
         Try
-            'Set reference to HruExtension
-            Dim hruExt As HruExtension = HruExtension.GetExtension
-            'Retrieve the token and format it for the header; Token comes from caller
-            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
-            'Put token in header
-            myWebClient.Headers(HttpRequestHeader.Authorization) = cred
-            AddHandler myWebClient.DownloadFileCompleted, AddressOf DownloadFileCompleted
-            AddHandler myWebClient.DownloadProgressChanged, AddressOf DownloadProgressCallback
-            Dim downloadUri As Uri = New Uri(url)
-            Dim aoiDownload As AoiDownloadInfo = Nothing
-            ' Populate the AoiDownloadInfo object from the grid
-            For Each row As DataGridViewRow In GrdTasks.Rows
-                If row.Cells(idxDownloadUrl).Value.Equals(url) Then
-                    Dim downloadFilePath As String = row.Cells(idxTaskLocalPath).Value
-                    Dim id As String = row.Cells(idxTaskId).Value
-                    Dim beginTime As DateTime = DateTime.Parse(row.Cells(idxTaskTime).Value)
-                    aoiDownload = New AoiDownloadInfo(url, BA_Task_Success, beginTime, downloadFilePath, id)
-                    aoiDownload.downloadStatus = BA_Download_Download_Started
-                End If
-            Next
-            myWebClient.DownloadFileAsync(downloadUri, aoiDownload.FilePath, aoiDownload)
-            UpdateDownloadStatus(aoiDownload, "Downloading file")
+            ' Using WebClient for built-in file download functionality
+            Using myWebClient As New WebClient()
+                'Set reference to HruExtension
+                Dim hruExt As HruExtension = HruExtension.GetExtension
+                'Retrieve the token and format it for the header; Token comes from caller
+                Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
+                'Put token in header
+                myWebClient.Headers(HttpRequestHeader.Authorization) = cred
+                AddHandler myWebClient.DownloadFileCompleted, AddressOf DownloadFileCompleted
+                AddHandler myWebClient.DownloadProgressChanged, AddressOf DownloadProgressCallback
+                Dim downloadUri As Uri = New Uri(url)
+                Dim aoiDownload As AoiDownloadInfo = Nothing
+                ' Populate the AoiDownloadInfo object from the grid
+                For Each row As DataGridViewRow In GrdTasks.Rows
+                    If row.Cells(idxDownloadUrl).Value.Equals(url) Then
+                        Dim downloadFilePath As String = row.Cells(idxTaskLocalPath).Value
+                        Dim id As String = row.Cells(idxTaskId).Value
+                        Dim beginTime As DateTime = DateTime.Parse(row.Cells(idxTaskTime).Value)
+                        aoiDownload = New AoiDownloadInfo(url, BA_Task_Success, beginTime, downloadFilePath, id)
+                        aoiDownload.downloadStatus = BA_Download_Download_Started
+                        Exit For
+                    End If
+                Next
+                myWebClient.DownloadFileAsync(downloadUri, aoiDownload.FilePath, aoiDownload)
+                UpdateDownloadStatus(aoiDownload, "Downloading file")
+            End Using
             Return BA_ReturnCode.Success
         Catch ex As Exception
             Debug.Print("DownloadFile: " & ex.Message)
@@ -441,6 +444,7 @@ Public Class FrmDownloadAoiMenu
             Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             aoiDownload.downloadStatus = BA_Download_Complete
             If e.Error IsNot Nothing Then
+                Debug.Print("DownloadFileCompleted error: " & aoiDownload.Url)
                 aoiDownload.Status = BA_Task_Failure
                 UpdateDownloadStatus(aoiDownload, e.Error.Message)
                 Exit Sub
@@ -489,6 +493,7 @@ Public Class FrmDownloadAoiMenu
             Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
             UpdateDownloadStatus(aoiDownload, "Downloading file")
+            'Debug.Print(aoiDownload.AoiName & " progress callback: " & elapsedTime.ToString)
         Catch ex As Exception
             Debug.Print("DownloadProgressCallback: " & ex.Message)
             MessageBox.Show(ex.Message, "DownloadProgressCallback Event Error")
