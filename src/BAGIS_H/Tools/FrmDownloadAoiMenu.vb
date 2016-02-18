@@ -24,6 +24,7 @@ Public Class FrmDownloadAoiMenu
     Private idxTaskId As Integer = 6
     Private idxTaskLocalPath As Integer = 7
     Private idxDownloadStatus As Integer = 8
+    Private idxCancelTask As Integer = 9
 
     Public Sub New()
 
@@ -155,6 +156,7 @@ Public Class FrmDownloadAoiMenu
                         .Cells(idxTaskType).Value = BA_TASK_DOWNLOAD
                         .Cells(idxTaskStatus).Value = BA_Task_Staging
                         .Cells(idxTaskTime).Value = "N/A"
+                        .Cells(idxCancelTask).Value = False
                     End With
                     GrdTasks.Rows.Add(item)
                     'Uncheck selected download so not accidently reselected
@@ -443,15 +445,15 @@ Public Class FrmDownloadAoiMenu
             ' File download completed
             Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             aoiDownload.downloadStatus = BA_Download_Complete
+            If e.Cancelled = True Then
+                aoiDownload.Status = BA_Task_Failure
+                UpdateDownloadStatus(aoiDownload, "Download cancelled")
+                Exit Sub
+            End If
             If e.Error IsNot Nothing Then
                 Debug.Print("DownloadFileCompleted error: " & aoiDownload.Url)
                 aoiDownload.Status = BA_Task_Failure
                 UpdateDownloadStatus(aoiDownload, e.Error.Message)
-                Exit Sub
-            End If
-            If e.Cancelled = True Then
-                aoiDownload.Status = BA_Task_Failure
-                UpdateDownloadStatus(aoiDownload, "Download cancelled")
                 Exit Sub
             End If
             ' The download succeeded !!
@@ -493,7 +495,17 @@ Public Class FrmDownloadAoiMenu
             Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
             UpdateDownloadStatus(aoiDownload, "Downloading file")
-            'Debug.Print(aoiDownload.AoiName & " progress callback: " & elapsedTime.ToString)
+            For Each row As DataGridViewRow In GrdTasks.Rows
+                Dim url As String = row.Cells(idxTaskUrl).Value
+                If url = aoiDownload.Url Then
+                    Dim cancelFlag As Boolean = Convert.ToBoolean(row.Cells(idxCancelTask).Value)
+                    If cancelFlag = True Then
+                        Dim cancelClient As WebClient = CType(sender, WebClient)
+                        cancelClient.CancelAsync()
+                    End If
+                End If
+            Next
+            Debug.Print(aoiDownload.AoiName & " progress callback: " & elapsedTime.ToString)
         Catch ex As Exception
             Debug.Print("DownloadProgressCallback: " & ex.Message)
             MessageBox.Show(ex.Message, "DownloadProgressCallback Event Error")
@@ -736,12 +748,10 @@ Public Class FrmDownloadAoiMenu
                 End If
             Else
                 'Downloads
-                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Staging) Then
-                    'File is being zipped; not sent to server yet
-                    'aRow.Cells(idxComment).Value = BA_Download_Cancelled
-                    'Can't do anything; GUI is locked when zipping under way
+                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Success) Then
+                    'File download to client has started
+                    aRow.Cells(idxCancelTask).Value = True
                 End If
-
             End If
         Next
         Application.DoEvents()
