@@ -15,9 +15,7 @@ Public Class SecurityHelper
     End Sub
 
     Public Shared Function GetServerToken(ByVal userName As String, ByVal password As String, ByVal url As String) As String
-        Dim reqT As HttpWebRequest
-        Dim resT As HttpWebResponse
-        reqT = WebRequest.Create(url)
+        Dim reqT As HttpWebRequest = WebRequest.Create(url)
         'Needs to be a POST request to get a token
         reqT.Method = "POST"
 
@@ -34,16 +32,17 @@ Public Class SecurityHelper
 
         Try
             'Intercept the httpRequest so we can add the user name/password
-            Dim dataStreamT As System.IO.Stream = reqT.GetRequestStream()
-            dataStreamT.Write(credArray, 0, credArray.Length)
-            dataStreamT.Close()
-            'Send the request and wait for response
-            resT = CType(reqT.GetResponse(), HttpWebResponse)
-            'Convert the JSON response to a BagisToken object
+            Using dataStreamT As System.IO.Stream = reqT.GetRequestStream()
+                dataStreamT.Write(credArray, 0, credArray.Length)
+            End Using
             Dim aToken As BagisToken = New BagisToken
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aToken.[GetType]())
-            'Store token in user settings
-            aToken = CType(ser.ReadObject(resT.GetResponseStream), BagisToken)
+            'Send the request and wait for response
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                'Convert the JSON response to a BagisToken object
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aToken.[GetType]())
+                'Store token in user settings
+                aToken = CType(ser.ReadObject(resT.GetResponseStream), BagisToken)
+            End Using
             StoreToken(aToken)
             Return aToken.token
         Catch ex As WebException
@@ -53,10 +52,9 @@ Public Class SecurityHelper
     End Function
 
     Public Shared Function IsTokenValid(ByVal testUrl As String, ByVal strToken As String) As Boolean
-        Dim reqT As HttpWebRequest
-        Dim resT As HttpWebResponse
-        'The end point for getting a token for the web service
-        reqT = WebRequest.Create(testUrl)
+
+'The end point for getting a token for the web service
+        Dim reqT As HttpWebRequest = WebRequest.Create(testUrl)
         'This is a GET request
         reqT.Method = "GET"
 
@@ -69,15 +67,16 @@ Public Class SecurityHelper
         'ServicePointManager.ServerCertificateValidationCallback = New System.Net.Security.RemoteCertificateValidationCallback(AddressOf AcceptAllCertifications)
 
         Try
-            resT = CType(reqT.GetResponse(), HttpWebResponse)
-            'Convert the JSON response to ValidateToken object
             Dim validateToken As ValidateToken = New ValidateToken
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(validateToken.[GetType]())
-            validateToken = CType(ser.ReadObject(resT.GetResponseStream), ValidateToken)
-            If String.IsNullOrEmpty(validateToken.detail) AndAlso _
-                Not String.IsNullOrEmpty(validateToken.message) Then Return True
-            If Not String.IsNullOrEmpty(validateToken.detail) Then
-                Debug.Print("Invalid token detail: " & validateToken.detail)
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                'Convert the JSON response to ValidateToken object
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(ValidateToken.[GetType]())
+                ValidateToken = CType(ser.ReadObject(resT.GetResponseStream), ValidateToken)
+            End Using
+            If String.IsNullOrEmpty(ValidateToken.detail) AndAlso _
+                Not String.IsNullOrEmpty(ValidateToken.message) Then Return True
+            If Not String.IsNullOrEmpty(ValidateToken.detail) Then
+                Debug.Print("Invalid token detail: " & ValidateToken.detail)
             End If
             Return False
         Catch ex As WebException

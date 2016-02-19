@@ -85,7 +85,9 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnDownloadAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnDownloadAoi.Click
         Try
-             'Is a destination folder selected
+            'TestWebClient()
+            'Exit Sub
+            'Is a destination folder selected
             If String.IsNullOrEmpty(TxtDownloadPath.Text) Then
                 MessageBox.Show("You must select a destination folder to download an AOI", "No folder selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Exit Sub
@@ -405,32 +407,32 @@ Public Class FrmDownloadAoiMenu
     Friend Function DownloadFile(ByVal url As String) As BA_ReturnCode
 
         Try
+            'Set reference to HruExtension
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            'Retrieve the token and format it for the header; Token comes from caller
+            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
+            Dim downloadUri As Uri = New Uri(url)
+            Dim aoiDownload As AoiDownloadInfo = Nothing
+            ' Populate the AoiDownloadInfo object from the grid
+            For Each row As DataGridViewRow In GrdTasks.Rows
+                If row.Cells(idxDownloadUrl).Value.Equals(url) Then
+                    Dim downloadFilePath As String = row.Cells(idxTaskLocalPath).Value
+                    Dim id As String = row.Cells(idxTaskId).Value
+                    Dim beginTime As DateTime = DateTime.Parse(row.Cells(idxTaskTime).Value)
+                    aoiDownload = New AoiDownloadInfo(url, BA_Task_Success, beginTime, downloadFilePath, id)
+                    aoiDownload.downloadStatus = BA_Download_Download_Started
+                    Exit For
+                End If
+            Next
             ' Using WebClient for built-in file download functionality
             Using myWebClient As New WebClient()
-                'Set reference to HruExtension
-                Dim hruExt As HruExtension = HruExtension.GetExtension
-                'Retrieve the token and format it for the header; Token comes from caller
-                Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
                 'Put token in header
                 myWebClient.Headers(HttpRequestHeader.Authorization) = cred
                 AddHandler myWebClient.DownloadFileCompleted, AddressOf DownloadFileCompleted
                 AddHandler myWebClient.DownloadProgressChanged, AddressOf DownloadProgressCallback
-                Dim downloadUri As Uri = New Uri(url)
-                Dim aoiDownload As AoiDownloadInfo = Nothing
-                ' Populate the AoiDownloadInfo object from the grid
-                For Each row As DataGridViewRow In GrdTasks.Rows
-                    If row.Cells(idxDownloadUrl).Value.Equals(url) Then
-                        Dim downloadFilePath As String = row.Cells(idxTaskLocalPath).Value
-                        Dim id As String = row.Cells(idxTaskId).Value
-                        Dim beginTime As DateTime = DateTime.Parse(row.Cells(idxTaskTime).Value)
-                        aoiDownload = New AoiDownloadInfo(url, BA_Task_Success, beginTime, downloadFilePath, id)
-                        aoiDownload.downloadStatus = BA_Download_Download_Started
-                        Exit For
-                    End If
-                Next
                 myWebClient.DownloadFileAsync(downloadUri, aoiDownload.FilePath, aoiDownload)
-                UpdateDownloadStatus(aoiDownload, "Downloading file")
             End Using
+            UpdateDownloadStatus(aoiDownload, "Downloading file")
             Return BA_ReturnCode.Success
         Catch ex As Exception
             Debug.Print("DownloadFile: " & ex.Message)
@@ -447,18 +449,36 @@ Public Class FrmDownloadAoiMenu
             aoiDownload.downloadStatus = BA_Download_Complete
             If e.Cancelled = True Then
                 aoiDownload.Status = BA_Task_Failure
+                'Delete zip file since we cancelled the download
+                If BA_File_ExistsWindowsIO(aoiDownload.FilePath) Then File.Delete(aoiDownload.FilePath)
                 UpdateDownloadStatus(aoiDownload, "Download cancelled")
                 Exit Sub
             End If
             If e.Error IsNot Nothing Then
-                Debug.Print("DownloadFileCompleted error: " & aoiDownload.Url)
+                'Debug.Print("DownloadFileCompleted error: " & aoiDownload.Url)
                 aoiDownload.Status = BA_Task_Failure
+                'Delete zip file since there was an error
+                If BA_File_ExistsWindowsIO(aoiDownload.FilePath) Then File.Delete(aoiDownload.FilePath)
                 UpdateDownloadStatus(aoiDownload, e.Error.Message)
                 Exit Sub
             End If
             ' The download succeeded !!
             If e.Cancelled = False And e.Error Is Nothing Then
-                'aoiDownload.Status = BA_Task_Pending
+                For Each row As DataGridViewRow In GrdTasks.Rows
+                    Dim url As String = row.Cells(idxTaskUrl).Value
+                    If url = aoiDownload.Url Then
+                        Dim cancelFlag As Boolean = Convert.ToBoolean(row.Cells(idxCancelTask).Value)
+                        If cancelFlag = True Then
+                            aoiDownload.Status = BA_Task_Failure
+                            'Delete zip file since we cancelled the download
+                            If BA_File_ExistsWindowsIO(aoiDownload.FilePath) Then File.Delete(aoiDownload.FilePath)
+                            UpdateDownloadStatus(aoiDownload, "Download cancelled")
+                            Exit Sub
+                        End If
+                        Exit For
+                    End If
+                Next
+
                 UpdateDownloadStatus(aoiDownload, "Unzipping file")
                 Dim parentFolder As String = "PleaseReturn"
                 Dim zipFile As String = BA_GetBareName(aoiDownload.FilePath, parentFolder)
@@ -498,14 +518,17 @@ Public Class FrmDownloadAoiMenu
             For Each row As DataGridViewRow In GrdTasks.Rows
                 Dim url As String = row.Cells(idxTaskUrl).Value
                 If url = aoiDownload.Url Then
+                    Debug.Print(aoiDownload.AoiName & " progress callback: " & elapsedTime.ToString)
                     Dim cancelFlag As Boolean = Convert.ToBoolean(row.Cells(idxCancelTask).Value)
+                    Debug.Print(aoiDownload.AoiName & " cancelFlag: " & cancelFlag)
                     If cancelFlag = True Then
                         Dim cancelClient As WebClient = CType(sender, WebClient)
                         cancelClient.CancelAsync()
+                        Debug.Print(aoiDownload.AoiName & " download cancelled")
                     End If
+                    Exit For
                 End If
             Next
-            Debug.Print(aoiDownload.AoiName & " progress callback: " & elapsedTime.ToString)
         Catch ex As Exception
             Debug.Print("DownloadProgressCallback: " & ex.Message)
             MessageBox.Show(ex.Message, "DownloadProgressCallback Event Error")
@@ -650,27 +673,26 @@ Public Class FrmDownloadAoiMenu
                 CheckUploadStatus(url)
             End If
         Next
+        Application.DoEvents()
     End Sub
 
     Private Sub CheckUploadStatus(ByVal uploadUrl As String)
-        Dim reqT As HttpWebRequest
-        Dim resT As HttpWebResponse
         Try
-            reqT = WebRequest.Create(uploadUrl)
+            Dim reqT As HttpWebRequest = WebRequest.Create(uploadUrl)
             'This is a GET request
             reqT.Method = "GET"
+            Dim aoiUpload As AoiTask = New AoiTask()
 
             'Retrieve the token and format it for the header
             Dim hruExt As HruExtension = HruExtension.GetExtension
             Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
-            resT = CType(reqT.GetResponse(), HttpWebResponse)
-
-            'Serialize the response so we can check the status
-            Dim aoiUpload As AoiTask = New AoiTask()
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
-            aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                'Serialize the response so we can check the status
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
+                aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+            End Using
 
             Dim uploadStatus As String = Trim(aoiUpload.task.status).ToUpper
             Dim strMessage As String = Nothing
@@ -712,15 +734,17 @@ Public Class FrmDownloadAoiMenu
                         downloadTask = BA_Download_Aoi(url, hruExt.EbagisToken.token)
                     End If
 
-                    Dim uploadStatus As String = Trim(downloadTask.task.status).ToUpper
-                    Select Case uploadStatus
-                        Case BA_Task_Failure
-                            strMessage = downloadTask.task.traceback
-                            Debug.Print("Download failure from server: " & downloadTask.task.traceback)
-                        Case BA_Task_Pending
-                            strMessage = "Assembling download"
-                    End Select
-                    Me.UpdateStatus(GrdTasks, downloadTask, strMessage)
+                    If downloadTask.task IsNot Nothing Then
+                        Dim uploadStatus As String = Trim(downloadTask.task.status).ToUpper
+                        Select Case uploadStatus
+                            Case BA_Task_Failure
+                                strMessage = downloadTask.task.traceback
+                                Debug.Print("Download failure from server: " & downloadTask.task.traceback)
+                            Case BA_Task_Pending
+                                strMessage = "Assembling download"
+                        End Select
+                        Me.UpdateStatus(GrdTasks, downloadTask, strMessage)
+                    End If
                 End If
             Next
             If activeDownloads < 1 Then DownloadTimer.Enabled = False
@@ -748,12 +772,52 @@ Public Class FrmDownloadAoiMenu
                 End If
             Else
                 'Downloads
-                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Success) Then
+                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Success) Or _
+                    aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Failure) Then
                     'File download to client has started
                     aRow.Cells(idxCancelTask).Value = True
+                    Dim aoiName As String = aRow.Cells(idxAoiName).Value
+                    Debug.Print(aoiName & "set to cancel")
                 End If
             End If
         Next
         Application.DoEvents()
+    End Sub
+
+    Private Sub TestWebClient()
+
+        Try
+            Dim dList As IList(Of AoiDownloadInfo) = New List(Of AoiDownloadInfo)
+            Dim aoiDownload1 As AoiDownloadInfo = New AoiDownloadInfo("https://test.ebagis.geog.pdx.edu/api/rest/downloads/f04df86b-08b7-417f-886e-8f157ec16db9/", _
+                                                      BA_Task_Success, DateTime.Now, "C:\Docs\Lesley\Downloads\aoi1.zip", 1)
+            Dim aoiDownload2 As AoiDownloadInfo = New AoiDownloadInfo("https://test.ebagis.geog.pdx.edu/api/rest/downloads/3480b635-a776-42d2-847e-5c208fd27e27/", _
+                                                      BA_Task_Success, DateTime.Now, "C:\Docs\Lesley\Downloads\aoi2.zip", 2)
+            Dim aoiDownload3 As AoiDownloadInfo = New AoiDownloadInfo("https://test.ebagis.geog.pdx.edu/api/rest/downloads/3f146a61-b9c1-476c-9365-85fe61f4ef6b/", _
+                                                      BA_Task_Success, DateTime.Now, "C:\Docs\Lesley\Downloads\aoi3.zip", 3)
+            dList.Add(aoiDownload1)
+            dList.Add(aoiDownload2)
+            dList.Add(aoiDownload3)
+
+            'Set reference to HruExtension
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            'Retrieve the token and format it for the header; Token comes from caller
+            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
+
+            For Each pDown As AoiDownloadInfo In dList
+                Using myWebClient As New WebClient()
+                    'Put token in header
+                    myWebClient.Headers(HttpRequestHeader.Authorization) = cred
+                    AddHandler myWebClient.DownloadFileCompleted, AddressOf DownloadFileCompleted
+                    AddHandler myWebClient.DownloadProgressChanged, AddressOf DownloadProgressCallback
+
+                    Dim downloadUri As Uri = New Uri(pDown.Url)
+                    pDown.downloadStatus = BA_Download_Download_Started
+                    myWebClient.DownloadFileAsync(downloadUri, pDown.FilePath, pDown)
+                End Using
+            Next
+        Catch ex As Exception
+            Debug.Print("TestWebClient Exception: " & ex.Message)
+        End Try
+
     End Sub
 End Class

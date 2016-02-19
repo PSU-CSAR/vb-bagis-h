@@ -43,7 +43,6 @@ Public Class AoiUploadTimer
     Private Sub OnTimedEvent(source As Object, e As ElapsedEventArgs)
         'Debug.Print("The Elapsed event was raised at {0}", e.SignalTime)
         Dim reqT As HttpWebRequest
-        Dim resT As HttpWebResponse
         Try
             reqT = WebRequest.Create(m_aoiUpload.url)
             'This is a GET request
@@ -53,11 +52,11 @@ Public Class AoiUploadTimer
             Dim cred As String = String.Format("{0} {1}", "Token", m_token)
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
-            resT = CType(reqT.GetResponse(), HttpWebResponse)
-
-            'Serialize the response so we can check the status
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(m_aoiUpload.[GetType]())
-            m_aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                'Serialize the response so we can check the status
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(m_aoiUpload.[GetType]())
+                m_aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+            End Using
 
             Dim uploadStatus As String = Trim(m_aoiUpload.task.status).ToUpper
             Dim strMessage As String = Nothing
