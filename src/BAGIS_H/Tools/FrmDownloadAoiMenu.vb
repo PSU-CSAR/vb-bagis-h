@@ -518,13 +518,13 @@ Public Class FrmDownloadAoiMenu
             For Each row As DataGridViewRow In GrdTasks.Rows
                 Dim url As String = row.Cells(idxTaskUrl).Value
                 If url = aoiDownload.Url Then
-                    Debug.Print(aoiDownload.AoiName & " progress callback: " & elapsedTime.ToString)
+                    'Debug.Print(aoiDownload.AoiName & " progress callback: " & elapsedTime.ToString)
                     Dim cancelFlag As Boolean = Convert.ToBoolean(row.Cells(idxCancelTask).Value)
-                    Debug.Print(aoiDownload.AoiName & " cancelFlag: " & cancelFlag)
+                    'Debug.Print(aoiDownload.AoiName & " cancelFlag: " & cancelFlag)
                     If cancelFlag = True Then
                         Dim cancelClient As WebClient = CType(sender, WebClient)
                         cancelClient.CancelAsync()
-                        Debug.Print(aoiDownload.AoiName & " download cancelled")
+                        'Debug.Print(aoiDownload.AoiName & " download cancelled")
                     End If
                     Exit For
                 End If
