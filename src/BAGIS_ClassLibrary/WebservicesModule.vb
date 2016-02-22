@@ -21,6 +21,8 @@ Public Module WebservicesModule
         Dim sb As StringBuilder = New StringBuilder()
         'url base for query
         sb.Append(webServiceUrl)
+        'append trailing backslash to url if it is missing
+        If Right(webServiceUrl, 1) <> "/" Then sb.Append("/")
         'append the query; where clause is required; This one returns all records
         Dim whereClause As String = "query?&where={0}"
         sb.Append(String.Format(whereClause, HttpUtility.UrlEncode(String.Format("OBJECTID>{0}", 0))))
@@ -39,72 +41,82 @@ Public Module WebservicesModule
         Dim query As String = sb.ToString
         'read the JSON request
         Dim jsonFeatures As String = GetResult(query)
+        Dim byteArray As Byte() = System.Text.Encoding.UTF8.GetBytes(jsonFeatures)
+        Dim jsonStream As System.IO.MemoryStream = New System.IO.MemoryStream(byteArray)
+        'Check to make sure we got some features, if not IJSONConverterGdb throws an exception
+        Dim jsonResult As JsonQueryResult = New JsonQueryResult()
+        Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(jsonResult.[GetType]())
+        jsonResult = CType(ser.ReadObject(jsonStream), JsonQueryResult)
 
-        Dim jsonReader As IJSONReader = New JSONReader
-        Dim JSONConverterGdb As IJSONConverterGdb = New JSONConverterGdb()
-        Dim originalToNewFieldMap As IPropertySet = Nothing
-        Dim recordSet As IRecordSet = Nothing
-        Dim recordSet2 As IRecordSet2 = Nothing
-        Dim workspaceFactory As IWorkspaceFactory = New FileGDBWorkspaceFactory
-        Dim workspace As IFeatureWorkspace = Nothing
-        Dim searchWS As IWorkspace2 = Nothing
-        Dim deleteFClass As IFeatureClass = Nothing
-        Dim deleteDataset As IDataset = Nothing
-        Try
-            jsonReader.ReadFromString(jsonFeatures)
-            JSONConverterGdb.ReadRecordSet(jsonReader, Nothing, Nothing, recordSet, originalToNewFieldMap)
-            Dim outputFolder As String = "PleaseReturn"
-            Dim outputFile As String = BA_GetBareName(newFilePath, outputFolder)
-            ' Strip trailing "\" if exists
-            If outputFolder(Len(outputFolder) - 1) = "\" Then
-                outputFolder = outputFolder.Remove(Len(outputFolder) - 1, 1)
-            End If
+        If jsonResult IsNot Nothing AndAlso jsonResult.features.Count > 0 Then
+            Dim jsonReader As IJSONReader = New JSONReader
+            Dim JSONConverterGdb As IJSONConverterGdb = New JSONConverterGdb()
+            Dim originalToNewFieldMap As IPropertySet = Nothing
+            Dim recordSet As IRecordSet = Nothing
+            Dim recordSet2 As IRecordSet2 = Nothing
+            Dim workspaceFactory As IWorkspaceFactory = New FileGDBWorkspaceFactory
+            Dim workspace As IFeatureWorkspace = Nothing
+            Dim searchWS As IWorkspace2 = Nothing
+            Dim deleteFClass As IFeatureClass = Nothing
+            Dim deleteDataset As IDataset = Nothing
+            Try
+                jsonReader.ReadFromString(jsonFeatures)
+                JSONConverterGdb.ReadRecordSet(jsonReader, Nothing, Nothing, recordSet, originalToNewFieldMap)
 
-            Dim tempFile As String = "webQuery"
-            workspace = workspaceFactory.OpenFromFile(outputFolder, 0)
-            searchWS = CType(workspace, IWorkspace2)
-            recordSet2 = CType(recordSet, IRecordSet2)
+                Dim outputFolder As String = "PleaseReturn"
+                Dim outputFile As String = BA_GetBareName(newFilePath, outputFolder)
+                ' Strip trailing "\" if exists
+                If outputFolder(Len(outputFolder) - 1) = "\" Then
+                    outputFolder = outputFolder.Remove(Len(outputFolder) - 1, 1)
+                End If
 
-            'Delete temp file if it exists
-            If searchWS.NameExists(esriDatasetType.esriDTFeatureClass, tempFile) Then
-                deleteFClass = workspace.OpenFeatureClass(tempFile)
-                deleteDataset = CType(deleteFClass, IDataset)
-                deleteDataset.Delete()
-            End If
-
-            'Delete output file if it exists
-            If searchWS.NameExists(esriDatasetType.esriDTFeatureClass, outputFile) Then
-                deleteFClass = workspace.OpenFeatureClass(outputFile)
-                deleteDataset = CType(deleteFClass, IDataset)
-                deleteDataset.Delete()
-            End If
-
-            'Save query results to temp file in target geodatabase
-            recordSet2.SaveAsTable(workspace, tempFile)
-            'Clip queried layer to aoi
-            Dim retVal As Short = BA_ClipAOIVector(aoiFolder, outputFolder & "\" & tempFile, outputFile, outputFolder, True)
-            If retVal = 1 Then
-                'Delete temporary query file
-                'Re-initialize workspace to resolve separated RCW error
+                Dim tempFile As String = "webQuery"
                 workspace = workspaceFactory.OpenFromFile(outputFolder, 0)
-                deleteFClass = workspace.OpenFeatureClass(tempFile)
-                deleteDataset = CType(deleteFClass, IDataset)
-                deleteDataset.Delete()
-                Return BA_ReturnCode.Success
-            End If
-            Return BA_ReturnCode.UnknownError
-        Catch ex As Exception
-            Debug.Print("BA_ClipFeatureService Exception: " & ex.Message)
-            Return BA_ReturnCode.UnknownError
-        Finally
-            recordSet = Nothing
-            recordSet2 = Nothing
-            workspace = Nothing
-            searchWS = Nothing
-            deleteFClass = Nothing
-            deleteDataset = Nothing
-        End Try
+                searchWS = CType(workspace, IWorkspace2)
+                recordSet2 = CType(recordSet, IRecordSet2)
 
+                'Delete temp file if it exists
+                If searchWS.NameExists(esriDatasetType.esriDTFeatureClass, tempFile) Then
+                    deleteFClass = workspace.OpenFeatureClass(tempFile)
+                    deleteDataset = CType(deleteFClass, IDataset)
+                    deleteDataset.Delete()
+                End If
+
+                'Delete output file if it exists
+                If searchWS.NameExists(esriDatasetType.esriDTFeatureClass, outputFile) Then
+                    deleteFClass = workspace.OpenFeatureClass(outputFile)
+                    deleteDataset = CType(deleteFClass, IDataset)
+                    deleteDataset.Delete()
+                End If
+
+                'Save query results to temp file in target geodatabase
+                recordSet2.SaveAsTable(workspace, tempFile)
+                'Clip queried layer to aoi
+                Dim retVal As Short = BA_ClipAOIVector(aoiFolder, outputFolder & "\" & tempFile, outputFile, outputFolder, True)
+                If retVal = 1 Then
+                    'Delete temporary query file
+                    'Re-initialize workspace to resolve separated RCW error
+                    workspace = workspaceFactory.OpenFromFile(outputFolder, 0)
+                    deleteFClass = workspace.OpenFeatureClass(tempFile)
+                    deleteDataset = CType(deleteFClass, IDataset)
+                    deleteDataset.Delete()
+                    Return BA_ReturnCode.Success
+                End If
+                Return BA_ReturnCode.UnknownError
+            Catch ex As Exception
+                Debug.Print("BA_ClipFeatureService Exception: " & ex.Message)
+                Return BA_ReturnCode.UnknownError
+            Finally
+                recordSet = Nothing
+                recordSet2 = Nothing
+                workspace = Nothing
+                searchWS = Nothing
+                deleteFClass = Nothing
+                deleteDataset = Nothing
+            End Try
+        Else
+            Return BA_ReturnCode.ReadError
+        End If
     End Function
 
     Private Function GetJSONEnvelope(ByVal clipFilePath As String) As String
@@ -252,20 +264,85 @@ Public Module WebservicesModule
 
     End Function
 
-    Public Function BA_QueryFeatureServiceFieldNames(ByVal webserviceUrl As String) As IList(Of String)
+    'Note that an image service can't be clipped directly to a vector. This function converts a vector to a raster
+    'before calling another clip function and deletes the temporary raster when the clip completes
+    Public Function BA_ClipImageServiceToVector(ByVal clipFilePath As String, ByVal webServiceUrl As String, _
+                                                ByVal newFilePath As String) As BA_ReturnCode
+        Dim wType As WorkspaceType = BA_GetWorkspaceTypeFromPath(newFilePath)
+        If wType = WorkspaceType.Raster Then
+            Debug.Print("BA_ClipImageServiceToVector can only write to FileGeodatabase format. Please supply an output path " _
+                        & "to a FileGeodatabase folder.")
+            Return BA_ReturnCode.WriteError
+        End If
+
+        Dim isLayer As IImageServerLayer = New ImageServerLayerClass
+        Dim imageRaster As IRaster = Nothing
+        Dim imageRasterProps As IRasterProps = Nothing
+        Dim extent As IEnvelope = Nothing
+        Try
+            'Create an image server layer by passing a URL.
+            Dim URL As String = webServiceUrl
+            isLayer.Initialize(URL)
+            'Get the raster from the image server layer.
+            imageRaster = isLayer.Raster
+
+            'The raster from an image server is normally large; Define the size of the raster.
+            imageRasterProps = DirectCast(imageRaster, IRasterProps)
+
+            Dim xCols As Long = -1
+            Dim yRows As Long = -1
+            Dim cellSize As Double = BA_CellSizeImageService(webServiceUrl)
+            BA_GetColumnRowCountFromVector(clipFilePath, cellSize, cellSize, extent, xCols, yRows)
+
+            '@ToDo: May need to worry about the projection in real-life
+            imageRasterProps.Extent = extent
+            imageRasterProps.Width = xCols
+            imageRasterProps.Height = yRows
+
+            'Save the clipped raster to the file geodatabase.
+            Dim newFolder As String = "PleaseReturn"
+            Dim newFile As String = BA_GetBareName(newFilePath, newFolder)
+            ' Strip trailing "\" if exists
+            If newFolder(Len(newFolder) - 1) = "\" Then
+                newFolder = newFolder.Remove(Len(newFolder) - 1, 1)
+            End If
+
+            'Remove the target raster if it exists
+            Dim retVal As Short = 1
+            If BA_File_Exists(newFilePath, WorkspaceType.Geodatabase, esriDatasetType.esriDTRasterDataset) Then
+                retVal = BA_RemoveRasterFromGDB(newFolder, newFile)
+            End If
+            If retVal = 1 Then
+                retVal = BA_SaveRasterDatasetGDB(imageRaster, newFolder, BA_RASTER_FORMAT, newFile)
+            End If
+
+            If retVal = 1 Then
+                Return BA_ReturnCode.Success
+            Else
+                Return BA_ReturnCode.UnknownError
+            End If
+        Catch ex As Exception
+            Debug.Print("BA_ClipImageServiceToVector Exception: " & ex.Message)
+            Return BA_ReturnCode.UnknownError
+        Finally
+            imageRaster = Nothing
+            imageRasterProps = Nothing
+            extent = Nothing
+        End Try
+    End Function
+
+    Public Function BA_QueryFeatureServiceFieldNames(ByVal webserviceUrl As String, ByVal fieldType As esriFieldType) As IList(Of String)
         Dim sb As StringBuilder = New StringBuilder()
         'read the JSON request
         Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(webserviceUrl & "?f=pjson")
-        Dim fs As FeatureService = New FeatureService()
+        Dim resp As System.Net.WebResponse = req.GetResponse()
 
-        Using resp As System.Net.WebResponse = req.GetResponse()
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
-            fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
-        End Using
+        Dim fs As FeatureService = New FeatureService()
+        Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+        fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
         Dim fieldList As List(Of String) = New List(Of String)
         For Each fsf As FeatureServiceField In fs.fields
-            If fsf.fieldType = esriFieldType.esriFieldTypeString Or _
-                fsf.fieldType = esriFieldType.esriFieldTypeInteger Then
+            If fsf.fieldType = fieldType Then
                 fieldList.Add(fsf.alias)
             End If
         Next
@@ -343,8 +420,8 @@ Public Module WebservicesModule
     'End Function
 
     Public Function BA_UploadMultiPart(ByVal webserviceUrl As String, ByVal strToken As String, _
-                                       ByVal fileName As String, ByVal filePath As String, _
-                                       ByVal comment As String) As AoiTask
+                                        ByVal fileName As String, ByVal filePath As String, _
+                                        ByVal comment As String) As AoiTask
         Dim reqT As HttpWebRequest
         Dim anUpload As AoiTask = New AoiTask
         'The end point for getting a token for the web service
@@ -537,6 +614,158 @@ Public Module WebservicesModule
             If kvp.Value.name.ToUpper = aoiName.ToUpper Then
                 Return True
             End If
+        Next
+        Return False
+    End Function
+
+    'Note: this method will also return true if imageUrl is a valid path to a local raster dataset
+    Public Function BA_File_ExistsImageServer(ByVal imageUrl As String) As Boolean
+        Dim isLayer As IImageServerLayer = New ImageServerLayerClass
+        Dim imageRaster As IRaster = Nothing
+        Try
+            isLayer.Initialize(imageUrl)
+            imageRaster = isLayer.Raster
+            Return True
+        Catch ex As Exception
+            ' An exception was thrown while trying to open the dataset, return false
+            Return False
+        End Try
+    End Function
+
+    ' Calculate raster cellsize from an input GeoDataset
+    Public Function BA_CellSizeImageService(ByVal url As String) As Double
+        Dim isLayer As IImageServerLayer = New ImageServerLayerClass
+        Dim imageRaster As IRaster = Nothing
+        Dim imageRasterProps As IRasterProps = Nothing
+        Try
+            'Create an image server layer by passing a URL.
+            isLayer.Initialize(url)
+            'Get the raster from the image server layer.
+            imageRaster = isLayer.Raster
+            imageRasterProps = DirectCast(imageRaster, IRasterProps)
+            Dim pPnt As IPnt = imageRasterProps.MeanCellSize
+            Return (pPnt.X + pPnt.Y) / 2
+        Catch ex As Exception
+            MsgBox("BA_CellSizeImageService: " & ex.Message)
+            Return 0
+        Finally
+            isLayer = Nothing
+            imageRaster = Nothing
+            imageRasterProps = Nothing
+        End Try
+    End Function
+
+    Public Function BA_FeatureServiceSpatialReference(ByVal url As String) As ISpatialReference
+        Dim sb As StringBuilder = New StringBuilder()
+        Dim spRef As ISpatialReference = Nothing
+        'read the JSON request
+        Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(url & "?f=pjson")
+        Dim resp As System.Net.WebResponse = req.GetResponse()
+
+        Dim fs As FeatureService = New FeatureService()
+        Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+        fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
+
+        If fs.extent.spatialReference IsNot Nothing Then
+            Dim factory As ISpatialReferenceFactory3 = New SpatialReferenceEnvironment()
+            spRef = factory.CreateSpatialReference(fs.extent.spatialReference.wkid)
+        End If
+        Return spRef
+    End Function
+
+    Public Function BA_File_ExistsFeatureServer(ByVal url As String) As Boolean
+        Dim sb As StringBuilder = New StringBuilder()
+        Try
+
+            'read the JSON request
+            Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(url & "?f=pjson")
+            Dim resp As System.Net.WebResponse = req.GetResponse()
+
+            Dim fs As FeatureService = New FeatureService()
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+            fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
+            If fs IsNot Nothing Then
+                If Not String.IsNullOrEmpty(fs.name) Then
+                    Return True
+                End If
+            End If
+            Return False
+        Catch ex As Exception
+            'We encountered an exception; Feature service doesn't exist
+            Return False
+        End Try
+    End Function
+
+    Public Function BA_QueryAllFeatureServiceFieldNames(ByVal webserviceUrl As String) As IList(Of FeatureServiceField)
+        Dim sb As StringBuilder = New StringBuilder()
+        Dim fieldList As List(Of FeatureServiceField) = New List(Of FeatureServiceField)
+        'read the JSON request
+        Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(webserviceUrl & "?f=pjson")
+        Dim resp As System.Net.WebResponse = req.GetResponse()
+
+        Dim fs As FeatureService = New FeatureService()
+        Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+        fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
+        For Each fsf As FeatureServiceField In fs.fields
+            fieldList.Add(fsf)
+        Next
+        Return fieldList
+    End Function
+
+    'Inputs: url to feature service, id of layer to be returned (usually 0)
+    'Returns an IFeatureClass
+    Public Function BA_OpenFeatureClassFromService(ByVal url As String, ByVal layerId As Integer) As IFeatureClass
+        Dim sipPs As IPropertySet = New PropertySet()
+        Dim sipWSF As IWorkspaceFactory = New FeatureServiceWorkspaceFactory()
+        Dim sipWS As IWorkspace = Nothing
+        Dim sipFws As IFeatureWorkspace = Nothing
+        Try
+            'Trim any data after "FeatureServer" in url
+            Dim idxFs As Integer = url.IndexOf(BA_Url_FeatureServer)
+            url = url.Substring(0, (idxFs + BA_Url_FeatureServer.Length))
+            sipPs.SetProperty("DATABASE", url)
+            sipWS = sipWSF.Open(sipPs, 0)
+            sipFws = CType(sipWS, IFeatureWorkspace)
+            Dim strLayerId As String = CType(layerId, String)
+            Return sipFws.OpenFeatureClass(strLayerId)
+        Catch ex As Exception
+            Debug.Print("BA_OpenFeatureClassFromService Exception: " & ex.Message)
+            Return Nothing
+        Finally
+            sipPs = Nothing
+            sipWS = Nothing
+            sipFws = Nothing
+            GC.WaitForPendingFinalizers()
+            GC.Collect()
+        End Try
+    End Function
+
+    Public Function BA_IsNetworkAvailable(ByVal minimumSpeed As Long) As Boolean
+        If Not NetworkInformation.NetworkInterface.GetIsNetworkAvailable() Then
+            Return False
+        End If
+        For Each ni As NetworkInformation.NetworkInterface In NetworkInformation.NetworkInterface.GetAllNetworkInterfaces
+            'discard because of standard reasons
+            If (ni.OperationalStatus <> NetworkInformation.OperationalStatus.Up) Or
+                (ni.NetworkInterfaceType = NetworkInformation.NetworkInterfaceType.Loopback) Or
+                (ni.NetworkInterfaceType = NetworkInformation.NetworkInterfaceType.Tunnel) Then
+                Continue For
+            End If
+
+            'this allow to filter modems, serial, etc.
+            If ni.Speed < minimumSpeed Then Continue For
+
+            'discard virtual cards (virtual box, virtual pc, etc.)
+            If (ni.Description.IndexOf("virtual", StringComparison.OrdinalIgnoreCase) >= 0) Or
+                (ni.Name.IndexOf("virtual", StringComparison.OrdinalIgnoreCase) >= 0) Then
+                Continue For
+            End If
+
+
+            'discard "Microsoft Loopback Adapter", it will not show as NetworkInterfaceType.Loopback but as Ethernet Card.
+            If ni.Description.Equals("Microsoft Loopback Adapter", StringComparison.OrdinalIgnoreCase) Then Continue For
+
+            Return True
         Next
         Return False
     End Function
