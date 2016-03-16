@@ -180,6 +180,13 @@
     <Compile Include="HruZoneDelineation\FrmDataUnits.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Objects\AoiDownloadInfo.vb" />
+    <Compile Include="Objects\AoiUploadTimer.vb" />
+    <Compile Include="Objects\BagisToken.vb" />
+    <Compile Include="Objects\AoiDownloadTimer.vb" />
+    <Compile Include="Objects\SecurityHelper.vb" />
+    <Compile Include="Objects\TaskLog.vb" />
+    <Compile Include="Objects\ValidateToken.vb" />
     <Compile Include="RefineHru\BtnReclassZones.vb" />
     <Compile Include="RefineHru\BtnSequentialId.vb" />
     <Compile Include="RefineHru\FrmSequentialId.Designer.vb">
@@ -268,6 +275,12 @@
     <Compile Include="Tools\BtnSlopeConverter.vb" />
     <Compile Include="Tools\BtnSnodas.vb" />
     <Compile Include="Tools\BtnToolsDataUnits.vb" />
+    <Compile Include="Tools\FrmDownloadAoiMenu.Designer.vb">
+      <DependentUpon>FrmDownloadAoiMenu.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmDownloadAoiMenu.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Tools\FrmExportToGdb.Designer.vb">
       <DependentUpon>FrmExportToGdb.vb</DependentUpon>
     </Compile>
@@ -486,6 +499,12 @@
     <Compile Include="Tools\FrmToolsDataUnits.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Tools\FrmUploadAoi.Designer.vb">
+      <DependentUpon>FrmUploadAoi.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmUploadAoi.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Help\FrmHelp.resx">
@@ -622,6 +641,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmToolsDataUnits.resx">
       <DependentUpon>FrmToolsDataUnits.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmUploadAoi.resx">
+      <DependentUpon>FrmUploadAoi.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -816,6 +838,8 @@
     <AddInContent Include="Images\BtnSequentialId.png" />
     <AddInContent Include="Images\BtnToolsDataUnits.png" />
     <AddInContent Include="Images\BtnSnodas.png" />
+    <AddInContent Include="Images\BtnFileModify.png" />
+    <AddInContent Include="Images\BtnDownloadAoi.png" />
     <Content Include="Other\LogTemplate.htm" />
   </ItemGroup>
   <ItemGroup>
