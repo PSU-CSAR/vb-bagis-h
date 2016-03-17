@@ -19,8 +19,8 @@ Public Class BtnPostProcess
         dockWindow.Show((Not dockWindow.IsVisible()))
         ' Set dimensions of dockable window
         Dim windowPos As ESRI.ArcGIS.Framework.IWindowPosition = CType(dockWindow, ESRI.ArcGIS.Framework.IWindowPosition)
-        windowPos.Height = 520
-        windowPos.Width = 530
+        windowPos.Height = 660
+        windowPos.Width = 770
         dockWindow.Caption = "Post Processing : Eliminate"
 
         If dockWindow.IsVisible Then

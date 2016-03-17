@@ -216,6 +216,13 @@ Public Class FrmCookieCut
     End Sub
 
     Private Sub BtnGenerateHru_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles BtnGenerateHru.Click
+        Dim hruNameError As String = BA_ValidateHruName(TxtNewHruName.Text)
+        If hruNameError IsNot Nothing Then
+            MessageBox.Show(hruNameError)
+            TxtNewHruName.Focus()
+            Exit Sub
+        End If
+
         'Disable form controls
         Me.Disable()
 
