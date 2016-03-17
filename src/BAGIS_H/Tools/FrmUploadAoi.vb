@@ -84,7 +84,7 @@ Public Class FrmUploadAoi
 
     Private Sub BtnUploadAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnUploadAoi.Click
         If String.IsNullOrEmpty(m_token.token) Then
-            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, "https://webservices.geog.pdx.edu/api/rest/api-token-auth/")
+            Dim strToken As String = SecurityHelper.GetServerToken(m_userName, m_password, "https://webservices.geog.pdx.edu/api/rest/token/")
             m_token.token = strToken
             If String.IsNullOrEmpty(strToken) Then
                 MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)
