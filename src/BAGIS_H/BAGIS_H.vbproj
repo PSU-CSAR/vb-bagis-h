@@ -145,6 +145,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -158,6 +159,7 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArchiveModule.vb" />
     <Compile Include="Config.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>
@@ -202,6 +204,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="RefineHru\IdentifyTool.vb" />
+    <Compile Include="Tools\BtnDownloadAoi.vb" />
     <Compile Include="Tools\BtnExportToGdb.vb" />
     <Compile Include="ContribAreaModule.vb" />
     <Compile Include="DAFlowModule.vb" />
@@ -272,6 +275,7 @@
     <Compile Include="Other\BtnViewLog.vb" />
     <Compile Include="Other\EditTemplates\BtnEditRule.vb" />
     <Compile Include="Tools\BtnFileLocator.vb" />
+    <Compile Include="Tools\BtnFileModify.vb" />
     <Compile Include="Tools\BtnSlopeConverter.vb" />
     <Compile Include="Tools\BtnSnodas.vb" />
     <Compile Include="Tools\BtnToolsDataUnits.vb" />
@@ -481,6 +485,12 @@
     <Compile Include="Tools\FrmFileLocator.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Tools\FrmPassword.Designer.vb">
+      <DependentUpon>FrmPassword.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmPassword.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Tools\FrmSlopeConverter.Designer.vb">
       <DependentUpon>FrmSlopeConverter.vb</DependentUpon>
     </Compile>
@@ -491,6 +501,12 @@
       <DependentUpon>FrmSnodas.vb</DependentUpon>
     </Compile>
     <Compile Include="Tools\FrmSnodas.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tools\FrmTaskLog.Designer.vb">
+      <DependentUpon>FrmTaskLog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FrmTaskLog.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Tools\FrmToolsDataUnits.Designer.vb">
@@ -633,11 +649,17 @@
     <EmbeddedResource Include="RefineHru\FrmZonalStats.resx">
       <DependentUpon>FrmZonalStats.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmPassword.resx">
+      <DependentUpon>FrmPassword.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmSlopeConverter.resx">
       <DependentUpon>FrmSlopeConverter.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmSnodas.resx">
       <DependentUpon>FrmSnodas.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmTaskLog.resx">
+      <DependentUpon>FrmTaskLog.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmToolsDataUnits.resx">
       <DependentUpon>FrmToolsDataUnits.vb</DependentUpon>
@@ -647,6 +669,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
