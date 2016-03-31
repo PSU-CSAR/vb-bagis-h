@@ -14,31 +14,39 @@ Module FilterModule1
 
     Public Function BA_AddRasFilter(ByVal infilepath As String, ByVal infile As String, _
                 ByVal outfilepath As String, ByVal outfile As String, _
-                ByVal maskFolder As String, ByVal maskFile As String, _
                 ByVal snapRasterPath As String, _
                 ByVal nbrWd As Integer, ByVal nbrHt As Integer, _
                 ByVal filterType As esriGeoAnalysisStatisticsEnum, _
-                ByVal iterations As Integer, ByVal tempOutFilePath As String) As BA_ReturnCode
+                ByVal iterations As Integer, ByVal aoiPath As String) As BA_ReturnCode
 
         'Declare ArcObjects outside of Try/Catch so we can release them in Finally
         'Create a RasterNeighborhoodOp operator    
         Dim pNeighborhoodOp As INeighborhoodOp = New RasterNeighborhoodOp
         Dim pRasterNeighborhood As IRasterNeighborhood = New RasterNeighborhood
-        Dim pRaster As IGeoDataset = Nothing
-        Dim pOutRaster As IGeoDataset = Nothing
-        Dim pStatRaster As IGeoDataset = Nothing
-        Dim maskGDS As IGeoDataset = Nothing
-        Dim pEnv As IRasterAnalysisEnvironment = Nothing
+        Dim pRaster As IGeoDataset2 = Nothing
+        Dim pOutRaster As IGeoDataset2 = Nothing
+        Dim pStatRaster As IGeoDataset2 = Nothing
+        'Dim maskGDS As IGeoDataset = Nothing
+        'Dim pEnv As IRasterAnalysisEnvironment = Nothing
 
         Try
             Dim inputWorkspaceType As WorkspaceType = BA_GetWorkspaceTypeFromPath(infilepath)
             Dim isIntegerRaster As Boolean
+            Dim clipRasterName As String = "tmpClip"
+
+            'Clip input layer to unbuffered AOI
+            Dim maskFolder As String = BA_GeodatabasePath(aoiPath, GeodatabaseNames.Aoi)
+            'Note: maskFile and and arguments to clip file should be same file (actual aoi boundary)
+            Dim maskFile As String = BA_EnumDescription(AOIClipFile.AOIExtentCoverage)
+            Dim retVal As Short = BA_ClipAOIRaster(aoiPath, infilepath + infile, clipRasterName, _
+                                                   outfilepath, AOIClipFile.AOIExtentCoverage, True)
+
             If inputWorkspaceType = WorkspaceType.Raster Then
-                isIntegerRaster = BA_IsIntegerRaster(infilepath + "\" + infile)
-                pRaster = BA_OpenRasterFromFile(infilepath, infile)
+                isIntegerRaster = BA_IsIntegerRaster(outfilepath + "\" + clipRasterName)
+                pRaster = BA_OpenRasterFromFile(outfilepath, clipRasterName)
             ElseIf inputWorkspaceType = WorkspaceType.Geodatabase Then
-                isIntegerRaster = BA_IsIntegerRaster(infilepath + "\" + infile)
-                pRaster = BA_OpenRasterFromGDB(infilepath, infile)
+                isIntegerRaster = BA_IsIntegerRaster(outfilepath + "\" + clipRasterName)
+                pRaster = BA_OpenRasterFromGDB(outfilepath, clipRasterName)
             End If
 
             'If BA_IsIntegerRaster(infilepath + "\" + infile) = 0 And _
@@ -51,46 +59,47 @@ Module FilterModule1
             'Specify a rectangle neighborhood
             pRasterNeighborhood.SetRectangle(nbrWd, nbrHt, esriUnitsCells)
 
+            '2016-03-31 Replace the mask with clipping the input file first. See above. 
+            'The mask causes an error in the filtering process as of AGS 10.2.2
             'Configure raster analysis environment
-            pEnv = CType(pNeighborhoodOp, IRasterAnalysisEnvironment)  ' Explicit cast
-            maskGDS = BA_OpenFeatureClassFromGDB(maskFolder, maskFile)
-            pEnv.Mask = maskGDS
+            'pEnv = CType(pNeighborhoodOp, IRasterAnalysisEnvironment)  ' Explicit cast
+            'maskGDS = BA_OpenFeatureClassFromGDB(maskFolder, maskFile)
+            'pEnv.Mask = maskGDS
             ' Set the analysis extent to match the mask
-            Dim extentProvider As Object = CType(maskGDS.Extent, Object)
-            pEnv.SetExtent(esriRasterEnvSettingEnum.esriRasterEnvValue, extentProvider)
+            'Dim extentProvider As Object = CType(maskGDS.Extent, Object)
+            'pEnv.SetExtent(esriRasterEnvSettingEnum.esriRasterEnvValue, extentProvider)
 
-            '22-JUL-2011 Decided to use INeighborhoodOp instead of GP because it was MUCH faster - LCB
             'Perform focal statistics
-            'Dim strFilterType As String = GetStatisticsTypeFromEnum(filterType)
-            'Dim maskPath As String = maskFolder & maskFile
-            'Dim name1 As String = Nothing
-            'Dim name2 As String = Nothing
-            'For index As Integer = 1 To iterations
-            '    ' Is this the next-to-last iteration
-            '    If index = iterations Then
-            '        name1 = "tempR001"
-            '    Else
-            '        name1 = "zzz" & index
-            '    End If
+            ''Dim strFilterType As String = GetStatisticsTypeFromEnum(filterType)
+            ''Dim maskPath As String = maskFolder & maskFile
+            ''Dim name1 As String = Nothing
+            ''Dim name2 As String = Nothing
+            ''For index As Integer = 1 To iterations
+            ''    ' Is this the next-to-last iteration
+            ''    If index = iterations Then
+            ''        name1 = "tempR001"
+            ''    Else
+            ''        name1 = "zzz" & index
+            ''    End If
 
-            '    ' Is this the first iteration? If so, we use infilepath for "from" raster
-            '    If index = 1 Then
-            '        'pOutRaster = pNeighborhoodOp.FocalStatistics(pRaster, filterType, pRasterNeighborhood, True)
-            '        BA_FocalStatistics_GP(infilepath & infile, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType)
-            '    Else
-            '        'pOutRaster = pNeighborhoodOp.FocalStatistics(pStatRaster, filterType, pRasterNeighborhood, True)
-            '        BA_FocalStatistics_GP(outfilepath & "\" & name2, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType)
-            '    End If
-            '    name2 = name1
-            'Next
-            'BA_RemoveTemporaryRasters(outfilepath, "zzz")
+            ''    ' Is this the first iteration? If so, we use infilepath for "from" raster
+            ''    If index = 1 Then
+            ''        'pOutRaster = pNeighborhoodOp.FocalStatistics(pRaster, filterType, pRasterNeighborhood, True)
+            ''        BA_FocalStatistics_GP(infilepath & "\" & infile, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType, snapRasterPath)
+            ''    Else
+            ''        'pOutRaster = pNeighborhoodOp.FocalStatistics(pStatRaster, filterType, pRasterNeighborhood, True)
+            ''        BA_FocalStatistics_GP(outfilepath & "\" & name2, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType, snapRasterPath)
+            ''    End If
+            ''    name2 = name1
+            ''Next
+            ''Dim success As BA_ReturnCode = BA_RemoveFilesByPrefix(outfilepath, "zzz")
 
             For index As Integer = 1 To iterations
                 ' Is this the first iteration? If so, we use infilepath for "from" raster
                 If index = 1 Then
                     pOutRaster = pNeighborhoodOp.FocalStatistics(pRaster, filterType, pRasterNeighborhood, True)
                 Else
-                    ' Otherwise use output from previous run
+                    'Otherwise use output from previous run
                     pOutRaster = pNeighborhoodOp.FocalStatistics(pStatRaster, filterType, pRasterNeighborhood, True)
                 End If
                 pStatRaster = pOutRaster
@@ -98,34 +107,45 @@ Module FilterModule1
 
             ' Persist focal statistics output to GDB
             ' Geoanalyst tool unable to save to file GDB
-            BA_SaveRasterDatasetGDB2(pOutRaster, tempOutFilePath, outfilepath, BA_RASTER_FORMAT, "tempR001")
+            retVal = BA_SaveRasterDatasetGDB2(pOutRaster, aoiPath, outfilepath, BA_RASTER_FORMAT, "tempR001")
+            Dim success As BA_ReturnCode = BA_ReturnCode.OtherError
 
             If filterType = esriGeoAnalysisStatsMajority Then
                 'Removing NoData only required for Majority filter
-                If BA_RemNodataFromRas(outfilepath, "tempR001", maskFolder, maskFile, _
-                                       outfilepath, outfile, snapRasterPath, tempOutFilePath) <> BA_ReturnCode.Success Then
+                success = BA_RemNodataFromRas(outfilepath, "tempR001", maskFolder, maskFile, outfilepath, outfile, _
+                                              snapRasterPath, aoiPath)
+                If success <> BA_ReturnCode.Success Then
+                    BA_RemoveRasterFromGDB(outfilepath, "tempR001")
                     Return BA_ReturnCode.UnknownError
                     Exit Function
                 End If
             Else
                 ' Rename output of filter to outfile name if we don't have to remove NoData values
-                BA_RenameRasterInGDB(outfilepath, "tempR001", outfile)
+                success = BA_RenameRasterInGDB(outfilepath, "tempR001", outfile)
+                'Dim success As BA_ReturnCode = BA_Copy(outfilepath & "\tempR001", outfilepath & "\" & outfile)
             End If
 
-            BA_RemoveRasterFromGDB(outfilepath, "tempR001")
-            Return BA_ReturnCode.Success
-
+            retVal = BA_RemoveRasterFromGDB(outfilepath, "tempR001")
+            retVal = BA_RemoveRasterFromGDB(outfilepath, clipRasterName)
+            Return success
         Catch ex As Exception
             MessageBox.Show("BA_AddRasFilter() Exception: " & ex.Message)
 
         Finally
+            pOutRaster = Nothing
+            pStatRaster = Nothing
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pRasterNeighborhood)
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pNeighborhoodOp)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pEnv)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pRaster)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pStatRaster)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pOutRaster)
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(maskGDS)
+            'ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pEnv)
+            'ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pRaster)
+            'ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pStatRaster)
+            'ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pOutRaster)
+            'ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(maskGDS)
+            'pEnv = Nothing
+            pRaster = Nothing
+            'maskGDS = Nothing
+            GC.WaitForPendingFinalizers()
+            GC.Collect()
         End Try
 
     End Function

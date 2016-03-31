@@ -309,7 +309,7 @@ Public Module GeodatabaseModule
                 Dim snapName As String = BA_GetBareName(snapRasterPath, snapPath)
 
                 Dim workspaceType As WorkspaceType = BA_GetWorkspaceTypeFromPath(snapPath)
-                If WorkspaceType = WorkspaceType.Geodatabase Then
+                If workspaceType = workspaceType.Geodatabase Then
                     snapGDS = BA_OpenRasterFromGDB(snapPath, snapName)
                 ElseIf workspaceType = workspaceType.Raster Then 'input is a GRID
                     snapGDS = BA_OpenRasterFromFile(snapPath, snapName)
@@ -518,7 +518,7 @@ Public Module GeodatabaseModule
 
             Return BA_ReturnCode.Success
         Catch ex As Exception
-            MsgBox("BA_RemoveTemporaryRasters & Exception: " & ex.Message)
+            MsgBox("BA_RemoveFilesByPrefix & Exception: " & ex.Message)
             Return BA_ReturnCode.OtherError
         Finally
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pDataset)

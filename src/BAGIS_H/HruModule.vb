@@ -611,7 +611,7 @@ Module HruModule
                     Dim width As Integer = CInt(pAction.parameters(ActionParameter.RectangleWidth))
                     Dim iterations As Integer = CInt(pAction.parameters(ActionParameter.IterationCount))
                     retVal = BA_FilterRaster(inputFolderPath, outputFolderPath, _
-                                             outputFileName, maskFolder, maskFile, _
+                                             outputFileName, _
                                              snapRasterPath, height, width, iterations, _
                                              esriGeoAnalysisStatisticsEnum.esriGeoAnalysisStatsMajority, _
                                              aoiPath)
@@ -624,7 +624,7 @@ Module HruModule
                     Dim width As Integer = CInt(pAction.parameters(ActionParameter.RectangleWidth))
                     Dim iterations As Integer = CInt(pAction.parameters(ActionParameter.IterationCount))
                     retVal = BA_FilterRaster(inputFolderPath, outputFolderPath, _
-                                             outputFileName, maskFolder, maskFile, _
+                                             outputFileName, _
                                              snapRasterPath, height, width, iterations, _
                                              esriGeoAnalysisStatisticsEnum.esriGeoAnalysisStatsMean, _
                                              aoiPath)
@@ -665,17 +665,16 @@ Module HruModule
     ' Applies filter to a raster and persists filtered raster
     Public Function BA_FilterRaster(ByVal inputFilePath As String, ByVal outputParentPath As String, _
                                     ByVal outputFileName As String, _
-                                    ByVal maskFolder As String, ByVal maskFile As String, _
                                     ByVal snapRasterPath As String, _
                                     ByVal height As Integer, ByVal width As Integer, _
                                     ByVal iterations As Integer, ByVal statisticType As esriGeoAnalysisStatisticsEnum, _
-                                    ByVal tempOutputFileName As String) As BA_ReturnCode
+                                    ByVal aoiPath As String) As BA_ReturnCode
         Dim retValue As BA_ReturnCode = BA_ReturnCode.UnknownError
         Dim inputParentPath As String = "Please return"
         Dim inputFileName As String = BA_GetBareName(inputFilePath, inputParentPath)
         retValue = BA_AddRasFilter(inputParentPath, inputFileName, outputParentPath, outputFileName, _
-                                   maskFolder, maskFile, snapRasterPath, width, height, statisticType, _
-                                   iterations, tempOutputFileName)
+                                   snapRasterPath, width, height, statisticType, _
+                                   iterations, aoiPath)
         Return retValue
     End Function
 

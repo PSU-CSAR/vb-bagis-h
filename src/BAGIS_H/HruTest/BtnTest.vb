@@ -139,8 +139,8 @@ Public Class BtnTest
         Dim maskFolder As String = "C:\Docs\Lesley\UCO_RioG_SantaFe_R_nr_SantaFe_092010\"
         Dim maskFile As String = "aoi_v"
         Dim snapRasterPath As String = "C:\Docs\Lesley\UCO_RioG_SantaFe_R_nr_SantaFe_092010\" & BA_EnumDescription(PublicPath.AoiGrid)
-        BA_AddRasFilter(inFilePath, inFile, outFilePath, outFile, maskFolder, _
-                        maskFile, snapRasterPath, 5, 5, esriGeoAnalysisStatisticsEnum.esriGeoAnalysisStatsMean, _
+        BA_AddRasFilter(inFilePath, inFile, outFilePath, outFile, _
+                        snapRasterPath, 5, 5, esriGeoAnalysisStatisticsEnum.esriGeoAnalysisStatsMean, _
                         5, maskFolder)
     End Sub
 
