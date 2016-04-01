@@ -614,7 +614,7 @@ Module HruModule
                                              outputFileName, _
                                              snapRasterPath, height, width, iterations, _
                                              esriGeoAnalysisStatisticsEnum.esriGeoAnalysisStatsMajority, _
-                                             aoiPath)
+                                             aoiPath, maskFolder, maskFile)
                     If retVal <> BA_ReturnCode.Success Then
                         Throw New Exception("An error occurred while filtering")
                     End If
@@ -627,7 +627,7 @@ Module HruModule
                                              outputFileName, _
                                              snapRasterPath, height, width, iterations, _
                                              esriGeoAnalysisStatisticsEnum.esriGeoAnalysisStatsMean, _
-                                             aoiPath)
+                                             aoiPath, maskFolder, maskFile)
                     If retVal <> BA_ReturnCode.Success Then
                         Throw New Exception("An error occurred while filtering")
                     End If
@@ -668,13 +668,13 @@ Module HruModule
                                     ByVal snapRasterPath As String, _
                                     ByVal height As Integer, ByVal width As Integer, _
                                     ByVal iterations As Integer, ByVal statisticType As esriGeoAnalysisStatisticsEnum, _
-                                    ByVal aoiPath As String) As BA_ReturnCode
+                                    ByVal aoiPath As String, ByVal maskFolder As String, ByVal maskFile As String) As BA_ReturnCode
         Dim retValue As BA_ReturnCode = BA_ReturnCode.UnknownError
         Dim inputParentPath As String = "Please return"
         Dim inputFileName As String = BA_GetBareName(inputFilePath, inputParentPath)
         retValue = BA_AddRasFilter(inputParentPath, inputFileName, outputParentPath, outputFileName, _
                                    snapRasterPath, width, height, statisticType, _
-                                   iterations, aoiPath)
+                                   iterations, aoiPath, maskFolder, maskFile)
         Return retValue
     End Function
 

@@ -141,7 +141,7 @@ Public Class BtnTest
         Dim snapRasterPath As String = "C:\Docs\Lesley\UCO_RioG_SantaFe_R_nr_SantaFe_092010\" & BA_EnumDescription(PublicPath.AoiGrid)
         BA_AddRasFilter(inFilePath, inFile, outFilePath, outFile, _
                         snapRasterPath, 5, 5, esriGeoAnalysisStatisticsEnum.esriGeoAnalysisStatsMean, _
-                        5, maskFolder)
+                        5, maskFolder, maskFolder, maskFile)
     End Sub
 
     Private Function BA_CreateFileGdb2(ByVal Path As String, ByVal strName As String) As BA_ReturnCode
