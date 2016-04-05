@@ -6,10 +6,15 @@ Imports ESRI.ArcGIS.esriSystem
 Imports ESRI.ArcGIS.DataSourcesGDB
 Imports ESRI.ArcGIS.Carto
 Imports ESRI.ArcGIS.DataSourcesRaster
+Imports ESRI.ArcGIS.GISClient
+Imports ESRI.ArcGIS.Server
 Imports System.Net
 Imports System.Timers
+Imports System.Windows.Forms
 
 Public Module WebservicesModule
+
+    Public Const BA_WebServerName = "https://test.ebagis.geog.pdx.edu"
 
     Public Function BA_ClipFeatureService(ByVal clipFilePath As String, ByVal webServiceUrl As String, _
                                           ByVal newFilePath As String, ByVal aoiFolder As String) As BA_ReturnCode
@@ -160,10 +165,11 @@ Public Module WebservicesModule
 
     Private Function GetResult(ByVal url As String) As String
         Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(url)
-        Dim resp As System.Net.WebResponse = req.GetResponse()
-        Using stream As System.IO.Stream = resp.GetResponseStream
-            Using streamReader As System.IO.StreamReader = New System.IO.StreamReader(stream)
-                Return streamReader.ReadToEnd
+        Using resp As System.Net.WebResponse = req.GetResponse()
+            Using stream As System.IO.Stream = resp.GetResponseStream
+                Using streamReader As System.IO.StreamReader = New System.IO.StreamReader(stream)
+                    Return streamReader.ReadToEnd
+                End Using
             End Using
         End Using
     End Function
@@ -332,23 +338,22 @@ Public Module WebservicesModule
     End Function
 
     Public Function BA_QueryFeatureServiceFieldNames(ByVal webserviceUrl As String, ByVal fieldType As esriFieldType) As IList(Of String)
-        Dim sb As StringBuilder = New StringBuilder()
+        Dim fieldList As List(Of String) = New List(Of String)
         'read the JSON request
         Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(webserviceUrl & "?f=pjson")
-        Dim resp As System.Net.WebResponse = req.GetResponse()
-
-        Dim fs As FeatureService = New FeatureService()
-        Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
-        fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
-        Dim fieldList As List(Of String) = New List(Of String)
-        For Each fsf As FeatureServiceField In fs.fields
-            If fsf.fieldType = fieldType Then
-                fieldList.Add(fsf.alias)
+        Using resp As System.Net.WebResponse = req.GetResponse()
+            Dim fs As FeatureService = New FeatureService()
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+            fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
+            For Each fsf As FeatureServiceField In fs.fields
+                If fsf.fieldType = fieldType Then
+                    fieldList.Add(fsf.alias)
+                End If
+            Next
+            If fieldList.Count > 1 Then
+                fieldList.Sort()
             End If
-        Next
-        If fieldList.Count > 1 Then
-            fieldList.Sort()
-        End If
+        End Using
         Return fieldList
     End Function
 
@@ -660,16 +665,16 @@ Public Module WebservicesModule
         Dim spRef As ISpatialReference = Nothing
         'read the JSON request
         Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(url & "?f=pjson")
-        Dim resp As System.Net.WebResponse = req.GetResponse()
+        Using resp As System.Net.WebResponse = req.GetResponse()
+            Dim fs As FeatureService = New FeatureService()
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+            fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
 
-        Dim fs As FeatureService = New FeatureService()
-        Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
-        fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
-
-        If fs.extent.spatialReference IsNot Nothing Then
-            Dim factory As ISpatialReferenceFactory3 = New SpatialReferenceEnvironment()
-            spRef = factory.CreateSpatialReference(fs.extent.spatialReference.wkid)
-        End If
+            If fs.extent.spatialReference IsNot Nothing Then
+                Dim factory As ISpatialReferenceFactory3 = New SpatialReferenceEnvironment()
+                spRef = factory.CreateSpatialReference(fs.extent.spatialReference.wkid)
+            End If
+        End Using
         Return spRef
     End Function
 
@@ -679,16 +684,16 @@ Public Module WebservicesModule
 
             'read the JSON request
             Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(url & "?f=pjson")
-            Dim resp As System.Net.WebResponse = req.GetResponse()
-
-            Dim fs As FeatureService = New FeatureService()
-            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
-            fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
-            If fs IsNot Nothing Then
-                If Not String.IsNullOrEmpty(fs.name) Then
-                    Return True
+            Using resp As System.Net.WebResponse = req.GetResponse()
+                Dim fs As FeatureService = New FeatureService()
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+                fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
+                If fs IsNot Nothing Then
+                    If Not String.IsNullOrEmpty(fs.name) Then
+                        Return True
+                    End If
                 End If
-            End If
+            End Using
             Return False
         Catch ex As Exception
             'We encountered an exception; Feature service doesn't exist
@@ -697,18 +702,17 @@ Public Module WebservicesModule
     End Function
 
     Public Function BA_QueryAllFeatureServiceFieldNames(ByVal webserviceUrl As String) As IList(Of FeatureServiceField)
-        Dim sb As StringBuilder = New StringBuilder()
         Dim fieldList As List(Of FeatureServiceField) = New List(Of FeatureServiceField)
         'read the JSON request
         Dim req As System.Net.WebRequest = System.Net.WebRequest.Create(webserviceUrl & "?f=pjson")
-        Dim resp As System.Net.WebResponse = req.GetResponse()
-
-        Dim fs As FeatureService = New FeatureService()
-        Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
-        fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
-        For Each fsf As FeatureServiceField In fs.fields
-            fieldList.Add(fsf)
-        Next
+        Using resp As System.Net.WebResponse = req.GetResponse()
+            Dim fs As FeatureService = New FeatureService()
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(fs.[GetType]())
+            fs = CType(ser.ReadObject(resp.GetResponseStream), FeatureService)
+            For Each fsf As FeatureServiceField In fs.fields
+                fieldList.Add(fsf)
+            Next
+        End Using
         Return fieldList
     End Function
 
@@ -770,8 +774,52 @@ Public Module WebservicesModule
         Return False
     End Function
 
+    'Takes the input path as an argument
+    'Adds validated urls to checkedUrls dictionary
+    'Return True if not a url or if url valid
+    Public Function BA_VerifyUrl(ByVal inputPath As String, ByRef checkedUrls As IDictionary(Of String, Boolean)) As Boolean
+        Dim AGSConnectionFactory As IAGSServerConnectionFactory = New AGSServerConnectionFactory
+        Dim connectionProps As IPropertySet = New PropertySet
+        Dim AGSConnection As IAGSServerConnection = Nothing
+        Dim checkedUrl As String = inputPath
+        Try
+            Dim wType As WorkspaceType = BA_GetWorkspaceTypeFromPath(inputPath)
+            If wType = WorkspaceType.FeatureServer Or _
+                wType = WorkspaceType.ImageServer Then
+                Dim idxServices As Integer = inputPath.IndexOf(BA_Url_Services)
+                checkedUrl = inputPath.Substring(0, idxServices + BA_Url_Services.Length)
+                If checkedUrls.ContainsKey(checkedUrl) Then
+                    Return checkedUrls(checkedUrl)
+                Else
+                    connectionProps.SetProperty("URL", checkedUrl)
+                    AGSConnection = AGSConnectionFactory.Open(connectionProps, 0)
+                    If Not checkedUrls.ContainsKey(checkedUrl) Then
+                        checkedUrls.Add(checkedUrl, True)
+                    End If
+                    Return True
+                End If
+            Else
+                'The inputPath is not an ArcGIS server resource
+                Return True
+            End If
+        Catch ex As Exception
+            Debug.Print("BA_VerifyUrl Exception: " & ex.Message)
+            If Not checkedUrls.ContainsKey(checkedUrl) Then
+                checkedUrls.Add(checkedUrl, False)
+            Else
+                checkedUrls(checkedUrl) = False
+            End If
+            MessageBox.Show("BAGIS is unable to connect to " & checkedUrl & " data cannot currently be used from this server", "Invalid server", _
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return False
+        Finally
+            connectionProps = Nothing
+            AGSConnection = Nothing
+        End Try
+    End Function
+
     Public Function BA_CancelUpload(ByVal serverUrl As String, ByVal taskId As String, ByVal strToken As String, _
-                                    ByRef taskStatus As String) As String
+                                ByRef taskStatus As String) As String
         Dim reqT As HttpWebRequest
         'Dim aDownload As AoiTask = New AoiTask
         'The end point for getting a token for the web service
@@ -809,4 +857,5 @@ Public Module WebservicesModule
             Return "An error occurred while cancelling the download"
         End Try
     End Function
+
 End Module
