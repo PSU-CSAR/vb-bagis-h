@@ -285,6 +285,24 @@ Public Class FrmDownloadAoiMenu
         Application.DoEvents()
     End Sub
 
+    'Work around cross-threading exception to update task table
+    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal taskId As String, ByVal taskStatus As String, ByVal strMessage As String)
+        If ctl.InvokeRequired Then
+            ctl.BeginInvoke(New Action(Of Control, String, String, String)(AddressOf UpdateStatus), _
+                            ctl, taskId, taskStatus, strMessage)
+        Else
+            For Each row As DataGridViewRow In GrdTasks.Rows
+                Dim tid As String = row.Cells(idxTaskId).Value
+                If tid = taskId Then
+                    row.Cells(idxTaskStatus).Value = taskStatus
+                    row.Cells(idxTaskMessage).Value = strMessage
+                    Exit Sub
+                End If
+            Next
+        End If
+        Application.DoEvents()
+    End Sub
+
     'Work around cross-threading exception to enable download button
     'Friend Sub EnableDownloadBtn(ByVal ctl As Control, ByVal Enabled As Boolean)
     '    If ctl.InvokeRequired Then
@@ -469,10 +487,10 @@ Public Class FrmDownloadAoiMenu
                     If url = aoiDownload.Url Then
                         Dim cancelFlag As Boolean = Convert.ToBoolean(row.Cells(idxCancelTask).Value)
                         If cancelFlag = True Then
-                            aoiDownload.Status = BA_Task_Failure
+                            aoiDownload.Status = BA_Task_Aborted
                             'Delete zip file since we cancelled the download
                             If BA_File_ExistsWindowsIO(aoiDownload.FilePath) Then File.Delete(aoiDownload.FilePath)
-                            UpdateDownloadStatus(aoiDownload, "Download cancelled")
+                            UpdateDownloadStatus(aoiDownload, "Download aborted")
                             Exit Sub
                         End If
                         Exit For
@@ -708,8 +726,10 @@ Public Class FrmDownloadAoiMenu
                     Me.UpdateLog(aoiUpload.id, aoiUpload.task.status, strMessage)
             End Select
             Me.UpdateStatus(GrdTasks, aoiUpload, strMessage)
-        Catch ex As WebException
-            Debug.Print("OnTimedEvent: " & ex.Message)
+        Catch webEx As WebException
+            Debug.Print("CheckUploadStatus WebException: " & webEx.Message)
+        Catch ex As Exception
+            Debug.Print("CheckUploadStatus Exception: " & ex.Message)
         End Try
     End Sub
 
@@ -762,16 +782,25 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnCancelTask_Click(sender As System.Object, e As System.EventArgs) Handles BtnCancelTask.Click
         Dim rows As DataGridViewSelectedRowCollection = GrdTasks.SelectedRows()
+        'Set reference to HruExtension
+        Dim hruExt As HruExtension = HruExtension.GetExtension
         For Each aRow As DataGridViewRow In rows
-            If aRow.Cells(idxTaskType).Equals(BA_TASK_UPLOAD) Then
+            If aRow.Cells(idxTaskType).Value.Equals(BA_TASK_UPLOAD) Then
                 'Uploads
-                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Staging) Then
-                    'File is being zipped; not sent to server yet
-                    'aRow.Cells(idxComment).Value = BA_Download_Cancelled
-                    'Can't do anything; GUI is locked when zipping under way
+                'Can't do anything until upload actually starts; GUI is locked when zipping under way
+                'Only pending tasks can be cancelled
+                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Pending) Then
+                    Dim taskId As String = Convert.ToString(aRow.Cells(idxTaskId).Value)
+                    Dim taskStatus As String = Convert.ToString(aRow.Cells(idxTaskStatus).Value)
+                    Dim cancelMessage As String = BA_CancelUpload(TxtBasinsDb.Text, taskId, hruExt.EbagisToken.token, taskStatus)
+                    If Not String.IsNullOrEmpty(taskStatus) Then
+                        aRow.Cells(idxTaskStatus).Value = taskStatus
+                    End If
+                    aRow.Cells(idxTaskMessage).Value = cancelMessage
                 End If
             Else
                 'Downloads
+                'This code sets a cancel flag on the task grid that is read by the download listeners
                 If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Success) Or _
                     aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Failure) Then
                     'File download to client has started
