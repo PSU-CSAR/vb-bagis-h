@@ -628,6 +628,9 @@
     <EmbeddedResource Include="RefineHru\FrmReclassZones.resx">
       <DependentUpon>FrmReclassZones.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tools\FrmDownloadAoiMenu.resx">
+      <DependentUpon>FrmDownloadAoiMenu.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tools\FrmExportToGdb.resx">
       <DependentUpon>FrmExportToGdb.vb</DependentUpon>
     </EmbeddedResource>

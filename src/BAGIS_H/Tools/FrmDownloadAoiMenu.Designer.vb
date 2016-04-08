@@ -57,13 +57,6 @@ Partial Class FrmDownloadAoiMenu
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TxtComment = New System.Windows.Forms.TextBox()
         Me.GrdTasks = New System.Windows.Forms.DataGridView()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.BtnClear = New System.Windows.Forms.Button()
-        Me.BtnUpload = New System.Windows.Forms.Button()
-        Me.BtnTaskLog = New System.Windows.Forms.Button()
-        Me.BtnUpdateStatus = New System.Windows.Forms.Button()
-        Me.DownloadTimer = New System.Windows.Forms.Timer(Me.components)
-        Me.BtnCancelTask = New System.Windows.Forms.Button()
         Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.AoiType = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Status = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -74,6 +67,13 @@ Partial Class FrmDownloadAoiMenu
         Me.LocalFolder = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DownloadStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.CancelTask = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.BtnClear = New System.Windows.Forms.Button()
+        Me.BtnUpload = New System.Windows.Forms.Button()
+        Me.BtnTaskLog = New System.Windows.Forms.Button()
+        Me.BtnUpdateStatus = New System.Windows.Forms.Button()
+        Me.DownloadTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.BtnCancelTask = New System.Windows.Forms.Button()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -151,6 +151,7 @@ Partial Class FrmDownloadAoiMenu
         '
         'BtnCancel
         '
+        Me.BtnCancel.CausesValidation = False
         Me.BtnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnCancel.Location = New System.Drawing.Point(806, 534)
         Me.BtnCancel.Name = "BtnCancel"
@@ -313,72 +314,6 @@ Partial Class FrmDownloadAoiMenu
         Me.GrdTasks.TabIndex = 83
         Me.GrdTasks.TabStop = False
         '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(12, 261)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(127, 16)
-        Me.Label3.TabIndex = 84
-        Me.Label3.Text = "Tasks in process"
-        '
-        'BtnClear
-        '
-        Me.BtnClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnClear.Location = New System.Drawing.Point(795, 246)
-        Me.BtnClear.Name = "BtnClear"
-        Me.BtnClear.Size = New System.Drawing.Size(110, 30)
-        Me.BtnClear.TabIndex = 85
-        Me.BtnClear.Text = "Clear tasks"
-        Me.BtnClear.UseVisualStyleBackColor = True
-        '
-        'BtnUpload
-        '
-        Me.BtnUpload.Enabled = False
-        Me.BtnUpload.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUpload.Location = New System.Drawing.Point(806, 488)
-        Me.BtnUpload.Name = "BtnUpload"
-        Me.BtnUpload.Size = New System.Drawing.Size(100, 30)
-        Me.BtnUpload.TabIndex = 86
-        Me.BtnUpload.Text = "Upload"
-        Me.BtnUpload.UseVisualStyleBackColor = True
-        '
-        'BtnTaskLog
-        '
-        Me.BtnTaskLog.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnTaskLog.Location = New System.Drawing.Point(678, 246)
-        Me.BtnTaskLog.Name = "BtnTaskLog"
-        Me.BtnTaskLog.Size = New System.Drawing.Size(110, 30)
-        Me.BtnTaskLog.TabIndex = 87
-        Me.BtnTaskLog.Text = "View task log"
-        Me.BtnTaskLog.UseVisualStyleBackColor = True
-        '
-        'BtnUpdateStatus
-        '
-        Me.BtnUpdateStatus.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUpdateStatus.Location = New System.Drawing.Point(551, 246)
-        Me.BtnUpdateStatus.Name = "BtnUpdateStatus"
-        Me.BtnUpdateStatus.Size = New System.Drawing.Size(120, 30)
-        Me.BtnUpdateStatus.TabIndex = 88
-        Me.BtnUpdateStatus.Text = "Update status"
-        Me.BtnUpdateStatus.UseVisualStyleBackColor = True
-        '
-        'DownloadTimer
-        '
-        Me.DownloadTimer.Interval = 10000
-        '
-        'BtnCancelTask
-        '
-        Me.BtnCancelTask.Enabled = False
-        Me.BtnCancelTask.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancelTask.Location = New System.Drawing.Point(425, 246)
-        Me.BtnCancelTask.Name = "BtnCancelTask"
-        Me.BtnCancelTask.Size = New System.Drawing.Size(120, 30)
-        Me.BtnCancelTask.TabIndex = 89
-        Me.BtnCancelTask.Text = "Cancel task"
-        Me.BtnCancelTask.UseVisualStyleBackColor = True
-        '
         'DataGridViewTextBoxColumn1
         '
         DataGridViewCellStyle8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -465,6 +400,72 @@ Partial Class FrmDownloadAoiMenu
         Me.CancelTask.ReadOnly = True
         Me.CancelTask.Visible = False
         Me.CancelTask.Width = 5
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.Location = New System.Drawing.Point(12, 261)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(127, 16)
+        Me.Label3.TabIndex = 84
+        Me.Label3.Text = "Tasks in process"
+        '
+        'BtnClear
+        '
+        Me.BtnClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnClear.Location = New System.Drawing.Point(795, 246)
+        Me.BtnClear.Name = "BtnClear"
+        Me.BtnClear.Size = New System.Drawing.Size(110, 30)
+        Me.BtnClear.TabIndex = 85
+        Me.BtnClear.Text = "Clear tasks"
+        Me.BtnClear.UseVisualStyleBackColor = True
+        '
+        'BtnUpload
+        '
+        Me.BtnUpload.Enabled = False
+        Me.BtnUpload.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnUpload.Location = New System.Drawing.Point(806, 488)
+        Me.BtnUpload.Name = "BtnUpload"
+        Me.BtnUpload.Size = New System.Drawing.Size(100, 30)
+        Me.BtnUpload.TabIndex = 86
+        Me.BtnUpload.Text = "Upload"
+        Me.BtnUpload.UseVisualStyleBackColor = True
+        '
+        'BtnTaskLog
+        '
+        Me.BtnTaskLog.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnTaskLog.Location = New System.Drawing.Point(678, 246)
+        Me.BtnTaskLog.Name = "BtnTaskLog"
+        Me.BtnTaskLog.Size = New System.Drawing.Size(110, 30)
+        Me.BtnTaskLog.TabIndex = 87
+        Me.BtnTaskLog.Text = "View task log"
+        Me.BtnTaskLog.UseVisualStyleBackColor = True
+        '
+        'BtnUpdateStatus
+        '
+        Me.BtnUpdateStatus.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnUpdateStatus.Location = New System.Drawing.Point(551, 246)
+        Me.BtnUpdateStatus.Name = "BtnUpdateStatus"
+        Me.BtnUpdateStatus.Size = New System.Drawing.Size(120, 30)
+        Me.BtnUpdateStatus.TabIndex = 88
+        Me.BtnUpdateStatus.Text = "Update status"
+        Me.BtnUpdateStatus.UseVisualStyleBackColor = True
+        '
+        'DownloadTimer
+        '
+        Me.DownloadTimer.Interval = 10000
+        '
+        'BtnCancelTask
+        '
+        Me.BtnCancelTask.Enabled = False
+        Me.BtnCancelTask.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnCancelTask.Location = New System.Drawing.Point(425, 246)
+        Me.BtnCancelTask.Name = "BtnCancelTask"
+        Me.BtnCancelTask.Size = New System.Drawing.Size(120, 30)
+        Me.BtnCancelTask.TabIndex = 89
+        Me.BtnCancelTask.Text = "Cancel task"
+        Me.BtnCancelTask.UseVisualStyleBackColor = True
         '
         'FrmDownloadAoiMenu
         '

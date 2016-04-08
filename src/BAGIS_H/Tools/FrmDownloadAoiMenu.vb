@@ -849,4 +849,38 @@ Public Class FrmDownloadAoiMenu
         End Try
 
     End Sub
+
+    Private Sub TxtBasinsDb_Validating(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles TxtBasinsDb.Validating
+        Dim errorMsg As String = Nothing
+        If Not ValidServerName(TxtBasinsDb.Text, errorMsg) Then
+            ' Cancel the event and select the text to be corrected by the user.
+            e.Cancel = True
+            TxtBasinsDb.Select(0, TxtBasinsDb.Text.Length)
+
+            ' Set the ErrorProvider error with the text to display. 
+            MessageBox.Show(errorMsg, "Invalid database path", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+
+    Private Function ValidServerName(ByVal url As String, ByRef errorMessage As String) As Boolean
+        ' Confirm there is text in the control.
+        If TxtBasinsDb.Text.Length = 0 Then
+            errorMessage = "Basins database is required."
+            Return False
+        End If
+        If TxtBasinsDb.Text.IndexOf("https://", StringComparison.OrdinalIgnoreCase) <> 0 Then
+            errorMessage = "A secure web service url starting with 'https' is required."
+            Return False
+        End If
+        If Not Uri.IsWellFormedUriString(TxtBasinsDb.Text, UriKind.Absolute) Then
+            errorMessage = "The url for the basins database you provided is not well-formed."
+            Return False
+        End If
+        'Check token
+        If GenerateToken() <> BA_ReturnCode.Success Then
+            errorMessage = "Unable to generate token and connect to the basins database you provided"
+            Return False
+        End If
+        Return True
+    End Function
 End Class

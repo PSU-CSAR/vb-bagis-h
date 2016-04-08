@@ -53,7 +53,7 @@ Public Class SecurityHelper
 
     Public Shared Function IsTokenValid(ByVal testUrl As String, ByVal strToken As String) As Boolean
 
-'The end point for getting a token for the web service
+        'The end point for getting a token for the web service
         Dim reqT As HttpWebRequest = WebRequest.Create(testUrl)
         'This is a GET request
         reqT.Method = "GET"
