@@ -25,6 +25,7 @@ Public Class FrmDownloadAoiMenu
     Private idxTaskLocalPath As Integer = 7
     Private idxDownloadStatus As Integer = 8
     Private idxCancelTask As Integer = 9
+    Private m_loading As Boolean = True
 
     Public Sub New()
 
@@ -36,20 +37,19 @@ Public Class FrmDownloadAoiMenu
 
         'Set the user name and password from a text file that is NOT in source countrol
         'Note: Developers will have to change this to a path valid on their machine
-        Dim filePath As String = BA_GetSettingsPath() & "\BAGIS\GoldenTicket.txt"
-        '@ToDo: In the future, this comes from user input
-        Try
-            ' Create an instance of StreamReader to read from a file.
-            ' The using statement also closes the StreamReader.
-            Using sr As New StreamReader(filePath)
-                hruExt.EBagisUserName = sr.ReadLine()
-                hruExt.EBagisPassword = sr.ReadLine()
-            End Using
-        Catch e As Exception
-            ' Let the user know what went wrong.
-            Console.WriteLine("The file could not be read:")
-            Console.WriteLine(e.Message)
-        End Try
+        'Dim filePath As String = BA_GetSettingsPath() & "\BAGIS\GoldenTicket.txt"
+        'Try
+        '    ' Create an instance of StreamReader to read from a file.
+        '    ' The using statement also closes the StreamReader.
+        '    Using sr As New StreamReader(filePath)
+        '        hruExt.EBagisUserName = sr.ReadLine()
+        '        hruExt.EBagisPassword = sr.ReadLine()
+        '    End Using
+        'Catch e As Exception
+        '    ' Let the user know what went wrong.
+        '    Console.WriteLine("The file could not be read:")
+        '    Console.WriteLine(e.Message)
+        'End Try
 
         ' Add any initialization after the InitializeComponent() call.
         '---create a row---
@@ -77,6 +77,25 @@ Public Class FrmDownloadAoiMenu
         'AoiGrid.Rows.Add(item2)
         AoiGrid.ClearSelection()
         AoiGrid.CurrentCell = Nothing
+
+        'Look for location of basins server in local config file
+        Dim bSettings As BagisHSettings = Nothing
+        Dim localSettingsPath As String = hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings)
+        If Not BA_File_ExistsWindowsIO(localSettingsPath) Then
+            Dim jsonFile As String = BA_GetBareName(BA_EnumDescription(PublicPath.BagisHSettings))
+            Dim copyPath As String = BA_GetAddInDirectory() & "\" & jsonFile
+            File.Copy(copyPath, localSettingsPath)
+        End If
+        bSettings = ReadSettingsFromJson(localSettingsPath)
+        If bSettings IsNot Nothing Then
+            If Not String.IsNullOrEmpty(bSettings.basinsDb) Then
+                TxtBasinsDb.Text = bSettings.basinsDb
+            End If
+        End If
+        m_loading = False   'turn off loading flag to turn on validation of server name
+        If String.IsNullOrEmpty(TxtBasinsDb.Text) Then
+            MessageBox.Show("The host name for the basins database could not be loaded. Please contact your system administrator")
+        End If
     End Sub
 
     Private Sub BtnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnCancel.Click
@@ -863,6 +882,8 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Function ValidServerName(ByVal url As String, ByRef errorMessage As String) As Boolean
+        'Always pass validation if loading
+        If m_loading = True Then Return True
         ' Confirm there is text in the control.
         If TxtBasinsDb.Text.Length = 0 Then
             errorMessage = "Basins database is required."
@@ -882,5 +903,44 @@ Public Class FrmDownloadAoiMenu
             Return False
         End If
         Return True
+    End Function
+
+    Public Function ReadSettingsFromJson(ByVal filePath As String) As BagisHSettings
+
+        Try
+            Dim bytes() As Byte = New Byte(0) {}
+            Dim settings As BagisHSettings = Nothing
+            Using fsSource As System.IO.FileStream = New System.IO.FileStream(filePath, _
+                FileMode.Open, FileAccess.Read)
+                ' Read the source file into a byte array.
+                ReDim bytes((fsSource.Length) - 1)
+                Dim numBytesToRead As Integer = CType(fsSource.Length, Integer)
+                Dim numBytesRead As Integer = 0
+
+                While (numBytesToRead > 0)
+                    ' Read may return anything from 0 to numBytesToRead.
+                    Dim n As Integer = fsSource.Read(bytes, numBytesRead, _
+                        numBytesToRead)
+                    ' Break when the end of the file is reached.
+                    If (n = 0) Then
+                        Exit While
+                    End If
+                    numBytesRead = (numBytesRead + n)
+                    numBytesToRead = (numBytesToRead - n)
+                End While
+            End Using
+
+            If bytes.Length > 0 Then
+                Using memStream As MemoryStream = New MemoryStream(bytes)
+                    settings = New BagisHSettings()
+                    Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(settings.[GetType]())
+                    Return CType(ser.ReadObject(memStream), BagisHSettings)
+                End Using
+            End If
+            Return settings
+        Catch ex As Exception
+            Debug.Print("ReadSettingsFromJson Exception: " & ex.Message)
+            Return Nothing
+        End Try
     End Function
 End Class

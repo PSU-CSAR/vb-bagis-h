@@ -184,6 +184,7 @@
     </Compile>
     <Compile Include="Objects\AoiDownloadInfo.vb" />
     <Compile Include="Objects\AoiUploadTimer.vb" />
+    <Compile Include="Objects\BagisHSettings.vb" />
     <Compile Include="Objects\BagisToken.vb" />
     <Compile Include="Objects\AoiDownloadTimer.vb" />
     <Compile Include="Objects\SecurityHelper.vb" />
@@ -673,6 +674,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="bagis-h-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
