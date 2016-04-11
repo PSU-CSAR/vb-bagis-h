@@ -76,8 +76,6 @@ Public Class FrmDownloadAoiMenu
         '@ToDo: Temporarily stop populating form
         'AoiGrid.Rows.Add(item)
         'AoiGrid.Rows.Add(item2)
-        AoiGrid.ClearSelection()
-        AoiGrid.CurrentCell = Nothing
 
         'Look for location of basins server in local config file
         Dim localSettingsPath As String = hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings)
@@ -96,6 +94,10 @@ Public Class FrmDownloadAoiMenu
         If String.IsNullOrEmpty(TxtBasinsDb.Text) Then
             MessageBox.Show("The host name for the basins database could not be loaded. Please contact your system administrator")
         End If
+
+        AoiGrid.ClearSelection()
+        AoiGrid.CurrentCell = Nothing
+        Me.ActiveControl = BtnList
     End Sub
 
     Private Sub BtnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnCancel.Click
@@ -399,6 +401,7 @@ Public Class FrmDownloadAoiMenu
         If Not String.IsNullOrEmpty(TxtUploadPath.Text) Then
             BtnUpload.Enabled = True
         Else
+            Me.ActiveControl = BtnSelectAoi
             BtnUpload.Enabled = False
         End If
     End Sub
@@ -906,8 +909,13 @@ Public Class FrmDownloadAoiMenu
         m_settings.basinsDb = TxtBasinsDb.Text
         'Set reference to HruExtension
         Dim hruExt As HruExtension = HruExtension.GetExtension
-        SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)
-        Return True
+        Dim success As BA_ReturnCode = SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)
+        If success = BA_ReturnCode.Success Then
+            Return True
+        Else
+            errorMessage = "An error occurred while trying to save the updated basins database location"
+            Return False
+        End If
     End Function
 
     Private Function ReadSettingsFromJson(ByVal filePath As String) As BagisHSettings
@@ -956,6 +964,7 @@ Public Class FrmDownloadAoiMenu
                 FileMode.Create, FileAccess.Write)
                 ser.WriteObject(fsDest, pSettings)
             End Using
+            MessageBox.Show("The updated basins database server location has been saved!")
             Return BA_ReturnCode.Success
         Catch ex As Exception
             Debug.Print("SaveSettings Exception: " & ex.Message)

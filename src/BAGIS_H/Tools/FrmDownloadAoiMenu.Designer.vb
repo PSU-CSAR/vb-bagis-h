@@ -23,18 +23,18 @@ Partial Class FrmDownloadAoiMenu
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle21 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle22 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle23 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle24 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.AoiGrid = New System.Windows.Forms.DataGridView()
         Me.AoiName = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Uploaded = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -74,6 +74,7 @@ Partial Class FrmDownloadAoiMenu
         Me.BtnUpdateStatus = New System.Windows.Forms.Button()
         Me.DownloadTimer = New System.Windows.Forms.Timer(Me.components)
         Me.BtnCancelTask = New System.Windows.Forms.Button()
+        Me.TxtServerExample = New System.Windows.Forms.TextBox()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -82,17 +83,17 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.AoiGrid.AllowUserToAddRows = False
         Me.AoiGrid.AllowUserToDeleteRows = False
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle13.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.AoiGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle13
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.AoiGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
         Me.AoiGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.AoiGrid.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.AoiName, Me.Uploaded, Me.Author, Me.Download, Me.Comment, Me.DownloadUrl})
-        Me.AoiGrid.Location = New System.Drawing.Point(11, 41)
+        Me.AoiGrid.Location = New System.Drawing.Point(12, 70)
         Me.AoiGrid.Name = "AoiGrid"
         Me.AoiGrid.Size = New System.Drawing.Size(896, 165)
         Me.AoiGrid.TabIndex = 0
@@ -100,8 +101,8 @@ Partial Class FrmDownloadAoiMenu
         '
         'AoiName
         '
-        DataGridViewCellStyle14.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AoiName.DefaultCellStyle = DataGridViewCellStyle14
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AoiName.DefaultCellStyle = DataGridViewCellStyle2
         Me.AoiName.HeaderText = "AOI Name"
         Me.AoiName.Name = "AoiName"
         Me.AoiName.ReadOnly = True
@@ -109,33 +110,33 @@ Partial Class FrmDownloadAoiMenu
         '
         'Uploaded
         '
-        DataGridViewCellStyle15.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Uploaded.DefaultCellStyle = DataGridViewCellStyle15
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Uploaded.DefaultCellStyle = DataGridViewCellStyle3
         Me.Uploaded.HeaderText = "Uploaded"
         Me.Uploaded.Name = "Uploaded"
         Me.Uploaded.ReadOnly = True
         '
         'Author
         '
-        DataGridViewCellStyle16.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Author.DefaultCellStyle = DataGridViewCellStyle16
+        DataGridViewCellStyle4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Author.DefaultCellStyle = DataGridViewCellStyle4
         Me.Author.HeaderText = "Author"
         Me.Author.Name = "Author"
         Me.Author.ReadOnly = True
         '
         'Download
         '
-        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle17.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle17.NullValue = False
-        Me.Download.DefaultCellStyle = DataGridViewCellStyle17
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle5.NullValue = False
+        Me.Download.DefaultCellStyle = DataGridViewCellStyle5
         Me.Download.HeaderText = "Download ?"
         Me.Download.Name = "Download"
         '
         'Comment
         '
-        DataGridViewCellStyle18.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Comment.DefaultCellStyle = DataGridViewCellStyle18
+        DataGridViewCellStyle6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Comment.DefaultCellStyle = DataGridViewCellStyle6
         Me.Comment.HeaderText = "Comment"
         Me.Comment.Name = "Comment"
         Me.Comment.ReadOnly = True
@@ -153,7 +154,7 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.BtnCancel.CausesValidation = False
         Me.BtnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancel.Location = New System.Drawing.Point(806, 534)
+        Me.BtnCancel.Location = New System.Drawing.Point(807, 560)
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.Size = New System.Drawing.Size(100, 30)
         Me.BtnCancel.TabIndex = 57
@@ -164,7 +165,7 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.BtnDownloadAoi.Enabled = False
         Me.BtnDownloadAoi.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnDownloadAoi.Location = New System.Drawing.Point(806, 455)
+        Me.BtnDownloadAoi.Location = New System.Drawing.Point(807, 481)
         Me.BtnDownloadAoi.Name = "BtnDownloadAoi"
         Me.BtnDownloadAoi.Size = New System.Drawing.Size(100, 30)
         Me.BtnDownloadAoi.TabIndex = 56
@@ -187,7 +188,7 @@ Partial Class FrmDownloadAoiMenu
         Me.TxtBasinsDb.Location = New System.Drawing.Point(143, 6)
         Me.TxtBasinsDb.Name = "TxtBasinsDb"
         Me.TxtBasinsDb.Size = New System.Drawing.Size(350, 22)
-        Me.TxtBasinsDb.TabIndex = 73
+        Me.TxtBasinsDb.TabIndex = 50
         '
         'Label7
         '
@@ -204,7 +205,7 @@ Partial Class FrmDownloadAoiMenu
         Me.TxtDownloadPath.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtDownloadPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtDownloadPath.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtDownloadPath.Location = New System.Drawing.Point(108, 453)
+        Me.TxtDownloadPath.Location = New System.Drawing.Point(109, 479)
         Me.TxtDownloadPath.Name = "TxtDownloadPath"
         Me.TxtDownloadPath.ReadOnly = True
         Me.TxtDownloadPath.Size = New System.Drawing.Size(581, 22)
@@ -214,7 +215,7 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.Label6.AutoSize = True
         Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(8, 456)
+        Me.Label6.Location = New System.Drawing.Point(9, 482)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(94, 16)
         Me.Label6.TabIndex = 75
@@ -223,7 +224,7 @@ Partial Class FrmDownloadAoiMenu
         'BtnSelectDownloadFolder
         '
         Me.BtnSelectDownloadFolder.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnSelectDownloadFolder.Location = New System.Drawing.Point(699, 455)
+        Me.BtnSelectDownloadFolder.Location = New System.Drawing.Point(700, 481)
         Me.BtnSelectDownloadFolder.Name = "BtnSelectDownloadFolder"
         Me.BtnSelectDownloadFolder.Size = New System.Drawing.Size(100, 30)
         Me.BtnSelectDownloadFolder.TabIndex = 74
@@ -234,7 +235,7 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(8, 488)
+        Me.Label1.Location = New System.Drawing.Point(9, 514)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(119, 16)
         Me.Label1.TabIndex = 77
@@ -245,7 +246,7 @@ Partial Class FrmDownloadAoiMenu
         Me.TxtUploadPath.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtUploadPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtUploadPath.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtUploadPath.Location = New System.Drawing.Point(130, 485)
+        Me.TxtUploadPath.Location = New System.Drawing.Point(131, 511)
         Me.TxtUploadPath.Name = "TxtUploadPath"
         Me.TxtUploadPath.ReadOnly = True
         Me.TxtUploadPath.Size = New System.Drawing.Size(435, 22)
@@ -254,7 +255,7 @@ Partial Class FrmDownloadAoiMenu
         'BtnSelectAoi
         '
         Me.BtnSelectAoi.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnSelectAoi.Location = New System.Drawing.Point(592, 488)
+        Me.BtnSelectAoi.Location = New System.Drawing.Point(593, 514)
         Me.BtnSelectAoi.Name = "BtnSelectAoi"
         Me.BtnSelectAoi.Size = New System.Drawing.Size(100, 30)
         Me.BtnSelectAoi.TabIndex = 80
@@ -264,7 +265,7 @@ Partial Class FrmDownloadAoiMenu
         'BtnUploadZip
         '
         Me.BtnUploadZip.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUploadZip.Location = New System.Drawing.Point(699, 488)
+        Me.BtnUploadZip.Location = New System.Drawing.Point(700, 514)
         Me.BtnUploadZip.Name = "BtnUploadZip"
         Me.BtnUploadZip.Size = New System.Drawing.Size(100, 30)
         Me.BtnUploadZip.TabIndex = 79
@@ -275,7 +276,7 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(8, 524)
+        Me.Label2.Location = New System.Drawing.Point(9, 550)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(125, 16)
         Me.Label2.TabIndex = 81
@@ -284,7 +285,7 @@ Partial Class FrmDownloadAoiMenu
         'TxtComment
         '
         Me.TxtComment.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtComment.Location = New System.Drawing.Point(139, 523)
+        Me.TxtComment.Location = New System.Drawing.Point(140, 549)
         Me.TxtComment.MaxLength = 512
         Me.TxtComment.Multiline = True
         Me.TxtComment.Name = "TxtComment"
@@ -296,17 +297,17 @@ Partial Class FrmDownloadAoiMenu
         Me.GrdTasks.AllowUserToAddRows = False
         Me.GrdTasks.AllowUserToDeleteRows = False
         Me.GrdTasks.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells
-        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.GrdTasks.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle19
+        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.GrdTasks.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle7
         Me.GrdTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GrdTasks.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.AoiType, Me.Status, Me.Started, Me.Message, Me.Url, Me.Id, Me.LocalFolder, Me.DownloadStatus, Me.CancelTask})
-        Me.GrdTasks.Location = New System.Drawing.Point(10, 282)
+        Me.GrdTasks.Location = New System.Drawing.Point(11, 308)
         Me.GrdTasks.Name = "GrdTasks"
         Me.GrdTasks.ReadOnly = True
         Me.GrdTasks.Size = New System.Drawing.Size(896, 165)
@@ -315,9 +316,9 @@ Partial Class FrmDownloadAoiMenu
         '
         'DataGridViewTextBoxColumn1
         '
-        DataGridViewCellStyle20.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle20
+        DataGridViewCellStyle8.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle8
         Me.DataGridViewTextBoxColumn1.HeaderText = "AOI Name"
         Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
         Me.DataGridViewTextBoxColumn1.ReadOnly = True
@@ -325,24 +326,24 @@ Partial Class FrmDownloadAoiMenu
         '
         'AoiType
         '
-        DataGridViewCellStyle21.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AoiType.DefaultCellStyle = DataGridViewCellStyle21
+        DataGridViewCellStyle9.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AoiType.DefaultCellStyle = DataGridViewCellStyle9
         Me.AoiType.HeaderText = "Type"
         Me.AoiType.Name = "AoiType"
         Me.AoiType.ReadOnly = True
         '
         'Status
         '
-        DataGridViewCellStyle22.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Status.DefaultCellStyle = DataGridViewCellStyle22
+        DataGridViewCellStyle10.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Status.DefaultCellStyle = DataGridViewCellStyle10
         Me.Status.HeaderText = "Status"
         Me.Status.Name = "Status"
         Me.Status.ReadOnly = True
         '
         'Started
         '
-        DataGridViewCellStyle23.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Started.DefaultCellStyle = DataGridViewCellStyle23
+        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Started.DefaultCellStyle = DataGridViewCellStyle11
         Me.Started.HeaderText = "Started"
         Me.Started.Name = "Started"
         Me.Started.ReadOnly = True
@@ -352,9 +353,9 @@ Partial Class FrmDownloadAoiMenu
         '
         'Message
         '
-        DataGridViewCellStyle24.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.Message.DefaultCellStyle = DataGridViewCellStyle24
+        DataGridViewCellStyle12.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.Message.DefaultCellStyle = DataGridViewCellStyle12
         Me.Message.HeaderText = "Message"
         Me.Message.Name = "Message"
         Me.Message.ReadOnly = True
@@ -404,7 +405,7 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(12, 261)
+        Me.Label3.Location = New System.Drawing.Point(13, 287)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(127, 16)
         Me.Label3.TabIndex = 84
@@ -413,7 +414,7 @@ Partial Class FrmDownloadAoiMenu
         'BtnClear
         '
         Me.BtnClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnClear.Location = New System.Drawing.Point(795, 246)
+        Me.BtnClear.Location = New System.Drawing.Point(796, 272)
         Me.BtnClear.Name = "BtnClear"
         Me.BtnClear.Size = New System.Drawing.Size(110, 30)
         Me.BtnClear.TabIndex = 85
@@ -424,17 +425,18 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.BtnUpload.Enabled = False
         Me.BtnUpload.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUpload.Location = New System.Drawing.Point(806, 488)
+        Me.BtnUpload.Location = New System.Drawing.Point(807, 514)
         Me.BtnUpload.Name = "BtnUpload"
         Me.BtnUpload.Size = New System.Drawing.Size(100, 30)
-        Me.BtnUpload.TabIndex = 86
+        Me.BtnUpload.TabIndex = 50
+        Me.BtnUpload.TabStop = False
         Me.BtnUpload.Text = "Upload"
         Me.BtnUpload.UseVisualStyleBackColor = True
         '
         'BtnTaskLog
         '
         Me.BtnTaskLog.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnTaskLog.Location = New System.Drawing.Point(678, 246)
+        Me.BtnTaskLog.Location = New System.Drawing.Point(679, 272)
         Me.BtnTaskLog.Name = "BtnTaskLog"
         Me.BtnTaskLog.Size = New System.Drawing.Size(110, 30)
         Me.BtnTaskLog.TabIndex = 87
@@ -444,7 +446,7 @@ Partial Class FrmDownloadAoiMenu
         'BtnUpdateStatus
         '
         Me.BtnUpdateStatus.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUpdateStatus.Location = New System.Drawing.Point(551, 246)
+        Me.BtnUpdateStatus.Location = New System.Drawing.Point(552, 272)
         Me.BtnUpdateStatus.Name = "BtnUpdateStatus"
         Me.BtnUpdateStatus.Size = New System.Drawing.Size(120, 30)
         Me.BtnUpdateStatus.TabIndex = 88
@@ -459,18 +461,30 @@ Partial Class FrmDownloadAoiMenu
         '
         Me.BtnCancelTask.Enabled = False
         Me.BtnCancelTask.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancelTask.Location = New System.Drawing.Point(425, 246)
+        Me.BtnCancelTask.Location = New System.Drawing.Point(426, 272)
         Me.BtnCancelTask.Name = "BtnCancelTask"
         Me.BtnCancelTask.Size = New System.Drawing.Size(120, 30)
         Me.BtnCancelTask.TabIndex = 89
         Me.BtnCancelTask.Text = "Cancel task"
         Me.BtnCancelTask.UseVisualStyleBackColor = True
         '
+        'TxtServerExample
+        '
+        Me.TxtServerExample.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.TxtServerExample.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtServerExample.Location = New System.Drawing.Point(143, 34)
+        Me.TxtServerExample.Name = "TxtServerExample"
+        Me.TxtServerExample.ReadOnly = True
+        Me.TxtServerExample.Size = New System.Drawing.Size(350, 15)
+        Me.TxtServerExample.TabIndex = 90
+        Me.TxtServerExample.Text = "Example: https://servername/api/rest/"
+        '
         'FrmDownloadAoiMenu
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(928, 572)
+        Me.ClientSize = New System.Drawing.Size(928, 600)
+        Me.Controls.Add(Me.TxtServerExample)
         Me.Controls.Add(Me.BtnCancelTask)
         Me.Controls.Add(Me.BtnUpdateStatus)
         Me.Controls.Add(Me.BtnTaskLog)
@@ -541,4 +555,5 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents LocalFolder As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents DownloadStatus As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents CancelTask As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents TxtServerExample As System.Windows.Forms.TextBox
 End Class
