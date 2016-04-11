@@ -26,6 +26,7 @@ Public Class FrmDownloadAoiMenu
     Private idxDownloadStatus As Integer = 8
     Private idxCancelTask As Integer = 9
     Private m_loading As Boolean = True
+    Private m_settings As BagisHSettings
 
     Public Sub New()
 
@@ -79,17 +80,16 @@ Public Class FrmDownloadAoiMenu
         AoiGrid.CurrentCell = Nothing
 
         'Look for location of basins server in local config file
-        Dim bSettings As BagisHSettings = Nothing
         Dim localSettingsPath As String = hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings)
         If Not BA_File_ExistsWindowsIO(localSettingsPath) Then
             Dim jsonFile As String = BA_GetBareName(BA_EnumDescription(PublicPath.BagisHSettings))
             Dim copyPath As String = BA_GetAddInDirectory() & "\" & jsonFile
             File.Copy(copyPath, localSettingsPath)
         End If
-        bSettings = ReadSettingsFromJson(localSettingsPath)
-        If bSettings IsNot Nothing Then
-            If Not String.IsNullOrEmpty(bSettings.basinsDb) Then
-                TxtBasinsDb.Text = bSettings.basinsDb
+        m_settings = ReadSettingsFromJson(localSettingsPath)
+        If m_settings IsNot Nothing Then
+            If Not String.IsNullOrEmpty(m_settings.basinsDb) Then
+                TxtBasinsDb.Text = m_settings.basinsDb
             End If
         End If
         m_loading = False   'turn off loading flag to turn on validation of server name
@@ -902,11 +902,15 @@ Public Class FrmDownloadAoiMenu
             errorMessage = "Unable to generate token and connect to the basins database you provided"
             Return False
         End If
+        If m_settings Is Nothing Then m_settings = New BagisHSettings()
+        m_settings.basinsDb = TxtBasinsDb.Text
+        'Set reference to HruExtension
+        Dim hruExt As HruExtension = HruExtension.GetExtension
+        SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)
         Return True
     End Function
 
-    Public Function ReadSettingsFromJson(ByVal filePath As String) As BagisHSettings
-
+    Private Function ReadSettingsFromJson(ByVal filePath As String) As BagisHSettings
         Try
             Dim bytes() As Byte = New Byte(0) {}
             Dim settings As BagisHSettings = Nothing
@@ -941,6 +945,21 @@ Public Class FrmDownloadAoiMenu
         Catch ex As Exception
             Debug.Print("ReadSettingsFromJson Exception: " & ex.Message)
             Return Nothing
+        End Try
+    End Function
+
+    Private Function SaveSettings(ByVal filePath As String, ByVal pSettings As BagisHSettings) As BA_ReturnCode
+        Try
+            'Serialize object to json
+            Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(pSettings.[GetType]())
+            Using fsDest As System.IO.FileStream = New System.IO.FileStream(filePath, _
+                FileMode.Create, FileAccess.Write)
+                ser.WriteObject(fsDest, pSettings)
+            End Using
+            Return BA_ReturnCode.Success
+        Catch ex As Exception
+            Debug.Print("SaveSettings Exception: " & ex.Message)
+            Return BA_ReturnCode.UnknownError
         End Try
     End Function
 End Class
