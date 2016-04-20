@@ -6,6 +6,7 @@ Imports BAGIS_ClassLibrary
 Imports ESRI.ArcGIS.CatalogUI
 Imports ESRI.ArcGIS.Catalog
 Imports ESRI.ArcGIS.esriSystem
+Imports ESRI.ArcGIS.Framework
 
 Public Class FrmDownloadAoiMenu
 
@@ -677,7 +678,7 @@ Public Class FrmDownloadAoiMenu
         If foundEntry IsNot Nothing Then
             Dim log As TaskLog = Nothing
             'First try to load an existing log file
-             If BA_File_ExistsWindowsIO(foundEntry.localFolder & BA_EnumDescription(PublicPath.EBagisTaskLog)) Then
+            If BA_File_ExistsWindowsIO(foundEntry.localFolder & BA_EnumDescription(PublicPath.EBagisTaskLog)) Then
                 Dim obj As Object = SerializableData.Load(foundEntry.localFolder & BA_EnumDescription(PublicPath.EBagisTaskLog), GetType(TaskLog))
                 If obj IsNot Nothing Then
                     log = CType(obj, TaskLog)
@@ -885,37 +886,53 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Function ValidServerName(ByVal url As String, ByRef errorMessage As String) As Boolean
-        'Always pass validation if loading
-        If m_loading = True Then Return True
-        ' Confirm there is text in the control.
-        If TxtBasinsDb.Text.Length = 0 Then
-            errorMessage = "Basins database is required."
+        Dim pStepProg As IStepProgressor = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
+        Dim progressDialog2 As IProgressDialog2 = Nothing
+        Try
+            progressDialog2 = BA_GetProgressDialog(pStepProg, "Validating and saving basins database server location", "Validating new server")
+            progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+            pStepProg.Hide()    'Don't use step progressor
+            progressDialog2.ShowDialog()
+
+            'Always pass validation if loading
+            If m_loading = True Then Return True
+            ' Confirm there is text in the control.
+            If TxtBasinsDb.Text.Length = 0 Then
+                errorMessage = "Basins database is required."
+                Return False
+            End If
+            If TxtBasinsDb.Text.IndexOf("https://", StringComparison.OrdinalIgnoreCase) <> 0 Then
+                errorMessage = "A secure web service url starting with 'https' is required."
+                Return False
+            End If
+            If Not Uri.IsWellFormedUriString(TxtBasinsDb.Text, UriKind.Absolute) Then
+                errorMessage = "The url for the basins database you provided is not well-formed."
+                Return False
+            End If
+            'Check token
+            If GenerateToken() <> BA_ReturnCode.Success Then
+                errorMessage = "Unable to generate token and connect to the basins database you provided"
+                Return False
+            End If
+            If m_settings Is Nothing Then m_settings = New BagisHSettings()
+            m_settings.basinsDb = TxtBasinsDb.Text
+            'Set reference to HruExtension
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            Dim success As BA_ReturnCode = SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)
+            If success = BA_ReturnCode.Success Then
+                Return True
+            Else
+                errorMessage = "An error occurred while trying to save the updated basins database location"
+                Return False
+            End If
+        Catch ex As Exception
+            Debug.Print("ValidServerName: " & ex.Message)
             Return False
-        End If
-        If TxtBasinsDb.Text.IndexOf("https://", StringComparison.OrdinalIgnoreCase) <> 0 Then
-            errorMessage = "A secure web service url starting with 'https' is required."
-            Return False
-        End If
-        If Not Uri.IsWellFormedUriString(TxtBasinsDb.Text, UriKind.Absolute) Then
-            errorMessage = "The url for the basins database you provided is not well-formed."
-            Return False
-        End If
-        'Check token
-        If GenerateToken() <> BA_ReturnCode.Success Then
-            errorMessage = "Unable to generate token and connect to the basins database you provided"
-            Return False
-        End If
-        If m_settings Is Nothing Then m_settings = New BagisHSettings()
-        m_settings.basinsDb = TxtBasinsDb.Text
-        'Set reference to HruExtension
-        Dim hruExt As HruExtension = HruExtension.GetExtension
-        Dim success As BA_ReturnCode = SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)
-        If success = BA_ReturnCode.Success Then
-            Return True
-        Else
-            errorMessage = "An error occurred while trying to save the updated basins database location"
-            Return False
-        End If
+        Finally
+            pStepProg = Nothing
+            progressDialog2.HideDialog()
+            progressDialog2 = Nothing
+        End Try
     End Function
 
     Private Function ReadSettingsFromJson(ByVal filePath As String) As BagisHSettings
@@ -971,4 +988,5 @@ Public Class FrmDownloadAoiMenu
             Return BA_ReturnCode.UnknownError
         End Try
     End Function
+
 End Class
