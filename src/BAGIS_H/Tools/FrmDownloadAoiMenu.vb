@@ -270,7 +270,7 @@ Public Class FrmDownloadAoiMenu
         AoiGrid.CurrentCell = Nothing
     End Sub
 
-    Private Sub BtnUploadZip_Click(sender As System.Object, e As System.EventArgs) Handles BtnUploadZip.Click
+    Private Sub BtnUploadZip_Click(sender As System.Object, e As System.EventArgs)
         Dim openFileDialog1 As New OpenFileDialog()
 
         openFileDialog1.Filter = "zip files (*.zip)|*.zip"
@@ -407,9 +407,20 @@ Public Class FrmDownloadAoiMenu
         End If
     End Sub
 
-    Private Sub BtnClear_Click(sender As System.Object, e As System.EventArgs) Handles BtnClear.Click
-        GrdTasks.Rows.Clear()
-        'BtnDownloadAoi.Enabled = True
+    Private Sub BtnClearCompleted_Click(sender As System.Object, e As System.EventArgs) Handles BtnClearCompleted.Click
+        For x = GrdTasks.Rows.Count - 1 To 0 Step -1
+            Dim pRow As DataGridViewRow = GrdTasks.Rows(x)
+            Dim pStatus As String = Convert.ToString(pRow.Cells(idxTaskStatus).Value)
+            ' Only remove rows with task status success, aborted, or failed
+            Select Case pStatus
+                Case BA_Task_Success
+                    GrdTasks.Rows.RemoveAt(x)
+                Case BA_Task_Aborted
+                    GrdTasks.Rows.RemoveAt(x)
+                Case BA_Task_Failure
+                    GrdTasks.Rows.RemoveAt(x)
+            End Select
+        Next
     End Sub
 
     Private Sub BtnSelectDownloadFolder_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectDownloadFolder.Click
@@ -483,6 +494,8 @@ Public Class FrmDownloadAoiMenu
     End Function
 
     Private Sub DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
+        Dim pStepProg As IStepProgressor = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
+        Dim progressDialog2 As IProgressDialog2 = Nothing
         Try
             'Me.EnableDownloadBtn(BtnDownloadAoi, True)
             ' File download completed
@@ -521,6 +534,10 @@ Public Class FrmDownloadAoiMenu
                 Next
 
                 UpdateDownloadStatus(aoiDownload, "Unzipping file")
+                progressDialog2 = BA_GetProgressDialog(pStepProg, "Unpacking " & aoiDownload.AoiName, "Unpacking AOI")
+                progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+                pStepProg.Hide()    'Don't use step progressor
+                progressDialog2.ShowDialog()
                 Dim parentFolder As String = "PleaseReturn"
                 Dim zipFile As String = BA_GetBareName(aoiDownload.FilePath, parentFolder)
                 Dim zipFilePath As String = aoiDownload.FilePath
@@ -543,6 +560,10 @@ Public Class FrmDownloadAoiMenu
         Catch ex As Exception
             Debug.Print("DownloadFileCompleted: " & ex.Message)
             MessageBox.Show("DownloadFileCompleted Event Error" & ex.Message)
+        Finally
+            pStepProg = Nothing
+            progressDialog2.HideDialog()
+            progressDialog2 = Nothing
         End Try
     End Sub
 
@@ -579,12 +600,18 @@ Public Class FrmDownloadAoiMenu
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
         Dim archive As IZipArchive = New ZipArchive
         Dim tempFile As String = "\tempZip.txt"
+        Dim pStepProg As IStepProgressor = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
+        Dim progressDialog2 As IProgressDialog2 = Nothing
         Try
             If Not String.IsNullOrEmpty(TxtUploadPath.Text) Then
                 Dim aoiName As String = BA_GetBareName(TxtUploadPath.Text)
                 Dim zipName As String = aoiName & ".zip"
                 Dim parentFolder As String = "PleaseReturn"
                 Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
+                progressDialog2 = BA_GetProgressDialog(pStepProg, "Preparing " & aoiName & " for upload", "Zipping AOI")
+                progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+                pStepProg.Hide()    'Don't use step progressor
+                progressDialog2.ShowDialog()
                 archive.CreateArchive(parentFolder & zipName)
                 If File.Exists(TxtUploadPath.Text & tempFile) = False Then
                     ' Create a file to write to.
@@ -610,6 +637,9 @@ Public Class FrmDownloadAoiMenu
         Catch ex As Exception
             Debug.Print("BtnUpload_Click exception: " & ex.Message)
         Finally
+            pStepProg = Nothing
+            progressDialog2.HideDialog()
+            progressDialog2 = Nothing
             'Be sure the archive is closed
             archive.CloseArchive()
         End Try
@@ -644,6 +674,8 @@ Public Class FrmDownloadAoiMenu
             End With
             'Clear out upload file name
             TxtUploadPath.Text = Nothing
+            'Clear out comments field
+            TxtComment.Text = Nothing
         Else
             With item
                 .Cells(idxTaskStatus).Value = BA_Task_Failure
@@ -701,12 +733,13 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
 
-    Private Sub BtnTaskLog_Click(sender As System.Object, e As System.EventArgs) Handles BtnTaskLog.Click
-        Dim frmTaskLog As FrmTaskLog = New FrmTaskLog
-        frmTaskLog.ShowDialog()
+    Private Sub BtnAoiHistory_Click(sender As System.Object, e As System.EventArgs) Handles BtnAoiHistory.Click
+        '@ToDo: When the AOI log functionality is completed, this button will display the log
+        'Dim frmTaskLog As FrmTaskLog = New FrmTaskLog
+        'frmTaskLog.ShowDialog()
     End Sub
 
-    Private Sub BtnUpdateStatus_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpdateStatus.Click
+    Private Sub BtnRefreshTasks_Click(sender As System.Object, e As System.EventArgs) Handles BtnRefreshTasks.Click
         For Each row As DataGridViewRow In GrdTasks.Rows
             Dim taskType As String = row.Cells(idxTaskType).Value
             If taskType.Equals(BA_TASK_UPLOAD) Then

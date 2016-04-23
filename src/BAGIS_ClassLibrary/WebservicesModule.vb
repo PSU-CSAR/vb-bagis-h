@@ -585,7 +585,10 @@ Public Module WebservicesModule
 
             'If we didn't get an exception, the upload was successful
             Return aDownload
-        Catch ex As WebException
+        Catch webEx As WebException
+            Debug.Print("BA_Download_Aoi WebException: " & webEx.Message)
+            Return aDownload
+        Catch ex As Exception
             Debug.Print("BA_Download_Aoi Exception: " & ex.Message)
             Return aDownload
         End Try
