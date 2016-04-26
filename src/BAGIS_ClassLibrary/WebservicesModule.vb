@@ -479,13 +479,15 @@ Public Module WebservicesModule
                 'The response is a long html page
                 'The exception is indicated with this line: <pre class="exception_value">An AOI of the same name already exists.</pre>
                 '@ToDo: Figure out how to parse the response and pull out this exception_value
+                sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
                 If exceptResp IsNot Nothing Then
                     Using SReader As System.IO.StreamReader = New System.IO.StreamReader(exceptResp.GetResponseStream)
                         sb.Append(SReader.ReadToEnd)
                     End Using
                 End If
             End Using
-            Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
+            'Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
+            MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return anUpload
         Catch ex As Exception
             Debug.Print("BA_UploadMultiPart: " & ex.Message)

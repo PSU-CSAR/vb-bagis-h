@@ -28,6 +28,7 @@ Public Class FrmDownloadAoiMenu
     Private idxCancelTask As Integer = 9
     Private m_loading As Boolean = True
     Private m_settings As BagisHSettings
+    Private m_maxMessageLength As Integer = 100
 
     Public Sub New()
 
@@ -291,39 +292,56 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     'Work around cross-threading exception to update task table
-    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal aoiUpload As AoiTask, ByVal strMessage As String)
-        If ctl.InvokeRequired Then
-            ctl.BeginInvoke(New Action(Of Control, AoiTask, String)(AddressOf UpdateStatus), ctl, aoiUpload, strMessage)
-        Else
+    Private Sub UpdateStatus(ByVal aoiUpload As AoiTask, ByVal strMessage As String)
+        Dim shortMessage As String = strMessage
+        Try
+            'Pause timer so we can show the MessageBox if we need to
+            DownloadTimer.Stop()
+            If Not String.IsNullOrEmpty(strMessage) AndAlso strMessage.Length > m_maxMessageLength Then
+                shortMessage = strMessage.Substring(0, m_maxMessageLength)
+            End If
+
             For Each row As DataGridViewRow In GrdTasks.Rows
                 Dim url As String = row.Cells(idxTaskUrl).Value
                 If url = aoiUpload.url Then
                     row.Cells(idxTaskStatus).Value = aoiUpload.task.status
-                    row.Cells(idxTaskMessage).Value = strMessage
-                    Exit Sub
+                    row.Cells(idxTaskMessage).Value = shortMessage
+                    If Not strMessage.Equals(shortMessage) Then
+                        Dim sb As StringBuilder = New StringBuilder
+                        Dim aoiName As String = row.Cells(idxAoiName).Value
+                        Dim taskType As String = row.Cells(idxTaskType).Value
+                        sb.Append(aoiName & " " & taskType & " error!" & vbCrLf & vbCrLf)
+                        sb.Append(strMessage)
+                        MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    End If
+                    Exit For
                 End If
             Next
-        End If
-        Application.DoEvents()
+        Catch ex As Exception
+            Debug.Print("UpdateStatus Exception: " & ex.Message)
+        Finally
+            'We always want to restart the download timer
+            DownloadTimer.Start()
+        End Try
     End Sub
 
+    'Not currently used as of 26-APR-2016
     'Work around cross-threading exception to update task table
-    Friend Sub UpdateStatus(ByVal ctl As Control, ByVal taskId As String, ByVal taskStatus As String, ByVal strMessage As String)
-        If ctl.InvokeRequired Then
-            ctl.BeginInvoke(New Action(Of Control, String, String, String)(AddressOf UpdateStatus), _
-                            ctl, taskId, taskStatus, strMessage)
-        Else
-            For Each row As DataGridViewRow In GrdTasks.Rows
-                Dim tid As String = row.Cells(idxTaskId).Value
-                If tid = taskId Then
-                    row.Cells(idxTaskStatus).Value = taskStatus
-                    row.Cells(idxTaskMessage).Value = strMessage
-                    Exit Sub
-                End If
-            Next
-        End If
-        Application.DoEvents()
-    End Sub
+    'Friend Sub UpdateStatus(ByVal ctl As Control, ByVal taskId As String, ByVal taskStatus As String, ByVal strMessage As String)
+    '    If ctl.InvokeRequired Then
+    '        ctl.BeginInvoke(New Action(Of Control, String, String, String)(AddressOf UpdateStatus), _
+    '                        ctl, taskId, taskStatus, strMessage)
+    '    Else
+    '        For Each row As DataGridViewRow In GrdTasks.Rows
+    '            Dim tid As String = row.Cells(idxTaskId).Value
+    '            If tid = taskId Then
+    '                row.Cells(idxTaskStatus).Value = taskStatus
+    '                row.Cells(idxTaskMessage).Value = strMessage
+    '                Exit For
+    '            End If
+    '        Next
+    '    End If
+    'End Sub
 
     'Work around cross-threading exception to enable download button
     'Friend Sub EnableDownloadBtn(ByVal ctl As Control, ByVal Enabled As Boolean)
@@ -335,17 +353,37 @@ Public Class FrmDownloadAoiMenu
     '    Application.DoEvents()
     'End Sub
 
+    'Note: This method sets the download status to complete so the timer stops checking it
     Private Sub UpdateDownloadStatus(ByVal aoiDownload As AoiDownloadInfo, ByVal strMessage As String)
-        For Each row As DataGridViewRow In GrdTasks.Rows
-            Dim url As String = row.Cells(idxTaskUrl).Value
-            If url = aoiDownload.Url Then
-                row.Cells(idxTaskStatus).Value = aoiDownload.Status
-                row.Cells(idxTaskMessage).Value = strMessage
-                row.Cells(idxDownloadStatus).Value = aoiDownload.Status
-                Exit Sub
+        Dim shortMessage As String = strMessage
+        Try
+            'Pause timer so we can show the MessageBox if we need to
+            DownloadTimer.Stop()
+            If Not String.IsNullOrEmpty(strMessage) AndAlso strMessage.Length > m_maxMessageLength Then
+                shortMessage = strMessage.Substring(0, m_maxMessageLength)
             End If
-        Next
-        Application.DoEvents()
+            For Each row As DataGridViewRow In GrdTasks.Rows
+                Dim url As String = row.Cells(idxTaskUrl).Value
+                If url = aoiDownload.Url Then
+                    row.Cells(idxTaskStatus).Value = aoiDownload.Status
+                    row.Cells(idxTaskMessage).Value = shortMessage
+                    row.Cells(idxDownloadStatus).Value = BA_Download_Complete
+                    If Not strMessage.Equals(shortMessage) Then
+                        Dim sb As StringBuilder = New StringBuilder
+                        Dim taskType As String = row.Cells(idxTaskType).Value
+                        sb.Append(aoiDownload.AoiName & " " & taskType & " error!" & vbCrLf & vbCrLf)
+                        sb.Append(strMessage)
+                        MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    End If
+                    Exit For
+                End If
+            Next
+        Catch ex As Exception
+            Debug.Print("UpdateDownloadStatus Exception: " & ex.Message)
+        Finally
+            'We always want to restart the download timer
+            DownloadTimer.Start()
+        End Try
     End Sub
 
     Private Sub BtnSelectAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectAoi.Click
@@ -575,8 +613,6 @@ Public Class FrmDownloadAoiMenu
         Try
             ' File download completed
             Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
-            Dim elapsedTime As TimeSpan = Now.Subtract(aoiDownload.StartTime)
-            UpdateDownloadStatus(aoiDownload, "Downloading file")
             For Each row As DataGridViewRow In GrdTasks.Rows
                 Dim url As String = row.Cells(idxTaskUrl).Value
                 If url = aoiDownload.Url Then
@@ -769,6 +805,7 @@ Public Class FrmDownloadAoiMenu
             End Using
 
             Dim uploadStatus As String = Trim(aoiUpload.task.status).ToUpper
+
             Dim strMessage As String = Nothing
             Select Case uploadStatus
                 Case BA_Task_Started
@@ -781,7 +818,7 @@ Public Class FrmDownloadAoiMenu
                     strMessage = aoiUpload.task.traceback
                     Me.UpdateLog(aoiUpload.id, aoiUpload.task.status, strMessage)
             End Select
-            Me.UpdateStatus(GrdTasks, aoiUpload, strMessage)
+            Me.UpdateStatus(aoiUpload, strMessage)
         Catch webEx As WebException
             Debug.Print("CheckUploadStatus WebException: " & webEx.Message)
         Catch ex As Exception
@@ -796,12 +833,13 @@ Public Class FrmDownloadAoiMenu
             For Each pRow As DataGridViewRow In GrdTasks.Rows
                 Dim downloadTask As AoiTask = Nothing
                 Dim downloadStatus As String = pRow.Cells(idxDownloadStatus).Value
-                If Not String.IsNullOrEmpty(downloadStatus) AndAlso downloadStatus.Equals(BA_Download_Processing) Then
+                Dim taskType As String = pRow.Cells(idxTaskType).Value
+                If taskType.Equals(BA_TASK_DOWNLOAD) AndAlso Not String.IsNullOrEmpty(downloadStatus) _
+                    AndAlso downloadStatus.Equals(BA_Download_Processing) Then
                     activeDownloads += 1
                     Dim url As String = pRow.Cells(idxTaskUrl).Value
                     'Check to see if we have a zip file
                     Dim contentType As String = WebservicesModule.BA_GetResponseContentType(url, hruExt.EbagisToken.token)
-                    Dim strMessage As String = Nothing
 
                     If contentType = BA_Mime_Compressed_Zip Then
                         Dim success As BA_ReturnCode = Me.DownloadFile(url)
@@ -811,15 +849,18 @@ Public Class FrmDownloadAoiMenu
                     End If
 
                     If downloadTask.task IsNot Nothing Then
-                        Dim uploadStatus As String = Trim(downloadTask.task.status).ToUpper
-                        Select Case uploadStatus
+                        Dim taskStatus As String = Trim(downloadTask.task.status).ToUpper
+                        Select Case taskStatus
                             Case BA_Task_Failure
-                                strMessage = downloadTask.task.traceback
+                                Dim downloadFilePath As String = pRow.Cells(idxTaskLocalPath).Value
+                                Dim id As String = pRow.Cells(idxTaskId).Value
+                                Dim beginTime As DateTime = DateTime.Parse(pRow.Cells(idxTaskTime).Value)
+                                Dim aoiDownload As AoiDownloadInfo = New AoiDownloadInfo(url, taskStatus, beginTime, downloadFilePath, id)
+                                Me.UpdateDownloadStatus(aoiDownload, downloadTask.task.traceback)
                                 Debug.Print("Download failure from server: " & downloadTask.task.traceback)
                             Case BA_Task_Pending
-                                strMessage = "Assembling download"
+                                Me.UpdateStatus(downloadTask, "Assembling download")
                         End Select
-                        Me.UpdateStatus(GrdTasks, downloadTask, strMessage)
                     End If
                 End If
             Next
