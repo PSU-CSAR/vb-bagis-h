@@ -845,7 +845,7 @@ Public Module WebservicesModule
                 Select Case resT.StatusCode
                     Case HttpStatusCode.OK  '200
                         retMessage = "Upload successfully cancelled"
-                        taskStatus = BA_Task_Success    'Marking it as success is same as JK does on server side
+                        taskStatus = BA_Task_Aborted    'Marking it as aborted to match download
                     Case HttpStatusCode.BadRequest  '400
                         retMessage = "Upload could not be cancelled"
                     Case HttpStatusCode.NotFound    '404

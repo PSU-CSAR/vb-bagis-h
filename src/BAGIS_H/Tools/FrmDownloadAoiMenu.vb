@@ -234,20 +234,36 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnList_Click(sender As System.Object, e As System.EventArgs) Handles BtnList.Click
         BtnList.Enabled = False
+        Dim pStepProg As IStepProgressor = Nothing
+        Dim progressDialog2 As IProgressDialog2 = Nothing
+        Try
+            pStepProg = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
+            pStepProg.Hide()    'Don't use step progressor
+            progressDialog2 = BA_GetProgressDialog(pStepProg, "Retrieving list of AOIs", "List AOIs")
+            progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+            progressDialog2.ShowDialog()
 
-        Dim success As BA_ReturnCode = GenerateToken()
-
-        If success = BA_ReturnCode.Success Then
-            'Set reference to HruExtension
-            Dim hruExt As HruExtension = HruExtension.GetExtension
-            Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token)
-            If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
-                RefreshGrid(storedAois)
-            Else
-                MessageBox.Show("No stored AOIs were found on this server")
+            Dim success As BA_ReturnCode = GenerateToken()
+            If success = BA_ReturnCode.Success Then
+                'Set reference to HruExtension
+                Dim hruExt As HruExtension = HruExtension.GetExtension
+                Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token)
+                If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
+                    RefreshGrid(storedAois)
+                Else
+                    MessageBox.Show("No stored AOIs were found on this server")
+                End If
             End If
-        End If
-        BtnList.Enabled = True
+        Catch ex As Exception
+            Debug.Print("BtnList_Click Exception: " & ex.Message)
+        Finally
+            BtnList.Enabled = True
+            pStepProg = Nothing
+            If progressDialog2 IsNot Nothing Then
+                progressDialog2.HideDialog()
+                progressDialog2 = Nothing
+            End If
+        End Try
     End Sub
 
     Private Sub RefreshGrid(ByVal storedAois)
@@ -532,7 +548,7 @@ Public Class FrmDownloadAoiMenu
     End Function
 
     Private Sub DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
-        Dim pStepProg As IStepProgressor = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
+        Dim pStepProg As IStepProgressor = Nothing
         Dim progressDialog2 As IProgressDialog2 = Nothing
         Try
             'Me.EnableDownloadBtn(BtnDownloadAoi, True)
@@ -540,7 +556,7 @@ Public Class FrmDownloadAoiMenu
             Dim aoiDownload As AoiDownloadInfo = CType(e.UserState, AoiDownloadInfo)
             aoiDownload.downloadStatus = BA_Download_Complete
             If e.Cancelled = True Then
-                aoiDownload.Status = BA_Task_Failure
+                aoiDownload.Status = BA_Task_Aborted
                 'Delete zip file since we cancelled the download
                 If BA_File_ExistsWindowsIO(aoiDownload.FilePath) Then File.Delete(aoiDownload.FilePath)
                 UpdateDownloadStatus(aoiDownload, "Download cancelled")
@@ -572,6 +588,7 @@ Public Class FrmDownloadAoiMenu
                 Next
 
                 UpdateDownloadStatus(aoiDownload, "Unzipping file")
+                pStepProg = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
                 progressDialog2 = BA_GetProgressDialog(pStepProg, "Unpacking " & aoiDownload.AoiName, "Unpacking AOI")
                 progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
                 pStepProg.Hide()    'Don't use step progressor
@@ -600,7 +617,9 @@ Public Class FrmDownloadAoiMenu
             MessageBox.Show("DownloadFileCompleted Event Error" & ex.Message)
         Finally
             pStepProg = Nothing
-            progressDialog2.HideDialog()
+            If progressDialog2 IsNot Nothing Then
+                progressDialog2.HideDialog()
+            End If
             progressDialog2 = Nothing
         End Try
     End Sub
@@ -878,36 +897,67 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnCancelTask_Click(sender As System.Object, e As System.EventArgs) Handles BtnCancelTask.Click
+        Dim pStepProg As IStepProgressor = Nothing
+        Dim progressDialog2 As IProgressDialog2 = Nothing
         Dim rows As DataGridViewSelectedRowCollection = GrdTasks.SelectedRows()
         'Set reference to HruExtension
         Dim hruExt As HruExtension = HruExtension.GetExtension
-        For Each aRow As DataGridViewRow In rows
-            If aRow.Cells(idxTaskType).Value.Equals(BA_TASK_UPLOAD) Then
-                'Uploads
-                'Can't do anything until upload actually starts; GUI is locked when zipping under way
-                'Only pending tasks can be cancelled
-                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Pending) Then
-                    Dim taskId As String = Convert.ToString(aRow.Cells(idxTaskId).Value)
-                    Dim taskStatus As String = Convert.ToString(aRow.Cells(idxTaskStatus).Value)
-                    Dim cancelMessage As String = BA_CancelUpload(TxtBasinsDb.Text, taskId, hruExt.EbagisToken.token, taskStatus)
-                    If Not String.IsNullOrEmpty(taskStatus) Then
-                        aRow.Cells(idxTaskStatus).Value = taskStatus
+        Try
+            For Each aRow As DataGridViewRow In rows
+                Dim aoiName As String = aRow.Cells(idxAoiName).Value
+                If aRow.Cells(idxTaskType).Value.Equals(BA_TASK_UPLOAD) Then
+                    'Uploads
+                    'Can't do anything until upload actually starts; GUI is locked when zipping under way
+                    'Only pending/started tasks can be cancelled
+                    If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Pending) Or _
+                        aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Started) Then
+                        Dim warningMessage As String = "Are you sure you want to cancel the upload for AOI: " & aoiName & _
+                            "? This action cannot be reversed!"
+                        Dim res1 As DialogResult = MessageBox.Show(warningMessage, "Warning", MessageBoxButtons.YesNo, _
+                                                                   MessageBoxIcon.Question)
+                        If res1 = Windows.Forms.DialogResult.Yes Then
+                            pStepProg = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
+                            pStepProg.Hide()    'Don't use step progressor
+                            progressDialog2 = BA_GetProgressDialog(pStepProg, "Sending cancellation request for " & aoiName, "Cancelling upload")
+                            progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+                            progressDialog2.ShowDialog()
+                            Dim taskId As String = Convert.ToString(aRow.Cells(idxTaskId).Value)
+                            Dim taskStatus As String = Convert.ToString(aRow.Cells(idxTaskStatus).Value)
+                            Dim cancelMessage As String = BA_CancelUpload(TxtBasinsDb.Text, taskId, hruExt.EbagisToken.token, taskStatus)
+                            If Not String.IsNullOrEmpty(taskStatus) Then
+                                aRow.Cells(idxTaskStatus).Value = taskStatus
+                            End If
+                            aRow.Cells(idxTaskMessage).Value = cancelMessage
+                            progressDialog2.HideDialog()
+                        End If
                     End If
-                    aRow.Cells(idxTaskMessage).Value = cancelMessage
-                End If
-            Else
-                'Downloads
-                'This code sets a cancel flag on the task grid that is read by the download listeners
-                If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Success) Or _
-                    aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Failure) Then
-                    'File download to client has started
-                    aRow.Cells(idxCancelTask).Value = True
-                    Dim aoiName As String = aRow.Cells(idxAoiName).Value
-                    Debug.Print(aoiName & "set to cancel")
-                End If
+                Else
+                    'Downloads
+                    'This code sets a cancel flag on the task grid that is read by the download listeners
+                    If aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Success) Or _
+                        aRow.Cells(idxTaskStatus).Value.Equals(BA_Task_Failure) Then
+                        Dim warningMessage As String = "Are you sure you want to cancel the download for AOI: " & aoiName & _
+                            "? This action cannot be reversed!"
+                        Dim res1 As DialogResult = MessageBox.Show(warningMessage, "Warning", MessageBoxButtons.YesNo, _
+                                                                   MessageBoxIcon.Question)
+                        If res1 = Windows.Forms.DialogResult.Yes Then
+                            'File download to client has started
+                            aRow.Cells(idxCancelTask).Value = True
+                            MessageBox.Show("Request sent to cancel download for: " & aoiName)
+                        End If
+                    End If
+                    End If
+            Next
+            Application.DoEvents()
+        Catch ex As Exception
+            Debug.Print("BtnCancelTask_Click Exception: " & ex.Message)
+        Finally
+            pStepProg = Nothing
+            If progressDialog2 IsNot Nothing Then
+                progressDialog2.HideDialog()
+                progressDialog2 = Nothing
             End If
-        Next
-        Application.DoEvents()
+        End Try
     End Sub
 
     Private Sub TestWebClient()
