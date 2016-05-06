@@ -946,7 +946,7 @@ Public Class FrmDownloadAoiMenu
                             MessageBox.Show("Request sent to cancel download for: " & aoiName)
                         End If
                     End If
-                    End If
+                End If
             Next
             Application.DoEvents()
         Catch ex As Exception
@@ -1113,4 +1113,28 @@ Public Class FrmDownloadAoiMenu
         End Try
     End Function
 
+    'Warn user if they have running tasks and give them chance to change their mind
+    Private Sub FrmDownloadAoiMenu_FormClosing(sender As Object, e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+        Dim runningTasks As Int16 = 0
+        For Each aRow As DataGridViewRow In GrdTasks.Rows
+            Dim taskStatus As String = Convert.ToString(aRow.Cells(idxTaskStatus).Value)
+            Select Case taskStatus
+                Case BA_Task_Started
+                    runningTasks += 1
+                Case BA_Task_Staging
+                    runningTasks += 1
+                Case BA_Task_Pending
+                    runningTasks += 1
+            End Select
+        Next
+        If runningTasks > 0 Then
+            e.Cancel = True
+            Dim res As DialogResult = MessageBox.Show("There are tasks in process on this screen." & vbCrLf & _
+                                                      "If you close the window they will continue to run " & _
+                                                      "but you will be unable to retrieve the status." & vbCrLf & vbCrLf & _
+                                                      "Do you still wish to close this window ?", "Window closing", _
+                                                      MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If res = Windows.Forms.DialogResult.Yes Then e.Cancel = False
+        End If
+    End Sub
 End Class
