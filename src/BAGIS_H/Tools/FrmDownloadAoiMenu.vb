@@ -234,13 +234,9 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnList_Click(sender As System.Object, e As System.EventArgs) Handles BtnList.Click
         BtnList.Enabled = False
-        Dim pStepProg As IStepProgressor = Nothing
         Dim progressDialog2 As IProgressDialog2 = Nothing
         Try
-            pStepProg = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
-            pStepProg.Hide()    'Don't use step progressor
-            progressDialog2 = BA_GetProgressDialog(pStepProg, "Retrieving list of AOIs", "List AOIs")
-            progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+            progressDialog2 = BA_GetAnimationProgressor(My.ArcMap.Application.hWnd, "Retrieving list of AOIs", "List AOIs")
             progressDialog2.ShowDialog()
 
             Dim success As BA_ReturnCode = GenerateToken()
@@ -258,7 +254,6 @@ Public Class FrmDownloadAoiMenu
             Debug.Print("BtnList_Click Exception: " & ex.Message)
         Finally
             BtnList.Enabled = True
-            pStepProg = Nothing
             If progressDialog2 IsNot Nothing Then
                 progressDialog2.HideDialog()
                 progressDialog2 = Nothing
@@ -548,7 +543,6 @@ Public Class FrmDownloadAoiMenu
     End Function
 
     Private Sub DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs)
-        Dim pStepProg As IStepProgressor = Nothing
         Dim progressDialog2 As IProgressDialog2 = Nothing
         Try
             'Me.EnableDownloadBtn(BtnDownloadAoi, True)
@@ -588,10 +582,7 @@ Public Class FrmDownloadAoiMenu
                 Next
 
                 UpdateDownloadStatus(aoiDownload, "Unzipping file")
-                pStepProg = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
-                progressDialog2 = BA_GetProgressDialog(pStepProg, "Unpacking " & aoiDownload.AoiName, "Unpacking AOI")
-                progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
-                pStepProg.Hide()    'Don't use step progressor
+                progressDialog2 = BA_GetAnimationProgressor(My.ArcMap.Application.hWnd, "Unpacking " & aoiDownload.AoiName, "Unpacking AOI")
                 progressDialog2.ShowDialog()
                 Dim parentFolder As String = "PleaseReturn"
                 Dim zipFile As String = BA_GetBareName(aoiDownload.FilePath, parentFolder)
@@ -616,7 +607,6 @@ Public Class FrmDownloadAoiMenu
             Debug.Print("DownloadFileCompleted: " & ex.Message)
             MessageBox.Show("DownloadFileCompleted Event Error" & ex.Message)
         Finally
-            pStepProg = Nothing
             If progressDialog2 IsNot Nothing Then
                 progressDialog2.HideDialog()
             End If
@@ -655,7 +645,6 @@ Public Class FrmDownloadAoiMenu
     Private Sub BtnUpload_Click(sender As System.Object, e As System.EventArgs) Handles BtnUpload.Click
         Dim archive As IZipArchive = New ZipArchive
         Dim tempFile As String = "\tempZip.txt"
-        Dim pStepProg As IStepProgressor = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
         Dim progressDialog2 As IProgressDialog2 = Nothing
         Try
             If Not String.IsNullOrEmpty(TxtUploadPath.Text) Then
@@ -663,9 +652,7 @@ Public Class FrmDownloadAoiMenu
                 Dim zipName As String = aoiName & ".zip"
                 Dim parentFolder As String = "PleaseReturn"
                 Dim file1 As String = BA_GetBareName(TxtUploadPath.Text, parentFolder)
-                progressDialog2 = BA_GetProgressDialog(pStepProg, "Preparing " & aoiName & " for upload", "Zipping AOI")
-                progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
-                pStepProg.Hide()    'Don't use step progressor
+                progressDialog2 = BA_GetAnimationProgressor(My.ArcMap.Application.hWnd, "Preparing " & aoiName & " for upload", "Zipping AOI")
                 progressDialog2.ShowDialog()
                 archive.CreateArchive(parentFolder & zipName)
                 If File.Exists(TxtUploadPath.Text & tempFile) = False Then
@@ -692,7 +679,6 @@ Public Class FrmDownloadAoiMenu
         Catch ex As Exception
             Debug.Print("BtnUpload_Click exception: " & ex.Message)
         Finally
-            pStepProg = Nothing
             progressDialog2.HideDialog()
             progressDialog2 = Nothing
             'Be sure the archive is closed
@@ -897,7 +883,6 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnCancelTask_Click(sender As System.Object, e As System.EventArgs) Handles BtnCancelTask.Click
-        Dim pStepProg As IStepProgressor = Nothing
         Dim progressDialog2 As IProgressDialog2 = Nothing
         Dim rows As DataGridViewSelectedRowCollection = GrdTasks.SelectedRows()
         'Set reference to HruExtension
@@ -916,10 +901,7 @@ Public Class FrmDownloadAoiMenu
                         Dim res1 As DialogResult = MessageBox.Show(warningMessage, "Warning", MessageBoxButtons.YesNo, _
                                                                    MessageBoxIcon.Question)
                         If res1 = Windows.Forms.DialogResult.Yes Then
-                            pStepProg = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
-                            pStepProg.Hide()    'Don't use step progressor
-                            progressDialog2 = BA_GetProgressDialog(pStepProg, "Sending cancellation request for " & aoiName, "Cancelling upload")
-                            progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+                            progressDialog2 = BA_GetAnimationProgressor(My.ArcMap.Application.hWnd, "Sending cancellation request for " & aoiName, "Cancelling upload")
                             progressDialog2.ShowDialog()
                             Dim taskId As String = Convert.ToString(aRow.Cells(idxTaskId).Value)
                             Dim taskStatus As String = Convert.ToString(aRow.Cells(idxTaskStatus).Value)
@@ -952,7 +934,6 @@ Public Class FrmDownloadAoiMenu
         Catch ex As Exception
             Debug.Print("BtnCancelTask_Click Exception: " & ex.Message)
         Finally
-            pStepProg = Nothing
             If progressDialog2 IsNot Nothing Then
                 progressDialog2.HideDialog()
                 progressDialog2 = Nothing
@@ -1010,12 +991,9 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Function ValidServerName(ByVal url As String, ByRef errorMessage As String) As Boolean
-        Dim pStepProg As IStepProgressor = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 5)
         Dim progressDialog2 As IProgressDialog2 = Nothing
         Try
-            progressDialog2 = BA_GetProgressDialog(pStepProg, "Validating and saving basins database server location", "Validating new server")
-            progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
-            pStepProg.Hide()    'Don't use step progressor
+            progressDialog2 = BA_GetAnimationProgressor(My.ArcMap.Application.hWnd, "Validating and saving basins database server location", "Validating new server")
             progressDialog2.ShowDialog()
 
             'Always pass validation if loading
@@ -1053,7 +1031,6 @@ Public Class FrmDownloadAoiMenu
             Debug.Print("ValidServerName: " & ex.Message)
             Return False
         Finally
-            pStepProg = Nothing
             progressDialog2.HideDialog()
             progressDialog2 = Nothing
         End Try
