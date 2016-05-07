@@ -29,6 +29,7 @@ Public Class FrmDownloadAoiMenu
     Private m_loading As Boolean = True
     Private m_settings As BagisHSettings
     Private m_maxMessageLength As Integer = 100
+    Private m_aoiSearchFilter As AOISearchFilter = Nothing
 
     Public Sub New()
 
@@ -99,6 +100,7 @@ Public Class FrmDownloadAoiMenu
 
         AoiGrid.ClearSelection()
         AoiGrid.CurrentCell = Nothing
+        m_aoiSearchFilter = New AOISearchFilter()
         Me.ActiveControl = BtnList
     End Sub
 
@@ -243,7 +245,7 @@ Public Class FrmDownloadAoiMenu
             If success = BA_ReturnCode.Success Then
                 'Set reference to HruExtension
                 Dim hruExt As HruExtension = HruExtension.GetExtension
-                Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token)
+                Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token, m_aoiSearchFilter)
                 If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
                     RefreshGrid(storedAois)
                 Else
@@ -1114,4 +1116,38 @@ Public Class FrmDownloadAoiMenu
             If res = Windows.Forms.DialogResult.Yes Then e.Cancel = False
         End If
     End Sub
+
+    Private Sub BtnShowFilter_Click(sender As System.Object, e As System.EventArgs) Handles BtnShowFilter.Click
+        If PnlFilter.Visible = True Then
+            PnlFilter.Visible = False
+        Else
+            PnlFilter.Visible = True
+        End If
+    End Sub
+
+    Private Sub BtnCloseFilter_Click(sender As System.Object, e As System.EventArgs) Handles BtnCloseFilter.Click
+        PnlFilter.Visible = False
+    End Sub
+
+    Private Sub RdoCurrentUser_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles RdoCurrentUser.CheckedChanged
+        If RdoCurrentUser.Checked = True Then
+            m_aoiSearchFilter.Clear()
+            '@ToDo: Replace this with the actual user name when we know where to get it
+            m_aoiSearchFilter.UserName = "testUser"
+        End If
+    End Sub
+
+    Private Sub BtnApplyFilter_Click(sender As System.Object, e As System.EventArgs) Handles BtnApplyFilter.Click
+        Me.BtnList.PerformClick()
+        PnlFilter.Hide()
+    End Sub
+
+    Private Sub BtnClearFilter_Click(sender As System.Object, e As System.EventArgs) Handles BtnClearFilter.Click
+        m_aoiSearchFilter.Clear()
+        Rdo2Weeks.Checked = False
+        RdoCurrentUser.Checked = False
+        RdoLastMonth.Checked = False
+        Me.BtnList.PerformClick()
+    End Sub
+
 End Class

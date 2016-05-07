@@ -27,6 +27,7 @@ Public Class FrmPassword
                 newToken.token = strToken
                 Dim hruExt As HruExtension = HruExtension.GetExtension
                 hruExt.EbagisToken = newToken
+                hruExt.EBagisUserName = TxtName.Text
                 Me.Close()
             Else
                 MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)

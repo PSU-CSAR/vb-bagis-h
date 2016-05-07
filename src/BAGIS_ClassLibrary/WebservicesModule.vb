@@ -506,11 +506,18 @@ Public Module WebservicesModule
         Next
     End Sub
 
-    Public Function BA_List_Aoi(ByVal url As String, ByVal strToken As String) As Dictionary(Of String, StoredAoi)
+    Public Function BA_List_Aoi(ByVal url As String, ByVal strToken As String, ByVal filter As AOISearchFilter) As Dictionary(Of String, StoredAoi)
         Dim aoiDictionary As Dictionary(Of String, StoredAoi) = New Dictionary(Of String, StoredAoi)
 
         'The end point for getting a token for the web service
         url = url & "aois/"
+        'Build the search string if applicable
+        If filter IsNot Nothing Then
+            'Filtering by user name
+            If Not String.IsNullOrEmpty(filter.UserName) Then
+                url = url + "?created_by=" + filter.UserName
+            End If
+        End If
         Dim reqT As HttpWebRequest = WebRequest.Create(url)
         'This is a GET request
         reqT.Method = "GET"
@@ -619,7 +626,7 @@ Public Module WebservicesModule
 
     Public Function BA_AoiInArchive(ByVal url As String, ByVal strToken As String, _
                                     ByVal aoiName As String) As Boolean
-        Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(url, strToken)
+        Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(url, strToken, Nothing)
         For Each kvp As KeyValuePair(Of String, StoredAoi) In storedAois
             If kvp.Value.name.ToUpper = aoiName.ToUpper Then
                 Return True

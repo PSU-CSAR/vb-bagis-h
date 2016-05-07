@@ -23,18 +23,18 @@ Partial Class FrmDownloadAoiMenu
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle18 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle19 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle20 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle21 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle22 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle23 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle24 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle49 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle50 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle51 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle52 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle53 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle54 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle55 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle56 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle57 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle58 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle59 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle60 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.AoiGrid = New System.Windows.Forms.DataGridView()
         Me.AoiName = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Uploaded = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -74,22 +74,33 @@ Partial Class FrmDownloadAoiMenu
         Me.DownloadTimer = New System.Windows.Forms.Timer(Me.components)
         Me.BtnCancelTask = New System.Windows.Forms.Button()
         Me.TxtServerExample = New System.Windows.Forms.TextBox()
+        Me.PnlFilter = New System.Windows.Forms.Panel()
+        Me.BtnShowFilter = New System.Windows.Forms.Button()
+        Me.RdoCurrentUser = New System.Windows.Forms.RadioButton()
+        Me.Rdo2Weeks = New System.Windows.Forms.RadioButton()
+        Me.RdoLastMonth = New System.Windows.Forms.RadioButton()
+        Me.RdoSearch = New System.Windows.Forms.RadioButton()
+        Me.TxtSearch = New System.Windows.Forms.TextBox()
+        Me.BtnApplyFilter = New System.Windows.Forms.Button()
+        Me.BtnCloseFilter = New System.Windows.Forms.Button()
+        Me.BtnClearFilter = New System.Windows.Forms.Button()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.PnlFilter.SuspendLayout()
         Me.SuspendLayout()
         '
         'AoiGrid
         '
         Me.AoiGrid.AllowUserToAddRows = False
         Me.AoiGrid.AllowUserToDeleteRows = False
-        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle13.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.AoiGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle13
+        DataGridViewCellStyle49.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle49.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle49.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle49.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle49.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle49.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle49.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.AoiGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle49
         Me.AoiGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.AoiGrid.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.AoiName, Me.Uploaded, Me.Author, Me.Download, Me.Comment, Me.DownloadUrl})
         Me.AoiGrid.Location = New System.Drawing.Point(12, 70)
@@ -100,8 +111,8 @@ Partial Class FrmDownloadAoiMenu
         '
         'AoiName
         '
-        DataGridViewCellStyle14.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AoiName.DefaultCellStyle = DataGridViewCellStyle14
+        DataGridViewCellStyle50.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AoiName.DefaultCellStyle = DataGridViewCellStyle50
         Me.AoiName.HeaderText = "AOI Name"
         Me.AoiName.Name = "AoiName"
         Me.AoiName.ReadOnly = True
@@ -109,33 +120,33 @@ Partial Class FrmDownloadAoiMenu
         '
         'Uploaded
         '
-        DataGridViewCellStyle15.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Uploaded.DefaultCellStyle = DataGridViewCellStyle15
+        DataGridViewCellStyle51.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Uploaded.DefaultCellStyle = DataGridViewCellStyle51
         Me.Uploaded.HeaderText = "Uploaded"
         Me.Uploaded.Name = "Uploaded"
         Me.Uploaded.ReadOnly = True
         '
         'Author
         '
-        DataGridViewCellStyle16.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Author.DefaultCellStyle = DataGridViewCellStyle16
+        DataGridViewCellStyle52.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Author.DefaultCellStyle = DataGridViewCellStyle52
         Me.Author.HeaderText = "Author"
         Me.Author.Name = "Author"
         Me.Author.ReadOnly = True
         '
         'Download
         '
-        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle17.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle17.NullValue = False
-        Me.Download.DefaultCellStyle = DataGridViewCellStyle17
+        DataGridViewCellStyle53.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle53.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle53.NullValue = False
+        Me.Download.DefaultCellStyle = DataGridViewCellStyle53
         Me.Download.HeaderText = "Download ?"
         Me.Download.Name = "Download"
         '
         'Comment
         '
-        DataGridViewCellStyle18.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Comment.DefaultCellStyle = DataGridViewCellStyle18
+        DataGridViewCellStyle54.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Comment.DefaultCellStyle = DataGridViewCellStyle54
         Me.Comment.HeaderText = "Comment"
         Me.Comment.Name = "Comment"
         Me.Comment.ReadOnly = True
@@ -286,14 +297,14 @@ Partial Class FrmDownloadAoiMenu
         Me.GrdTasks.AllowUserToAddRows = False
         Me.GrdTasks.AllowUserToDeleteRows = False
         Me.GrdTasks.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells
-        DataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle19.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.GrdTasks.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle19
+        DataGridViewCellStyle55.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle55.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle55.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle55.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle55.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle55.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle55.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.GrdTasks.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle55
         Me.GrdTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.GrdTasks.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.AoiType, Me.Status, Me.Started, Me.Message, Me.Url, Me.Id, Me.LocalFolder, Me.DownloadStatus, Me.CancelTask})
         Me.GrdTasks.Location = New System.Drawing.Point(14, 411)
@@ -305,9 +316,9 @@ Partial Class FrmDownloadAoiMenu
         '
         'DataGridViewTextBoxColumn1
         '
-        DataGridViewCellStyle20.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle20
+        DataGridViewCellStyle56.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle56.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DataGridViewTextBoxColumn1.DefaultCellStyle = DataGridViewCellStyle56
         Me.DataGridViewTextBoxColumn1.HeaderText = "AOI Name"
         Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
         Me.DataGridViewTextBoxColumn1.ReadOnly = True
@@ -315,24 +326,24 @@ Partial Class FrmDownloadAoiMenu
         '
         'AoiType
         '
-        DataGridViewCellStyle21.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AoiType.DefaultCellStyle = DataGridViewCellStyle21
+        DataGridViewCellStyle57.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AoiType.DefaultCellStyle = DataGridViewCellStyle57
         Me.AoiType.HeaderText = "Type"
         Me.AoiType.Name = "AoiType"
         Me.AoiType.ReadOnly = True
         '
         'Status
         '
-        DataGridViewCellStyle22.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Status.DefaultCellStyle = DataGridViewCellStyle22
+        DataGridViewCellStyle58.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Status.DefaultCellStyle = DataGridViewCellStyle58
         Me.Status.HeaderText = "Status"
         Me.Status.Name = "Status"
         Me.Status.ReadOnly = True
         '
         'Started
         '
-        DataGridViewCellStyle23.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Started.DefaultCellStyle = DataGridViewCellStyle23
+        DataGridViewCellStyle59.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Started.DefaultCellStyle = DataGridViewCellStyle59
         Me.Started.HeaderText = "Started"
         Me.Started.Name = "Started"
         Me.Started.ReadOnly = True
@@ -342,9 +353,9 @@ Partial Class FrmDownloadAoiMenu
         '
         'Message
         '
-        DataGridViewCellStyle24.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.Message.DefaultCellStyle = DataGridViewCellStyle24
+        DataGridViewCellStyle60.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle60.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.Message.DefaultCellStyle = DataGridViewCellStyle60
         Me.Message.HeaderText = "Message"
         Me.Message.Name = "Message"
         Me.Message.ReadOnly = True
@@ -469,11 +480,127 @@ Partial Class FrmDownloadAoiMenu
         Me.TxtServerExample.TabIndex = 90
         Me.TxtServerExample.Text = "Example: https://servername/api/rest/"
         '
+        'PnlFilter
+        '
+        Me.PnlFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.PnlFilter.Controls.Add(Me.BtnCloseFilter)
+        Me.PnlFilter.Controls.Add(Me.BtnApplyFilter)
+        Me.PnlFilter.Controls.Add(Me.TxtSearch)
+        Me.PnlFilter.Controls.Add(Me.RdoSearch)
+        Me.PnlFilter.Controls.Add(Me.RdoLastMonth)
+        Me.PnlFilter.Controls.Add(Me.Rdo2Weeks)
+        Me.PnlFilter.Controls.Add(Me.RdoCurrentUser)
+        Me.PnlFilter.Location = New System.Drawing.Point(156, 55)
+        Me.PnlFilter.Name = "PnlFilter"
+        Me.PnlFilter.Size = New System.Drawing.Size(627, 186)
+        Me.PnlFilter.TabIndex = 91
+        Me.PnlFilter.Visible = False
+        '
+        'BtnShowFilter
+        '
+        Me.BtnShowFilter.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnShowFilter.Location = New System.Drawing.Point(609, 2)
+        Me.BtnShowFilter.Name = "BtnShowFilter"
+        Me.BtnShowFilter.Size = New System.Drawing.Size(143, 30)
+        Me.BtnShowFilter.TabIndex = 92
+        Me.BtnShowFilter.Text = "Show/Hide filter"
+        Me.BtnShowFilter.UseVisualStyleBackColor = True
+        '
+        'RdoCurrentUser
+        '
+        Me.RdoCurrentUser.AutoSize = True
+        Me.RdoCurrentUser.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.RdoCurrentUser.Location = New System.Drawing.Point(15, 15)
+        Me.RdoCurrentUser.Name = "RdoCurrentUser"
+        Me.RdoCurrentUser.Size = New System.Drawing.Size(195, 20)
+        Me.RdoCurrentUser.TabIndex = 0
+        Me.RdoCurrentUser.TabStop = True
+        Me.RdoCurrentUser.Text = "Show AOI's uploaded by me"
+        Me.RdoCurrentUser.UseVisualStyleBackColor = True
+        '
+        'Rdo2Weeks
+        '
+        Me.Rdo2Weeks.AutoSize = True
+        Me.Rdo2Weeks.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Rdo2Weeks.Location = New System.Drawing.Point(15, 39)
+        Me.Rdo2Weeks.Name = "Rdo2Weeks"
+        Me.Rdo2Weeks.Size = New System.Drawing.Size(265, 20)
+        Me.Rdo2Weeks.TabIndex = 1
+        Me.Rdo2Weeks.TabStop = True
+        Me.Rdo2Weeks.Text = "Show AOI's uploaded in the last 2 weeks"
+        Me.Rdo2Weeks.UseVisualStyleBackColor = True
+        '
+        'RdoLastMonth
+        '
+        Me.RdoLastMonth.AutoSize = True
+        Me.RdoLastMonth.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.RdoLastMonth.Location = New System.Drawing.Point(15, 63)
+        Me.RdoLastMonth.Name = "RdoLastMonth"
+        Me.RdoLastMonth.Size = New System.Drawing.Size(252, 20)
+        Me.RdoLastMonth.TabIndex = 2
+        Me.RdoLastMonth.TabStop = True
+        Me.RdoLastMonth.Text = "Show AOI's uploaded in the last month"
+        Me.RdoLastMonth.UseVisualStyleBackColor = True
+        '
+        'RdoSearch
+        '
+        Me.RdoSearch.AutoSize = True
+        Me.RdoSearch.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.RdoSearch.Location = New System.Drawing.Point(15, 87)
+        Me.RdoSearch.Name = "RdoSearch"
+        Me.RdoSearch.Size = New System.Drawing.Size(236, 20)
+        Me.RdoSearch.TabIndex = 3
+        Me.RdoSearch.TabStop = True
+        Me.RdoSearch.Text = "Show AOI's with search text in name"
+        Me.RdoSearch.UseVisualStyleBackColor = True
+        '
+        'TxtSearch
+        '
+        Me.TxtSearch.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TxtSearch.Location = New System.Drawing.Point(253, 87)
+        Me.TxtSearch.Name = "TxtSearch"
+        Me.TxtSearch.Size = New System.Drawing.Size(192, 22)
+        Me.TxtSearch.TabIndex = 4
+        '
+        'BtnApplyFilter
+        '
+        Me.BtnApplyFilter.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnApplyFilter.Location = New System.Drawing.Point(405, 142)
+        Me.BtnApplyFilter.Name = "BtnApplyFilter"
+        Me.BtnApplyFilter.Size = New System.Drawing.Size(100, 30)
+        Me.BtnApplyFilter.TabIndex = 69
+        Me.BtnApplyFilter.Text = "Apply Filter"
+        Me.BtnApplyFilter.UseVisualStyleBackColor = True
+        '
+        'BtnCloseFilter
+        '
+        Me.BtnCloseFilter.CausesValidation = False
+        Me.BtnCloseFilter.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnCloseFilter.Location = New System.Drawing.Point(516, 142)
+        Me.BtnCloseFilter.Name = "BtnCloseFilter"
+        Me.BtnCloseFilter.Size = New System.Drawing.Size(100, 30)
+        Me.BtnCloseFilter.TabIndex = 70
+        Me.BtnCloseFilter.Text = "Cancel"
+        Me.BtnCloseFilter.UseVisualStyleBackColor = True
+        '
+        'BtnClearFilter
+        '
+        Me.BtnClearFilter.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnClearFilter.Location = New System.Drawing.Point(759, 2)
+        Me.BtnClearFilter.Name = "BtnClearFilter"
+        Me.BtnClearFilter.Size = New System.Drawing.Size(100, 30)
+        Me.BtnClearFilter.TabIndex = 93
+        Me.BtnClearFilter.Text = "Clear filter"
+        Me.BtnClearFilter.UseVisualStyleBackColor = True
+        '
         'FrmDownloadAoiMenu
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(928, 642)
+        Me.Controls.Add(Me.BtnClearFilter)
+        Me.Controls.Add(Me.BtnShowFilter)
+        Me.Controls.Add(Me.PnlFilter)
         Me.Controls.Add(Me.TxtServerExample)
         Me.Controls.Add(Me.BtnCancelTask)
         Me.Controls.Add(Me.BtnRefreshTasks)
@@ -501,6 +628,8 @@ Partial Class FrmDownloadAoiMenu
         Me.Text = "Basins Aoi Menu"
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.PnlFilter.ResumeLayout(False)
+        Me.PnlFilter.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -544,4 +673,14 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents DownloadStatus As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents CancelTask As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents TxtServerExample As System.Windows.Forms.TextBox
+    Friend WithEvents PnlFilter As System.Windows.Forms.Panel
+    Friend WithEvents BtnShowFilter As System.Windows.Forms.Button
+    Friend WithEvents BtnCloseFilter As System.Windows.Forms.Button
+    Friend WithEvents BtnApplyFilter As System.Windows.Forms.Button
+    Friend WithEvents TxtSearch As System.Windows.Forms.TextBox
+    Friend WithEvents RdoSearch As System.Windows.Forms.RadioButton
+    Friend WithEvents RdoLastMonth As System.Windows.Forms.RadioButton
+    Friend WithEvents Rdo2Weeks As System.Windows.Forms.RadioButton
+    Friend WithEvents RdoCurrentUser As System.Windows.Forms.RadioButton
+    Friend WithEvents BtnClearFilter As System.Windows.Forms.Button
 End Class
