@@ -30,6 +30,9 @@ Public Class FrmDownloadAoiMenu
     Private m_settings As BagisHSettings
     Private m_maxMessageLength As Integer = 100
     Private m_aoiSearchFilter As AOISearchFilter = Nothing
+    Private FILTER_PREFIX_LENGTH As Int16 = "Show ".Length
+    ' We cache this here and don't apply it until filter is applied
+    Private m_txtFilterDescr As String = ""
 
     Public Sub New()
 
@@ -245,10 +248,13 @@ Public Class FrmDownloadAoiMenu
             If success = BA_ReturnCode.Success Then
                 'Set reference to HruExtension
                 Dim hruExt As HruExtension = HruExtension.GetExtension
+                'Set the user name if it is a user name search
+                If RdoCurrentUser.Checked = True Then m_aoiSearchFilter.UserName = hruExt.EBagisUserName
                 Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token, m_aoiSearchFilter)
                 If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
                     RefreshGrid(storedAois)
                 Else
+                    AoiGrid.Rows.Clear()
                     MessageBox.Show("No stored AOIs were found on this server")
                 End If
             End If
@@ -1122,6 +1128,7 @@ Public Class FrmDownloadAoiMenu
             PnlFilter.Visible = False
         Else
             PnlFilter.Visible = True
+            PnlFilter.BringToFront()
         End If
     End Sub
 
@@ -1132,13 +1139,14 @@ Public Class FrmDownloadAoiMenu
     Private Sub RdoCurrentUser_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles RdoCurrentUser.CheckedChanged
         If RdoCurrentUser.Checked = True Then
             m_aoiSearchFilter.Clear()
-            '@ToDo: Replace this with the actual user name when we know where to get it
-            m_aoiSearchFilter.UserName = "testUser"
+            'We set the user name right before searching because we may not have the token yet
+            m_txtFilterDescr = RdoCurrentUser.Text.Substring(FILTER_PREFIX_LENGTH)
         End If
     End Sub
 
     Private Sub BtnApplyFilter_Click(sender As System.Object, e As System.EventArgs) Handles BtnApplyFilter.Click
         Me.BtnList.PerformClick()
+        TxtFilterDescr.Text = m_txtFilterDescr
         PnlFilter.Hide()
     End Sub
 
@@ -1147,7 +1155,64 @@ Public Class FrmDownloadAoiMenu
         Rdo2Weeks.Checked = False
         RdoCurrentUser.Checked = False
         RdoLastMonth.Checked = False
+        m_txtFilterDescr = "None"
+        TxtFilterDescr.Text = m_txtFilterDescr
         Me.BtnList.PerformClick()
     End Sub
 
+    Private Sub Rdo2Weeks_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles Rdo2Weeks.CheckedChanged
+        If Rdo2Weeks.Checked = True Then
+            m_aoiSearchFilter.Clear()
+            m_aoiSearchFilter.CreatedAfter = DateTime.Now.AddDays(-14)
+            m_txtFilterDescr = Rdo2Weeks.Text.Substring(FILTER_PREFIX_LENGTH)
+        End If
+    End Sub
+
+    Private Sub RdoLastMonth_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles RdoLastMonth.CheckedChanged
+        If RdoLastMonth.Checked = True Then
+            m_aoiSearchFilter.Clear()
+            m_aoiSearchFilter.CreatedAfter = DateTime.Now.AddMonths(-1)
+            m_txtFilterDescr = RdoLastMonth.Text.Substring(FILTER_PREFIX_LENGTH)
+        End If
+    End Sub
+
+    Private Sub RdoSearch_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles RdoSearch.CheckedChanged
+        If RdoSearch.Checked = True Then
+            m_aoiSearchFilter.Clear()
+            'We'll set the filter text in the txtSearch validating function
+            TxtSearch.Enabled = True
+        Else
+            TxtSearch.Text = Nothing
+            TxtSearch.Enabled = False
+        End If
+    End Sub
+
+    Private Function ValidSearchString(ByRef errorMessage As String) As Boolean
+        ' Confirm there is text in the control.
+        If TxtSearch.Text.Length = 0 Then
+            errorMessage = "Search text is required"
+            Return False
+        End If
+        ' Confirm there are no spaces in the control
+        If Trim(TxtSearch.Text).IndexOf(" ") > -1 Then
+            errorMessage = "Spaces are not allowed in the search text"
+            Return False
+        End If
+        Return True
+    End Function
+
+    Private Sub TxtSearch_Validating(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles TxtSearch.Validating
+        Dim errorMsg As String = Nothing
+        If Not ValidSearchString(errorMsg) Then
+            ' Cancel the event and select the text to be corrected by the user.
+            e.Cancel = True
+            TxtSearch.Select(0, TxtSearch.Text.Length)
+
+            ' Set the ErrorProvider error with the text to display. 
+            MessageBox.Show(errorMsg, "Filter error", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            m_aoiSearchFilter.StringSearch = Trim(TxtSearch.Text)
+            m_txtFilterDescr = RdoSearch.Text.Substring(FILTER_PREFIX_LENGTH) + " '" + m_aoiSearchFilter.StringSearch + "'"
+        End If
+    End Sub
 End Class

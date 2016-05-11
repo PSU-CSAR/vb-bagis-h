@@ -516,6 +516,10 @@ Public Module WebservicesModule
             'Filtering by user name
             If Not String.IsNullOrEmpty(filter.UserName) Then
                 url = url + "?created_by=" + filter.UserName
+            ElseIf Not filter.CreatedAfter = Nothing Then
+                url = url + "?created_after=" + filter.StrCreatedAfter
+            ElseIf Not String.IsNullOrEmpty(filter.StringSearch) Then
+                url = url + "?search=" + filter.StringSearch
             End If
         End If
         Dim reqT As HttpWebRequest = WebRequest.Create(url)

@@ -119,6 +119,7 @@ Public Class SecurityHelper
                 Dim newToken As BagisToken = New BagisToken
                 newToken.token = strToken
                 hruExt.EbagisToken = newToken
+                hruExt.EBagisUserName = My.Settings.UserName
                 Return BA_ReturnCode.Success
             End If
         End If
