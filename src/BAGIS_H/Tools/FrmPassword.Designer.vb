@@ -82,7 +82,7 @@ Partial Class FrmPassword
         Me.TxtName.Name = "TxtName"
         Me.TxtName.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
         Me.TxtName.Size = New System.Drawing.Size(317, 22)
-        Me.TxtName.TabIndex = 83
+        Me.TxtName.TabIndex = 1
         '
         'TextBox3
         '
@@ -96,7 +96,7 @@ Partial Class FrmPassword
         Me.TextBox3.TabStop = False
         Me.TextBox3.Text = "Name:"
         '
-        'FrmProfilePassword
+        'FrmPassword
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -107,7 +107,7 @@ Partial Class FrmPassword
         Me.Controls.Add(Me.BtnClose)
         Me.Controls.Add(Me.TxtPassword)
         Me.Controls.Add(Me.TextBox1)
-        Me.Name = "FrmProfilePassword"
+        Me.Name = "FrmPassword"
         Me.ShowIcon = False
         Me.Text = "Password Required"
         Me.ResumeLayout(False)
