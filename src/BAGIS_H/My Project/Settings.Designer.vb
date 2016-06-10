@@ -65,18 +65,6 @@ Namespace My
                 Me("GoldenTicket") = value
             End Set
         End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property UserName() As String
-            Get
-                Return CType(Me("UserName"),String)
-            End Get
-            Set
-                Me("UserName") = value
-            End Set
-        End Property
     End Class
 End Namespace
 

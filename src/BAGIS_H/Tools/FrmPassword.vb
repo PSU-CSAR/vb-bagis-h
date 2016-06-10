@@ -24,12 +24,10 @@ Public Class FrmPassword
             'If successful, store token in extension
             If Not String.IsNullOrEmpty(strToken) Then
                 Dim newToken As BagisToken = New BagisToken()
-                newToken.token = strToken
+                newToken.key = strToken
                 Dim hruExt As HruExtension = HruExtension.GetExtension
                 hruExt.EbagisToken = newToken
                 hruExt.EBagisUserName = TxtName.Text
-                My.Settings.UserName = TxtName.Text
-                My.Settings.Save()
                 Me.Close()
             Else
                 MessageBox.Show("Invalid user name or password. Failed to connect to database.", "Failed Connection", MessageBoxButtons.OK, MessageBoxIcon.Error)

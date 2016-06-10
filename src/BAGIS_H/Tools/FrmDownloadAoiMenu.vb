@@ -194,7 +194,7 @@ Public Class FrmDownloadAoiMenu
                     Application.DoEvents()
                     'Set reference to HruExtension
                     Dim hruExt As HruExtension = HruExtension.GetExtension
-                    Dim aDownload As AoiTask = BA_Download_Aoi(downloadUrl, hruExt.EbagisToken.token)
+                    Dim aDownload As AoiTask = BA_Download_Aoi(downloadUrl, hruExt.EbagisToken.key)
                     If aDownload.task IsNot Nothing Then
                         With item
                             .Cells(idxTaskStatus).Value = aDownload.task.status
@@ -250,7 +250,7 @@ Public Class FrmDownloadAoiMenu
                 Dim hruExt As HruExtension = HruExtension.GetExtension
                 'Set the user name if it is a user name search
                 If RdoCurrentUser.Checked = True Then m_aoiSearchFilter.UserName = hruExt.EBagisUserName
-                Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.token, m_aoiSearchFilter)
+                Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.key, m_aoiSearchFilter)
                 If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
                     RefreshGrid(storedAois)
                 Else
@@ -437,7 +437,7 @@ Public Class FrmDownloadAoiMenu
                     Dim aoiName As String = BA_GetBareName(DataPath)
                     'Set reference to HruExtension
                     Dim hruExt As HruExtension = HruExtension.GetExtension
-                    Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, hruExt.EbagisToken.token, aoiName)
+                    Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, hruExt.EbagisToken.key, aoiName)
                     If inArchive = False Then
                         TxtUploadPath.Text = DataPath
                     Else
@@ -510,7 +510,7 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Function GenerateToken() As BA_ReturnCode
-        Return SecurityHelper.GenerateToken(TxtBasinsDb.Text & "validate-token/", TxtBasinsDb.Text & "token/")
+        Return SecurityHelper.GenerateToken(TxtBasinsDb.Text & "account/user/", TxtBasinsDb.Text & "account/login/")
     End Function
 
     Friend Function DownloadFile(ByVal url As String) As BA_ReturnCode
@@ -519,7 +519,7 @@ Public Class FrmDownloadAoiMenu
             'Set reference to HruExtension
             Dim hruExt As HruExtension = HruExtension.GetExtension
             'Retrieve the token and format it for the header; Token comes from caller
-            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
+            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.key)
             Dim downloadUri As Uri = New Uri(url)
             Dim aoiDownload As AoiDownloadInfo = Nothing
             ' Populate the AoiDownloadInfo object from the grid
@@ -712,7 +712,7 @@ Public Class FrmDownloadAoiMenu
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         'Set reference to HruExtension
         Dim hruExt As HruExtension = HruExtension.GetExtension
-        Dim anUpload As AoiTask = BA_UploadMultiPart(uploadUrl, hruExt.EbagisToken.token, aoiName, zipFilePath, TxtComment.Text)
+        Dim anUpload As AoiTask = BA_UploadMultiPart(uploadUrl, hruExt.EbagisToken.key, aoiName, zipFilePath, TxtComment.Text)
         If anUpload.task IsNot Nothing Then
             With item
                 .Cells(idxTaskStatus).Value = anUpload.task.status
@@ -808,7 +808,7 @@ Public Class FrmDownloadAoiMenu
 
             'Retrieve the token and format it for the header
             Dim hruExt As HruExtension = HruExtension.GetExtension
-            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
+            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.key)
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
             Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
@@ -852,13 +852,13 @@ Public Class FrmDownloadAoiMenu
                     activeDownloads += 1
                     Dim url As String = pRow.Cells(idxTaskUrl).Value
                     'Check to see if we have a zip file
-                    Dim contentType As String = WebservicesModule.BA_GetResponseContentType(url, hruExt.EbagisToken.token)
+                    Dim contentType As String = WebservicesModule.BA_GetResponseContentType(url, hruExt.EbagisToken.key)
 
                     If contentType = BA_Mime_Compressed_Zip Then
                         Dim success As BA_ReturnCode = Me.DownloadFile(url)
                         Exit Sub
                     Else
-                        downloadTask = BA_Download_Aoi(url, hruExt.EbagisToken.token)
+                        downloadTask = BA_Download_Aoi(url, hruExt.EbagisToken.key)
                     End If
 
                     If downloadTask.task IsNot Nothing Then
@@ -913,7 +913,7 @@ Public Class FrmDownloadAoiMenu
                             progressDialog2.ShowDialog()
                             Dim taskId As String = Convert.ToString(aRow.Cells(idxTaskId).Value)
                             Dim taskStatus As String = Convert.ToString(aRow.Cells(idxTaskStatus).Value)
-                            Dim cancelMessage As String = BA_CancelUpload(TxtBasinsDb.Text, taskId, hruExt.EbagisToken.token, taskStatus)
+                            Dim cancelMessage As String = BA_CancelUpload(TxtBasinsDb.Text, taskId, hruExt.EbagisToken.key, taskStatus)
                             If Not String.IsNullOrEmpty(taskStatus) Then
                                 aRow.Cells(idxTaskStatus).Value = taskStatus
                             End If
@@ -966,7 +966,7 @@ Public Class FrmDownloadAoiMenu
             'Set reference to HruExtension
             Dim hruExt As HruExtension = HruExtension.GetExtension
             'Retrieve the token and format it for the header; Token comes from caller
-            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.token)
+            Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.key)
 
             For Each pDown As AoiDownloadInfo In dList
                 Using myWebClient As New WebClient()

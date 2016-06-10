@@ -1,14 +1,14 @@
 ﻿Public Class BagisToken
 
-    Private m_token As String
+    Private m_key As String
 
-    Property token As String
+    Property key As String
         Get
-            Return m_token
+            Return m_key
         End Get
 
         Set(ByVal value As String)
-            m_token = value
+            m_key = value
         End Set
     End Property
 

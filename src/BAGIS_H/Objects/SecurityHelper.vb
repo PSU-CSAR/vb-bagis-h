@@ -10,7 +10,7 @@ Public Class SecurityHelper
     End Function
 
     Private Shared Sub StoreToken(ByVal aToken As BagisToken)
-        My.Settings.GoldenTicket = aToken.token
+        My.Settings.GoldenTicket = aToken.key
         My.Settings.Save()
     End Sub
 
@@ -44,14 +44,14 @@ Public Class SecurityHelper
                 aToken = CType(ser.ReadObject(resT.GetResponseStream), BagisToken)
             End Using
             StoreToken(aToken)
-            Return aToken.token
+            Return aToken.key
         Catch ex As WebException
             Debug.Print("GetServerToken Exception" & ex.Message)
             Return Nothing
         End Try
     End Function
 
-    Public Shared Function IsTokenValid(ByVal testUrl As String, ByVal strToken As String) As Boolean
+    Public Shared Function IsTokenValid(ByVal testUrl As String, ByVal strToken As String) As UserData
 
         'The end point for getting a token for the web service
         Dim reqT As HttpWebRequest = WebRequest.Create(testUrl)
@@ -66,22 +66,17 @@ Public Class SecurityHelper
         '@ToDo: Workaround for certificate error; This should come out when the certificate issue is fixed
         'ServicePointManager.ServerCertificateValidationCallback = New System.Net.Security.RemoteCertificateValidationCallback(AddressOf AcceptAllCertifications)
 
+        Dim userData As UserData = New UserData
         Try
-            Dim validateToken As ValidateToken = New ValidateToken
             Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
                 'Convert the JSON response to ValidateToken object
-                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(ValidateToken.[GetType]())
-                ValidateToken = CType(ser.ReadObject(resT.GetResponseStream), ValidateToken)
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(userData.[GetType]())
+                UserData = CType(ser.ReadObject(resT.GetResponseStream), UserData)
             End Using
-            If String.IsNullOrEmpty(ValidateToken.detail) AndAlso _
-                Not String.IsNullOrEmpty(ValidateToken.message) Then Return True
-            If Not String.IsNullOrEmpty(ValidateToken.detail) Then
-                Debug.Print("Invalid token detail: " & ValidateToken.detail)
-            End If
-            Return False
+            Return UserData
         Catch ex As WebException
             'Catch exception and return false; Token is not valid
-            Return False
+            Return userData
         End Try
     End Function
 
@@ -109,17 +104,18 @@ Public Class SecurityHelper
         Dim hruExt As HruExtension = HruExtension.GetExtension
         Dim bToken As BagisToken = hruExt.EbagisToken
         Dim strToken As String = Nothing
-        If bToken IsNot Nothing Then strToken = bToken.token
+        If bToken IsNot Nothing Then strToken = bToken.key
         If String.IsNullOrEmpty(strToken) Then  '1. look for token in extension
             strToken = SecurityHelper.BA_GetStoredToken() '2. if not, check to see if token is stored
         End If
         If Not String.IsNullOrEmpty(strToken) Then
-            Dim isValid As Boolean = SecurityHelper.IsTokenValid(validateUrl, strToken)
-            If isValid = True Then      '3. If stored token valid, store in extension
+            Dim userData As UserData = SecurityHelper.IsTokenValid(validateUrl, strToken)
+            If userData.username IsNot Nothing Then      '3. If stored token valid, store in extension
                 Dim newToken As BagisToken = New BagisToken
-                newToken.token = strToken
+                newToken.key = strToken
                 hruExt.EbagisToken = newToken
-                hruExt.EBagisUserName = My.Settings.UserName
+                hruExt.EBagisUserName = userData.username
+                hruExt.EbagisGroups = userData.roleList
                 Return BA_ReturnCode.Success
             End If
         End If

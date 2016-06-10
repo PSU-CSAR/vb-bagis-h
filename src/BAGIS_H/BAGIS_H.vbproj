@@ -186,9 +186,9 @@
     <Compile Include="Objects\BagisHSettings.vb" />
     <Compile Include="Objects\BagisToken.vb" />
     <Compile Include="Objects\AoiDownloadTimer.vb" />
+    <Compile Include="Objects\UserData.vb" />
     <Compile Include="Objects\SecurityHelper.vb" />
     <Compile Include="Objects\TaskLog.vb" />
-    <Compile Include="Objects\ValidateToken.vb" />
     <Compile Include="RefineHru\BtnReclassZones.vb" />
     <Compile Include="RefineHru\BtnSequentialId.vb" />
     <Compile Include="RefineHru\FrmSequentialId.Designer.vb">
