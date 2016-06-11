@@ -5,12 +5,14 @@
 
   End Sub
 
-  Protected Overrides Sub OnClick()
-        Dim dForm As FrmDownloadAoiMenu = New FrmDownloadAoiMenu()
-        dForm.ShowDialog()
-        'Dim uForm As FrmUploadAoi = New FrmUploadAoi()
-        'uForm.ShowDialog()
-  End Sub
+    Protected Overrides Sub OnClick()
+        Try
+            Dim dForm As FrmDownloadAoiMenu = New FrmDownloadAoiMenu()
+            dForm.ShowDialog()
+        Catch ex As Exception
+            Windows.Forms.MessageBox.Show(ex.StackTrace)
+        End Try
+    End Sub
 
   Protected Overrides Sub OnUpdate()
 

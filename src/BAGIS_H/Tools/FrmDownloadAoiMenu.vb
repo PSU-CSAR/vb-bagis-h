@@ -86,6 +86,14 @@ Public Class FrmDownloadAoiMenu
         'Look for location of basins server in local config file
         Dim localSettingsPath As String = hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings)
         If Not BA_File_ExistsWindowsIO(localSettingsPath) Then
+            'Make sure the BAGIS folder is there
+            Dim parentPath As String = "PleaseReturn"
+            Dim bagisFolder As String = BA_GetBareName(localSettingsPath, parentPath)
+            If Not BA_Folder_ExistsWindowsIO(parentPath) Then
+                Dim existingFolder As String = "PleaseReturn"
+                bagisFolder = BA_GetBareName(parentPath, existingFolder)
+                Dim newFolder As String = BA_CreateFolder(existingFolder, bagisFolder)
+            End If
             Dim jsonFile As String = BA_GetBareName(BA_EnumDescription(PublicPath.BagisHSettings))
             Dim copyPath As String = BA_GetAddInDirectory() & "\" & jsonFile
             File.Copy(copyPath, localSettingsPath)
