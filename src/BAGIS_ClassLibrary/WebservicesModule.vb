@@ -487,6 +487,9 @@ Public Module WebservicesModule
                 End If
             End Using
             'Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
+            'May dump the error to a local file
+            'Dim tempDir As String = System.IO.Path.GetTempPath
+            'System.IO.File.WriteAllText(tempDir + "\upload_error.txt", sb.ToString)
             MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return anUpload
         Catch ex As Exception
