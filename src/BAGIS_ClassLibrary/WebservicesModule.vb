@@ -877,4 +877,78 @@ Public Module WebservicesModule
         End Try
     End Function
 
+    Public Sub BA_TestChunkedUpload(ByVal webserviceUrl As String, ByVal strToken As String, _
+                                    ByVal fileName As String, ByVal filePath As String, _
+                                    ByVal comment As String)
+        Dim reqT As HttpWebRequest
+        Dim anUpload As AoiTask = New AoiTask
+        'The end point for getting a token for the web service
+        reqT = WebRequest.Create(webserviceUrl)
+        'This is a POST request
+        reqT.Method = "PUT"
+        'We are sending a form
+        Dim boundary As String = MultipartFormHelper.CreateFormDataBoundary()
+        reqT.ContentType = "multipart/form-data; boundary=" & boundary
+        reqT.KeepAlive = True
+
+        'Retrieve the token and format it for the header; Token comes from caller
+        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+        'Put token in header
+        reqT.Headers(HttpRequestHeader.Authorization) = cred
+
+        Dim lngRange As Long = 0
+        Try
+            Using requestStream As System.IO.Stream = reqT.GetRequestStream
+                Dim postData As Dictionary(Of String, String) = New Dictionary(Of String, String)
+                postData.Add("filename", fileName)
+                If Not String.IsNullOrEmpty(comment) Then postData.Add("comment", Trim(comment))
+
+                Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath)
+                'postData.Add("md5", MultipartFormHelper.GenerateMD5Hash(fileInfo))
+                postData.Add("placeholder", "123")
+                MultipartFormHelper.WriteMultipartFormData(postData, requestStream, boundary)
+
+                If fileInfo IsNot Nothing Then
+                    '@ToDo: Remove hard-coding; write a dynamic function to determine mime type
+                    'Dim fileMimeType As String = "text/plain"
+                    Dim fileMimeType As String = BA_Mime_Zip
+                    Dim fileFormKey As String = "file"
+                    lngRange = MultipartFormHelper.WriteMultipartFormData(fileInfo, requestStream, boundary, fileMimeType, fileFormKey)
+                End If
+                Dim endBytes() As Byte = Encoding.UTF8.GetBytes("--" + boundary + "--")
+                requestStream.Write(endBytes, 0, endBytes.Length)
+            End Using
+
+            reqT.AddRange(0, lngRange)
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                'Convert the JSON response to a Task object
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
+                'Put JSON payload into AOI object
+                anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+            End Using
+        Catch w As WebException
+            Dim sb As StringBuilder = New StringBuilder
+            Using exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)
+                'The response is a long html page
+                'The exception is indicated with this line: <pre class="exception_value">An AOI of the same name already exists.</pre>
+                '@ToDo: Figure out how to parse the response and pull out this exception_value
+                sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
+                If exceptResp IsNot Nothing Then
+                    Using SReader As System.IO.StreamReader = New System.IO.StreamReader(exceptResp.GetResponseStream)
+                        sb.Append(SReader.ReadToEnd)
+                    End Using
+                End If
+            End Using
+            'Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
+            'May dump the error to a local file
+            'Dim tempDir As String = System.IO.Path.GetTempPath
+            'System.IO.File.WriteAllText(tempDir + "\upload_error.txt", sb.ToString)
+            MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Catch ex As Exception
+            Debug.Print("BA_UploadMultiPart: " & ex.Message)
+        End Try
+
+
+    End Sub
+
 End Module
