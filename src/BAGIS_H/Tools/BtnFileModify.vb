@@ -16,9 +16,11 @@ Public Class BtnFileModify
 
     Protected Overrides Sub OnClick()
         'Dim myForm As FrmDownloadAoiMenu = New FrmDownloadAoiMenu()
-        Dim myForm As FrmUploadAoi = New FrmUploadAoi
-        myForm.ShowDialog()
+        'Dim myForm As FrmUploadAoi = New FrmUploadAoi
+        'myForm.ShowDialog()
         'GetModifyDate()
+        'Normally the url would come from the local configuration file but this is just a test
+        Dim retCode As BA_ReturnCode = BA_VersionTest(BA_WebServerName & "/api/rest/")
     End Sub
 
     Protected Overrides Sub OnUpdate()

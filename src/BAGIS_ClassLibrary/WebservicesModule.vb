@@ -951,4 +951,34 @@ Public Module WebservicesModule
 
     End Sub
 
+    Public Function BA_VersionTest(ByVal serverUrl As String) As BA_ReturnCode
+        Dim reqT As HttpWebRequest
+        'The end point for checking the api version
+        Dim versionUrl As String = serverUrl & "api-version/"
+        reqT = WebRequest.Create(versionUrl)
+        'This is a GET request
+        reqT.Method = "GET"
+        'Add explicit content length to avoid 411 error
+        reqT.ContentLength = 0
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=0.1"
+        Try
+            Dim resString As String = ""
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                Using source As System.IO.Stream = resT.GetResponseStream
+                    Using sr As System.IO.StreamReader = New System.IO.StreamReader(source)
+                        resString = sr.ReadToEnd
+                    End Using
+                End Using
+            End Using
+            MessageBox.Show("Response: " & resString)
+            Return (BA_ReturnCode.Success)
+        Catch ex As Exception
+            Debug.Print("BA_VersionTest: " & ex.Message)
+            Return BA_ReturnCode.UnknownError
+        End Try
+
+
+    End Function
+
 End Module
