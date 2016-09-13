@@ -532,7 +532,7 @@ Public Class FrmDownloadAoiMenu
             Dim aoiDownload As AoiDownloadInfo = Nothing
             ' Populate the AoiDownloadInfo object from the grid
             For Each row As DataGridViewRow In GrdTasks.Rows
-                If row.Cells(idxDownloadUrl).Value.Equals(url) Then
+                If Not String.IsNullOrEmpty(row.Cells(idxDownloadUrl).Value) AndAlso row.Cells(idxDownloadUrl).Value.Equals(url) Then
                     Dim downloadFilePath As String = row.Cells(idxTaskLocalPath).Value
                     Dim id As String = row.Cells(idxTaskId).Value
                     Dim beginTime As DateTime = DateTime.Parse(row.Cells(idxTaskTime).Value)
@@ -745,7 +745,8 @@ Public Class FrmDownloadAoiMenu
     Friend Sub UpdateLog(ByVal id As String, ByVal status As String, ByVal errorMessage As String)
         Dim foundEntry As TaskLogEntry = Nothing
         For Each row As DataGridViewRow In GrdTasks.Rows
-            If row.Cells(idxTaskId).Value.ToString.Equals(id) Then
+            If Not String.IsNullOrEmpty(row.Cells(idxTaskId).Value) AndAlso _
+                row.Cells(idxTaskId).Value.ToString.Equals(id) Then
                 'Update the task log entry
                 foundEntry = New TaskLogEntry()
                 Dim zipPath As String = row.Cells(idxTaskLocalPath).Value.ToString  'The path of the .zip file
