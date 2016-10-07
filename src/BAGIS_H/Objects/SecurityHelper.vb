@@ -26,6 +26,9 @@ Public Class SecurityHelper
         'We are sending a form
         reqT.ContentType = "application/x-www-form-urlencoded"
         reqT.ContentLength = credArray.Length
+        'Set the accept header to request the current version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
+
 
         '@ToDo: Workaround for certificate error; This should come out when the certificate issue is fixed
         'ServicePointManager.ServerCertificateValidationCallback = New System.Net.Security.RemoteCertificateValidationCallback(AddressOf AcceptAllCertifications)
@@ -62,6 +65,9 @@ Public Class SecurityHelper
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
         'Put token in header
         reqT.Headers(HttpRequestHeader.Authorization) = cred
+        'Set the accept header to request the current version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
+
 
         '@ToDo: Workaround for certificate error; This should come out when the certificate issue is fixed
         'ServicePointManager.ServerCertificateValidationCallback = New System.Net.Security.RemoteCertificateValidationCallback(AddressOf AcceptAllCertifications)

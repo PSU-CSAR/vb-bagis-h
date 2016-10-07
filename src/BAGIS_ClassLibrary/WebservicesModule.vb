@@ -15,6 +15,7 @@ Imports System.Windows.Forms
 Public Module WebservicesModule
 
     Public Const BA_WebServerName = "https://test.ebagis.geog.pdx.edu"
+    Public Const BA_EbagisApiVersion = "0.1"
 
     Public Function BA_ClipFeatureService(ByVal clipFilePath As String, ByVal webServiceUrl As String, _
                                           ByVal newFilePath As String, ByVal aoiFolder As String) As BA_ReturnCode
@@ -533,6 +534,8 @@ Public Module WebservicesModule
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
         'Put token in header
         reqT.Headers(HttpRequestHeader.Authorization) = cred
+        'Set the accept header to request the current version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
 
         Try
             Dim resString As String = Nothing
@@ -961,7 +964,7 @@ Public Module WebservicesModule
         'Add explicit content length to avoid 411 error
         reqT.ContentLength = 0
         'Set the accept header to request a lower version of the api
-        reqT.Accept = "application/json; version=0.1"
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
         Try
             Dim resString As String = ""
             Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
