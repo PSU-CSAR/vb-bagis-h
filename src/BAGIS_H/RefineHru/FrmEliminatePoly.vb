@@ -624,6 +624,7 @@ Public Class FrmEliminatePoly
                 Dim success As BA_ReturnCode = BA_RenameFeatureClassInGDB(hruOutputPath2, vOutputFileName, polyFileName)
                 If success = BA_ReturnCode.Success Then
                     BA_Dissolve(hruOutputPath2 & "\" & polyFileName, BA_FIELD_HRUID_NC, vOutputPath)
+                    BA_AddShapeAreaToAttrib(hruOutputPath2 & "\" & vOutputFileName)
                     BA_UpdateRequiredColumns(hruOutputPath2, vOutputFileName, BA_FIELD_HRUID_NC)
                 End If
             Else
