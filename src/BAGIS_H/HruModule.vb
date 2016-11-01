@@ -1466,6 +1466,20 @@ Module HruModule
         Return Nothing
     End Function
 
+    Public Function BA_CheckForNonSequentialHru(ByVal folderName As String, ByVal fileName As String) As String
+        Dim polyCount As Integer = BA_CountPolygons(folderName, fileName, BA_FIELD_ID)
+        Dim statResults As BA_DataStatistics
+        Dim retMessage As String = Nothing
+        Dim success As Integer = BA_GetDataStatistics(folderName & "\" & fileName, BA_FIELD_ID, statResults)
+        If success = 0 Then
+            If polyCount <> statResults.Maximum Then
+                retMessage = "The output HRU dataset contains non-sequential HRU ID numbers. If your analysis requires " + _
+                    "sequential HRU ID numbers, you will need to run the 'Assign Sequential HRU ID Numbers' tool."
+            End If
+        End If
+        Return retMessage
+    End Function
+
 End Module
 
 

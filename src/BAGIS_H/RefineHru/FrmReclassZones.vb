@@ -431,6 +431,13 @@ Public Class FrmReclassZones
                             m_aoi.Save(xmlOutputPath)
                             progressDialog2.HideDialog()
 
+                            'Warning message of hru id's aren't sequential
+                            Dim warningMessage As String = BA_CheckForNonSequentialHru(hruOutputPath2, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False))
+                            If Not String.IsNullOrEmpty(warningMessage) Then
+                                MessageBox.Show(warningMessage, "Non-sequential HRU ID", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                            End If
+
+
                             'Reload Layers in Define Zones dockable window if it's visible
                             'Get handle to Define Zones dockable window so we can check visibility
                             Dim dockWindow As ESRI.ArcGIS.Framework.IDockableWindow
