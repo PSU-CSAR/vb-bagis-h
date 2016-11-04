@@ -366,26 +366,14 @@ Public Class FrmReclassZones
                         Dim vOutputPath As String = BA_StandardizePathString(hruOutputPath2, True) & BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False)
                         Dim vReturnVal As Short = BA_Raster2PolygonShapefileFromPath(rInputPath, vOutputPath, False)
 
-                        'add HRUID_CO and HRUID_NC fields to the Vector file
-                        'If BA_AddCTAndNonCTToAttrib(vOutputPath) <> BA_ReturnCode.Success Then
-                        '    Throw New Exception("Error adding CT and NonCT to Shape file.")
-                        'End If
-                        'If TxtParentNonContig.Text.Equals(YES) Then
-                        '    BA_UpdateRequiredColumns(hruOutputPath2, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False), BA_FIELD_HRUID_NC)
-
-                        'Else
-                        '    BA_UpdateRequiredColumns(hruOutputPath2, BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False), BA_FIELD_HRUID_CO)
-                        'End If
-
                         ' Filled DEM Path
                         Dim layerPath As String = m_aoi.FilePath & "\" & BA_EnumDescription(GeodatabaseNames.Surfaces)
                         Dim fullLayerPath As String = layerPath & "\" & BA_EnumDescription(MapsFileName.filled_dem_gdb)
                         'get raster resolution
                         Dim cellSize As Double
                         Dim rasterStat As IRasterStatistics = BA_GetRasterStatsGDB(fullLayerPath, cellSize)
-                        Dim allowNonContiguous As Boolean = False
-                        If TxtParentNonContig.Text.Equals(YES) Then allowNonContiguous = True
-                        success = BA_ProcessNonContiguousGrids(allowNonContiguous, vOutputPath, hruOutputPath2, cellSize, snapRasterPath)
+                        success = BA_ProcessNonContiguousGrids(CkNonContiguous.Checked, vOutputPath, hruOutputPath2, _
+                                                               cellSize, snapRasterPath)
 
                         If success = BA_ReturnCode.Success Then
                             pStepProg.Step()
@@ -663,8 +651,10 @@ Public Class FrmReclassZones
                 ' We found the hru the user selected
                 If anHru.Name.Equals(selItem.Name) Then
                     TxtParentNonContig.Text = NO
+                    CkNonContiguous.Checked = False
                     If anHru.AllowNonContiguousHru Then
                         TxtParentNonContig.Text = YES
+                        CkNonContiguous.Checked = True
                     End If
                     Exit For
                 End If
