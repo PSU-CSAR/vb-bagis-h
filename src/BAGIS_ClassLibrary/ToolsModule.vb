@@ -908,7 +908,11 @@ Public Module ToolsModule
                 GP.SetEnvironmentValue("snapRaster", snapRasterPath)
             End If
             pResult = GP.Execute(tool, Nothing)
-            Return BA_ReturnCode.Success
+
+            ' Build the raster attribute table; Don't overwrite if it already exists; Combine doesn't create attribute table if
+            ' large number of polygons
+            Dim success As BA_ReturnCode = BA_BuildRasterAttributeTable(outRasterPath, False)
+            Return success
         Catch ex As Exception
             For c As Integer = 0 To GP.MessageCount - 1
                 Debug.Print("GP error: " & GP.GetMessage(c))
