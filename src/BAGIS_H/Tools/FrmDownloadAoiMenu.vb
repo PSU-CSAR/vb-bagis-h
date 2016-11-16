@@ -1240,47 +1240,81 @@ Public Class FrmDownloadAoiMenu
             MessageBox.Show("You must select at least one AOI to download", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Exit Sub
         Else
-            'Set reference to HruExtension
-            Dim hruExt As HruExtension = HruExtension.GetExtension
-            'Delete the selected AOI's
-            Dim failedToDelete As IList(Of String) = New List(Of String)
-            Dim success As BA_ReturnCode = BA_ReturnCode.UnknownError
+            'Make sure user wants to delete
+            Dim warnSb As StringBuilder = New StringBuilder()
+            warnSb.Append("You are about to delete the AOI(s) listed below. This action cannot be undone." & vbCrLf & vbCrLf)
             For Each deleteName As String In dDict.Keys
-                Dim deleteUrl As String = dDict(deleteName)
-                success = BA_Delete_Aoi(deleteUrl, hruExt.EbagisToken.key)
-                If success <> BA_ReturnCode.Success Then
-                    failedToDelete.Add(deleteName)
-                End If
+                warnSb.Append(deleteName & vbCrLf)
             Next
-            'Refresh the list of AOI's; Programatically click BtnList
-            BtnList_Click(sender, e)
-            'If any AOI's couldn't be deleted, warn the user
-            If failedToDelete.Count > 0 Then
-                Dim sb As StringBuilder = New StringBuilder()
-                sb.Append("The following AOI's could not be deleted: " & vbCrLf & vbCrLf)
-                For Each dName As String In failedToDelete
-                    sb.Append(dName & vbCrLf)
+            warnSb.Append(vbCrLf & "Do you wish to continue ?")
+            Dim res As DialogResult = MessageBox.Show(warnSb.ToString, "Delete AOI(s)", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If res = Windows.Forms.DialogResult.Yes Then
+                'Set reference to HruExtension
+                Dim hruExt As HruExtension = HruExtension.GetExtension
+                'Delete the selected AOI's
+                Dim failedToDelete As IList(Of String) = New List(Of String)
+                Dim success As BA_ReturnCode = BA_ReturnCode.UnknownError
+                For Each deleteName As String In dDict.Keys
+                    Dim deleteUrl As String = dDict(deleteName)
+                    success = BA_Delete_Aoi(deleteUrl, hruExt.EbagisToken.key)
+                    If success <> BA_ReturnCode.Success Then
+                        failedToDelete.Add(deleteName)
+                    End If
                 Next
-                MessageBox.Show(sb.ToString, "Failed to delete AOI", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Else
-                MessageBox.Show("The selected AOI's have been deleted", "Delete AOI", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                'Refresh the list of AOI's; Programatically click BtnList
+                BtnList_Click(sender, e)
+                'If any AOI's couldn't be deleted, warn the user
+                If failedToDelete.Count > 0 Then
+                    Dim sb As StringBuilder = New StringBuilder()
+                    sb.Append("The following AOI(s) could not be deleted: " & vbCrLf & vbCrLf)
+                    For Each dName As String In failedToDelete
+                        sb.Append(dName & vbCrLf)
+                    Next
+                    MessageBox.Show(sb.ToString, "Failed to delete AOI", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Else
+                    MessageBox.Show("The selected AOI(s) have been deleted", "Delete AOI(s)", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                End If
             End If
         End If
     End Sub
 
-    Private Sub AoiGrid_CellValueChanged(sender As System.Object, e As System.Windows.Forms.DataGridViewCellEventArgs) Handles AoiGrid.CellValueChanged
-        Dim colIdx As Integer = e.ColumnIndex
+    ' This event handler manually raises the CellValueChanged event
+    ' by calling the CommitEdit method. Works with AoiGrid_CellValueChanged to manage the delete button
+    Sub AoiGrid_CurrentCellDirtyStateChanged(ByVal sender As Object, ByVal e As EventArgs) _
+        Handles AoiGrid.CurrentCellDirtyStateChanged
+            If AoiGrid.IsCurrentCellDirty Then
+                AoiGrid.CommitEdit(DataGridViewDataErrorContexts.Commit)
+            End If
+    End Sub
+
+    ' If a check box cell is clicked, this event handler disables  
+    ' or enables the button in the same row as the clicked cell.
+    Public Sub AoiGrid_CellValueChanged(ByVal sender As Object, _
+        ByVal e As DataGridViewCellEventArgs) _
+        Handles AoiGrid.CellValueChanged
+
         Dim aoiSelected As Boolean = False
-        If colIdx = idxSelectAoi Then
-            For Each pRow As DataGridViewRow In AoiGrid.Rows
-                Dim ckDelete As Boolean = pRow.Cells(idxSelectAoi).Value
-                If ckDelete = True Then
-                    aoiSelected = True
-                    Exit For
-                End If
-            Next
-            'Only enable delete button if AOI selected
-            BtnDelete.Enabled = aoiSelected
+        If e.ColumnIndex = idxSelectAoi AndAlso e.RowIndex > -1 Then
+            Dim checkCell As DataGridViewCheckBoxCell = _
+                CType(AoiGrid.Rows(e.RowIndex).Cells(idxSelectAoi), DataGridViewCheckBoxCell)
+            aoiSelected = CType(checkCell.Value, [Boolean])
+
+            If aoiSelected = True Then
+                BtnDelete.Enabled = True
+                AoiGrid.Invalidate()
+                Exit Sub
+            Else
+                'Check to see if any other rows are still selected
+                For Each pRow As DataGridViewRow In AoiGrid.Rows
+                    Dim ckDelete As Boolean = pRow.Cells(idxSelectAoi).Value
+                    If ckDelete = True Then
+                        aoiSelected = True
+                        Exit For
+                    End If
+                Next
+                BtnDelete.Enabled = aoiSelected
+                AoiGrid.Invalidate()
+            End If
         End If
     End Sub
 End Class
