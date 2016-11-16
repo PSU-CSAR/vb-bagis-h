@@ -999,11 +999,12 @@ Public Module WebservicesModule
         reqT.Headers(HttpRequestHeader.Authorization) = cred
         Try
             Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
-                Using stream As System.IO.Stream = resT.GetResponseStream
-                    Using streamReader As System.IO.StreamReader = New System.IO.StreamReader(stream)
-                        Debug.Print("JSON response -->" & streamReader.ReadToEnd)
-                    End Using
-                End Using
+                'Commenting out because the request returns an empty response
+                'Using stream As System.IO.Stream = resT.GetResponseStream
+                '    Using streamReader As System.IO.StreamReader = New System.IO.StreamReader(stream)
+                '        Debug.Print("JSON response -->" & streamReader.ReadToEnd)
+                '    End Using
+                'End Using
             End Using
 
             'If we didn't get an exception, the upload was successful

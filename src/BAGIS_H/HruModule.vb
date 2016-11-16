@@ -361,7 +361,7 @@ Module HruModule
             Dim nextRule As ContributingAreasRule = CType(ruleToRun, ContributingAreasRule)
             success = BA_CreateContributingAreas(aoiPath, hruOutputPath, ruleToRun.OutputDatasetName, nextRule)
         End If
-        If TypeOf ruleToRun Is TemplateRule Then
+        If TypeOf ruleToRun Is TemplateRule AndAlso success = BA_ReturnCode.Success Then
             success = AddReclassAttribToLulcOutput(ruleToRun, hruOutputPath, ruleToRun.OutputDatasetName)
         End If
         If success = BA_ReturnCode.Success Then
