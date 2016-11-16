@@ -13,7 +13,7 @@ Public Class FrmDownloadAoiMenu
     Private idxAoiName As Integer = 0
     Private idxDateUploaded As Integer = 1
     Private idxAuthor As Integer = 2
-    Private idxDownload As Integer = 3
+    Private idxSelectAoi As Integer = 3
     Private idxComment As Integer = 4
     Private idxDownloadUrl As Integer = 5
     Private idxTaskAoi As Integer = 0
@@ -137,7 +137,7 @@ Public Class FrmDownloadAoiMenu
             Dim dList As IList(Of String) = New List(Of String)
             Dim dCount As UInt16 = 0
             For Each pRow As DataGridViewRow In AoiGrid.Rows
-                Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
+                Dim ckDownload As Boolean = pRow.Cells(idxSelectAoi).Value
                 If ckDownload = True Then
                     dCount += 1
                     Dim downloadFilePath As String = TxtDownloadPath.Text & "\" & Convert.ToString(pRow.Cells(idxAoiName).Value)
@@ -150,7 +150,7 @@ Public Class FrmDownloadAoiMenu
                             Dim aoiTask As String = Convert.ToString(tRow.Cells(idxTaskAoi).Value)
                             If aoiName.Equals(aoiTask) Then
                                 MessageBox.Show(aoiName & " is already being downloaded.")
-                                pRow.Cells(idxDownload).Value = False
+                                pRow.Cells(idxSelectAoi).Value = False
                                 Exit Sub
                             End If
                         End If
@@ -181,7 +181,7 @@ Public Class FrmDownloadAoiMenu
 
             'BtnDownloadAoi.Enabled = False
             For Each pRow As DataGridViewRow In AoiGrid.Rows
-                Dim ckDownload As Boolean = pRow.Cells(idxDownload).Value
+                Dim ckDownload As Boolean = pRow.Cells(idxSelectAoi).Value
                 If ckDownload = True Then
                     Dim downloadUrl As String = Convert.ToString(pRow.Cells(idxDownloadUrl).Value)
                     downloadUrl = downloadUrl & "download/"
@@ -198,7 +198,7 @@ Public Class FrmDownloadAoiMenu
                     End With
                     GrdTasks.Rows.Add(item)
                     'Uncheck selected download so not accidently reselected
-                    pRow.Cells(idxDownload).Value = False
+                    pRow.Cells(idxSelectAoi).Value = False
                     Application.DoEvents()
                     'Set reference to HruExtension
                     Dim hruExt As HruExtension = HruExtension.GetExtension
@@ -1222,6 +1222,65 @@ Public Class FrmDownloadAoiMenu
         Else
             m_aoiSearchFilter.StringSearch = Trim(TxtSearch.Text)
             m_txtFilterDescr = RdoSearch.Text.Substring(FILTER_PREFIX_LENGTH) + " '" + m_aoiSearchFilter.StringSearch + "'"
+        End If
+    End Sub
+
+    Private Sub BtnDelete_Click(sender As System.Object, e As System.EventArgs) Handles BtnDelete.Click
+        'Is at least one aoi selected ?
+        'Dictionary with aoiName as key and url as value
+        Dim dDict As IDictionary(Of String, String) = New Dictionary(Of String, String)
+        For Each pRow As DataGridViewRow In AoiGrid.Rows
+            Dim ckDelete As Boolean = pRow.Cells(idxSelectAoi).Value
+            If ckDelete = True Then
+                dDict.Add(Convert.ToString(pRow.Cells(idxAoiName).Value).Trim, _
+                          Convert.ToString(pRow.Cells(idxDownloadUrl).Value).Trim)
+            End If
+        Next
+        If dDict.Keys.Count < 1 Then
+            MessageBox.Show("You must select at least one AOI to download", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Exit Sub
+        Else
+            'Set reference to HruExtension
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            'Delete the selected AOI's
+            Dim failedToDelete As IList(Of String) = New List(Of String)
+            Dim success As BA_ReturnCode = BA_ReturnCode.UnknownError
+            For Each deleteName As String In dDict.Keys
+                Dim deleteUrl As String = dDict(deleteName)
+                success = BA_Delete_Aoi(deleteUrl, hruExt.EbagisToken.key)
+                If success <> BA_ReturnCode.Success Then
+                    failedToDelete.Add(deleteName)
+                End If
+            Next
+            'Refresh the list of AOI's; Programatically click BtnList
+            BtnList_Click(sender, e)
+            'If any AOI's couldn't be deleted, warn the user
+            If failedToDelete.Count > 0 Then
+                Dim sb As StringBuilder = New StringBuilder()
+                sb.Append("The following AOI's could not be deleted: " & vbCrLf & vbCrLf)
+                For Each dName As String In failedToDelete
+                    sb.Append(dName & vbCrLf)
+                Next
+                MessageBox.Show(sb.ToString, "Failed to delete AOI", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Else
+                MessageBox.Show("The selected AOI's have been deleted", "Delete AOI", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+        End If
+    End Sub
+
+    Private Sub AoiGrid_CellValueChanged(sender As System.Object, e As System.Windows.Forms.DataGridViewCellEventArgs) Handles AoiGrid.CellValueChanged
+        Dim colIdx As Integer = e.ColumnIndex
+        Dim aoiSelected As Boolean = False
+        If colIdx = idxSelectAoi Then
+            For Each pRow As DataGridViewRow In AoiGrid.Rows
+                Dim ckDelete As Boolean = pRow.Cells(idxSelectAoi).Value
+                If ckDelete = True Then
+                    aoiSelected = True
+                    Exit For
+                End If
+            Next
+            'Only enable delete button if AOI selected
+            BtnDelete.Enabled = aoiSelected
         End If
     End Sub
 End Class
