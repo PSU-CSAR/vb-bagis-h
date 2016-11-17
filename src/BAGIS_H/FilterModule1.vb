@@ -60,80 +60,76 @@ Module FilterModule1
                     Exit Function
                 End If
 
-                '2016-03-31 Replace the mask with clipping the input file first. See above. 
-                'The mask causes an error in the filtering process as of AGS 10.2.2
-                'Configure raster analysis environment
-                'pEnv = CType(pNeighborhoodOp, IRasterAnalysisEnvironment)  ' Explicit cast
-                'maskGDS = BA_OpenFeatureClassFromGDB(maskFolder, maskFile)
-                'pEnv.Mask = maskGDS
-                ' Set the analysis extent to match the mask
-                'Dim extentProvider As Object = CType(maskGDS.Extent, Object)
-                'pEnv.SetExtent(esriRasterEnvSettingEnum.esriRasterEnvValue, extentProvider)
-
                 'Perform focal statistics
-                ''Dim strFilterType As String = GetStatisticsTypeFromEnum(filterType)
-                ''Dim maskPath As String = maskFolder & maskFile
-                ''Dim name1 As String = Nothing
-                ''Dim name2 As String = Nothing
-                ''For index As Integer = 1 To iterations
-                ''    ' Is this the next-to-last iteration
-                ''    If index = iterations Then
-                ''        name1 = "tempR001"
-                ''    Else
-                ''        name1 = "zzz" & index
-                ''    End If
-
-                ''    ' Is this the first iteration? If so, we use infilepath for "from" raster
-                ''    If index = 1 Then
-                ''        'pOutRaster = pNeighborhoodOp.FocalStatistics(pRaster, filterType, pRasterNeighborhood, True)
-                ''        BA_FocalStatistics_GP(infilepath & "\" & infile, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType, snapRasterPath)
-                ''    Else
-                ''        'pOutRaster = pNeighborhoodOp.FocalStatistics(pStatRaster, filterType, pRasterNeighborhood, True)
-                ''        BA_FocalStatistics_GP(outfilepath & "\" & name2, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType, snapRasterPath)
-                ''    End If
-                ''    name2 = name1
-                ''Next
-                ''Dim success As BA_ReturnCode = BA_RemoveFilesByPrefix(outfilepath, "zzz")
-
-                'Specify a rectangle neighborhood
-                pRasterNeighborhood.SetRectangle(nbrWd, nbrHt, esriUnitsCells)
-
+                Dim strFilterType As String = GetStatisticsTypeFromEnum(filterType)
+                Dim maskPath As String = maskFolder & maskFile
+                Dim name1 As String = Nothing
+                Dim name2 As String = Nothing
+                Dim success As BA_ReturnCode = BA_ReturnCode.UnknownError
                 For index As Integer = 1 To iterations
+                    ' Is this the next-to-last iteration
+                    If index = iterations Then
+                        name1 = "tempR001"
+                    Else
+                        name1 = "zzz" & index
+                    End If
+
                     ' Is this the first iteration? If so, we use infilepath for "from" raster
                     If index = 1 Then
-                        pOutRaster = pNeighborhoodOp.FocalStatistics(pRaster, filterType, pRasterNeighborhood, True)
+                        'pOutRaster = pNeighborhoodOp.FocalStatistics(pRaster, filterType, pRasterNeighborhood, True)
+                        success = BA_FocalStatistics_GP(infilepath & "\" & infile, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType, snapRasterPath)
                     Else
-                        'Otherwise use output from previous run
-                        pOutRaster = pNeighborhoodOp.FocalStatistics(pStatRaster, filterType, pRasterNeighborhood, True)
+                        'pOutRaster = pNeighborhoodOp.FocalStatistics(pStatRaster, filterType, pRasterNeighborhood, True)
+                        success = BA_FocalStatistics_GP(outfilepath & "\" & name2, outfilepath & "\" & name1, maskPath, "Rectangle 5 5 Cell", strFilterType, snapRasterPath)
                     End If
-                    pStatRaster = pOutRaster
+                    name2 = name1
+                    If success <> BA_ReturnCode.Success Then Exit For
                 Next
 
-                ' Persist focal statistics output to GDB
-                ' Geoanalyst tool unable to save to file GDB
-                retVal = BA_SaveRasterDatasetGDB2(pOutRaster, aoiPath, outfilepath, BA_RASTER_FORMAT, "tempR001")
-                Dim success As BA_ReturnCode = BA_ReturnCode.OtherError
+                If success = BA_ReturnCode.Success Then
+                    success = BA_RemoveFilesByPrefix(outfilepath, "zzz")
 
-                If filterType = esriGeoAnalysisStatsMajority Then
-                    'Removing NoData only required for Majority filter
-                    success = BA_RemNodataFromRas(outfilepath, "tempR001", maskFolder, maskFile, outfilepath, outfile, _
-                                                  snapRasterPath, aoiPath)
-                    If success <> BA_ReturnCode.Success Then
-                        BA_RemoveRasterFromGDB(outfilepath, "tempR001")
-                        Return BA_ReturnCode.UnknownError
-                        Exit Function
+                    '2016-NOV-17: Switching back to geoprocessor focal statistics; With large datasets, the neighborhoodOp runs
+                    'out of memory on the third pass GitHub issue #36
+                    ''Specify a rectangle neighborhood
+                    'pRasterNeighborhood.SetRectangle(nbrWd, nbrHt, esriUnitsCells)
+
+                    'For index As Integer = 1 To iterations
+                    '    ' Is this the first iteration? If so, we use infilepath for "from" raster
+                    '    If index = 1 Then
+                    '        pOutRaster = pNeighborhoodOp.FocalStatistics(pRaster, filterType, pRasterNeighborhood, True)
+                    '    Else
+                    '        'Otherwise use output from previous run
+                    '        pOutRaster = pNeighborhoodOp.FocalStatistics(pStatRaster, filterType, pRasterNeighborhood, True)
+                    '    End If
+                    '    pStatRaster = pOutRaster
+                    'Next
+
+                    ' Persist focal statistics output to GDB
+                    ' Geoanalyst tool unable to save to file GDB
+                    'retVal = BA_SaveRasterDatasetGDB2(pOutRaster, aoiPath, outfilepath, BA_RASTER_FORMAT, "tempR001")
+
+                    If filterType = esriGeoAnalysisStatsMajority Then
+                        'Removing NoData only required for Majority filter
+                        success = BA_RemNodataFromRas(outfilepath, "tempR001", maskFolder, maskFile, outfilepath, outfile, _
+                                                      snapRasterPath, aoiPath)
+                        If success <> BA_ReturnCode.Success Then
+                            BA_RemoveRasterFromGDB(outfilepath, "tempR001")
+                            Return BA_ReturnCode.UnknownError
+                            Exit Function
+                        End If
+                    Else
+                        ' Rename output of filter to outfile name if we don't have to remove NoData values
+                        success = BA_RenameRasterInGDB(outfilepath, "tempR001", outfile)
+                        'Dim success As BA_ReturnCode = BA_Copy(outfilepath & "\tempR001", outfilepath & "\" & outfile)
                     End If
-                Else
-                    ' Rename output of filter to outfile name if we don't have to remove NoData values
-                    success = BA_RenameRasterInGDB(outfilepath, "tempR001", outfile)
-                    'Dim success As BA_ReturnCode = BA_Copy(outfilepath & "\tempR001", outfilepath & "\" & outfile)
-                End If
 
-                retVal = BA_RemoveRasterFromGDB(outfilepath, "tempR001")
-                retVal = BA_RemoveRasterFromGDB(outfilepath, clipRasterName)
-                Return success
-            Else
-                Return BA_ReturnCode.UnknownError
+                    retVal = BA_RemoveRasterFromGDB(outfilepath, "tempR001")
+                    retVal = BA_RemoveRasterFromGDB(outfilepath, clipRasterName)
+                    Return success
+                Else
+                    Return BA_ReturnCode.UnknownError
+                End If
             End If
         Catch ex As Exception
             MessageBox.Show("BA_AddRasFilter() Exception: " & ex.Message)

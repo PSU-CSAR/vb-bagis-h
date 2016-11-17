@@ -930,7 +930,7 @@ Public Module ToolsModule
         End Try
     End Function
 
-    ' Calculate focal statistics with GP; Not used as of Nov 2, 2011
+    ' Calculate focal statistics with GP
     Public Function BA_FocalStatistics_GP(ByVal inRaster As String, ByVal outRasterDataset As String, _
                                           ByVal maskDataset As String, ByVal neighborhood As String, _
                                           ByVal statisticsType As String, ByVal snapRasterPath As String) As BA_ReturnCode
