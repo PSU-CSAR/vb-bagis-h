@@ -701,7 +701,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="ESRI.ArcGIS.ArcMapUI">
       <Private>False</Private>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
   <ItemGroup>
