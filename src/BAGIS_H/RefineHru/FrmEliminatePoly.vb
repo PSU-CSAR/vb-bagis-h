@@ -600,7 +600,7 @@ Public Class FrmEliminatePoly
             Dim newcount As Long = BA_GetFeatureCount(hruOutputPath2, vName)
             Dim zonesRemoved As Long = originalCount - newcount
             If zonesRemoved > 0 Then
-                TxtNoZonesRemoved.Text = originalCount - newcount
+                TxtNoZonesRemoved.Text = zonesRemoved
             Else
                 TxtNoZonesRemoved.Text = BA_UNKNOWN
             End If
