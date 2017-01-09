@@ -386,7 +386,7 @@ Public Class FrmEliminatePoly
             PanelPercentile.Visible = False
             PanelArea.Visible = True
             TxtPolyArea.Enabled = True
-            'TxtNoZonesRemoved.Text = ""
+            TxtNoZonesRemoved.Text = BA_UNKNOWN
         Else
             PanelPercentile.Visible = True
             PanelArea.Visible = False
@@ -598,7 +598,12 @@ Public Class FrmEliminatePoly
             'update TxtNoZonesRemoved value
             Dim originalCount As Long = BA_GetFeatureCount(m_featurePath, m_featureName)
             Dim newcount As Long = BA_GetFeatureCount(hruOutputPath2, vName)
-            TxtNoZonesRemoved.Text = originalCount - newcount
+            Dim zonesRemoved As Long = originalCount - newcount
+            If zonesRemoved > 0 Then
+                TxtNoZonesRemoved.Text = originalCount - newcount
+            Else
+                TxtNoZonesRemoved.Text = BA_UNKNOWN
+            End If
 
             'add HRUID_CO and HRUID_NC fields to the Vector file
             If BA_AddCTAndNonCTToAttrib(vOutputPath) <> BA_ReturnCode.Success Then
@@ -676,14 +681,22 @@ Public Class FrmEliminatePoly
             Next
             pStepProg.Step()
 
+            Dim maxPolygonToRetainAttributes As Integer = 5000  'Note: copying the attributes for large number of polys causes ArcMap to hang
             If CkRetainAttributes.Checked = True And pHru.ParentHru IsNot Nothing Then
-                Dim origHru As Hru = pHru.ParentHru
-                Dim parentPath As String = Nothing
-                Dim ruleFilePath As String = BA_GetHruPathGDB(m_aoi.FilePath, PublicPath.HruDirectory, origHru.Name)
-                If origHru IsNot Nothing AndAlso origHru.ParentHru IsNot Nothing Then
-                    parentPath = origHru.ParentHru.FilePath & GRID
+                If newcount > maxPolygonToRetainAttributes Then
+                    MessageBox.Show("Due to the large number of polygons (" & newcount & ") the source attributes from the parent HRU cannot be retained. " +
+                                    "Copying the source attributes will cause ArcMap to be non-responsive. If you need to retain the source " +
+                                    "attributes the maximum number of polygons is " & maxPolygonToRetainAttributes & ".")
+                    CkRetainAttributes.Checked = False
+                Else
+                    Dim origHru As Hru = pHru.ParentHru
+                    Dim parentPath As String = Nothing
+                    Dim ruleFilePath As String = BA_GetHruPathGDB(m_aoi.FilePath, PublicPath.HruDirectory, origHru.Name)
+                    If origHru IsNot Nothing AndAlso origHru.ParentHru IsNot Nothing Then
+                        parentPath = origHru.ParentHru.FilePath & GRID
+                    End If
+                    BA_AddAttributesToHru(m_aoi.FilePath, hruOutputPath2, ruleFilePath, origHru.RuleList, parentPath)
                 End If
-                BA_AddAttributesToHru(m_aoi.FilePath, hruOutputPath2, ruleFilePath, origHru.RuleList, parentPath)
                 pStepProg.Step()
             End If
 
