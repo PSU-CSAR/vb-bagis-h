@@ -224,7 +224,7 @@ Public Class FrmReclassZones
             Dim actionCode As Short = 0
             Dim vectorName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False)
             Dim success As BA_ReturnCode = BA_AddExtentLayer(My.ArcMap.Document, parentPath & vectorName, _
-                                                             Nothing, vectorName, actionCode, 1.0)
+                                                             Nothing, True, vectorName, actionCode, 1.0)
             BtnSelectZones.Enabled = True
             TxtSelZone.Enabled = True
         Else
