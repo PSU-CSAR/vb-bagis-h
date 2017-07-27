@@ -667,7 +667,7 @@ Partial Class FrmDownloadAoiMenu
         Me.Controls.Add(Me.AoiGrid)
         Me.Name = "FrmDownloadAoiMenu"
         Me.ShowIcon = False
-        Me.Text = "Basins Aoi Menu"
+        Me.Text = "eBAGIS Aoi Menu"
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).EndInit()
         Me.PnlFilter.ResumeLayout(False)
