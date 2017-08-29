@@ -451,8 +451,7 @@ Public Class FrmDownloadAoiMenu
                     Else
                         Dim sb As StringBuilder = New StringBuilder
                         sb.Append("An AOI named '" & aoiName & "' already exists in the repository. ")
-                        sb.Append("Please use the update form to update parts of this AOI or ")
-                        sb.Append("select another AOI to upload.")
+                        sb.Append("Please select another AOI to upload.")
                         MessageBox.Show(sb.ToString, "AOI already exists", MessageBoxButtons.OK, MessageBoxIcon.Information)
                         Exit Sub
                     End If
