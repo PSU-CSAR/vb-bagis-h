@@ -87,6 +87,7 @@ Partial Class FrmDownloadAoiMenu
         Me.Label4 = New System.Windows.Forms.Label()
         Me.TxtFilterDescr = New System.Windows.Forms.TextBox()
         Me.BtnDelete = New System.Windows.Forms.Button()
+        Me.BtnSignIn = New System.Windows.Forms.Button()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PnlFilter.SuspendLayout()
@@ -190,7 +191,7 @@ Partial Class FrmDownloadAoiMenu
         Me.BtnList.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnList.Location = New System.Drawing.Point(502, 2)
         Me.BtnList.Name = "BtnList"
-        Me.BtnList.Size = New System.Drawing.Size(100, 30)
+        Me.BtnList.Size = New System.Drawing.Size(80, 30)
         Me.BtnList.TabIndex = 68
         Me.BtnList.Text = "List"
         Me.BtnList.UseVisualStyleBackColor = True
@@ -580,7 +581,7 @@ Partial Class FrmDownloadAoiMenu
         'BtnShowFilter
         '
         Me.BtnShowFilter.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnShowFilter.Location = New System.Drawing.Point(609, 2)
+        Me.BtnShowFilter.Location = New System.Drawing.Point(588, 2)
         Me.BtnShowFilter.Name = "BtnShowFilter"
         Me.BtnShowFilter.Size = New System.Drawing.Size(143, 30)
         Me.BtnShowFilter.TabIndex = 92
@@ -590,9 +591,9 @@ Partial Class FrmDownloadAoiMenu
         'BtnClearFilter
         '
         Me.BtnClearFilter.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnClearFilter.Location = New System.Drawing.Point(759, 2)
+        Me.BtnClearFilter.Location = New System.Drawing.Point(738, 2)
         Me.BtnClearFilter.Name = "BtnClearFilter"
-        Me.BtnClearFilter.Size = New System.Drawing.Size(100, 30)
+        Me.BtnClearFilter.Size = New System.Drawing.Size(90, 30)
         Me.BtnClearFilter.TabIndex = 93
         Me.BtnClearFilter.Text = "Clear filter"
         Me.BtnClearFilter.UseVisualStyleBackColor = True
@@ -632,11 +633,22 @@ Partial Class FrmDownloadAoiMenu
         Me.BtnDelete.Text = "Delete AOI"
         Me.BtnDelete.UseVisualStyleBackColor = True
         '
+        'BtnSignIn
+        '
+        Me.BtnSignIn.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnSignIn.Location = New System.Drawing.Point(831, 2)
+        Me.BtnSignIn.Name = "BtnSignIn"
+        Me.BtnSignIn.Size = New System.Drawing.Size(90, 30)
+        Me.BtnSignIn.TabIndex = 97
+        Me.BtnSignIn.Text = "Sign in"
+        Me.BtnSignIn.UseVisualStyleBackColor = True
+        '
         'FrmDownloadAoiMenu
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(928, 652)
+        Me.Controls.Add(Me.BtnSignIn)
         Me.Controls.Add(Me.BtnDelete)
         Me.Controls.Add(Me.TxtFilterDescr)
         Me.Controls.Add(Me.Label4)
@@ -728,4 +740,5 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents SelectAoi As System.Windows.Forms.DataGridViewCheckBoxColumn
     Friend WithEvents Comment As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents DownloadUrl As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents BtnSignIn As System.Windows.Forms.Button
 End Class

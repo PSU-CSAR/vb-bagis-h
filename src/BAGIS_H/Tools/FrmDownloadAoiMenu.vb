@@ -201,6 +201,7 @@ Public Class FrmDownloadAoiMenu
                     pRow.Cells(idxSelectAoi).Value = False
                     Application.DoEvents()
                     'Set reference to HruExtension
+                    BtnSignIn.Text = "Sign out"
                     Dim hruExt As HruExtension = HruExtension.GetExtension
                     Dim aDownload As AoiTask = BA_Download_Aoi(downloadUrl, hruExt.EbagisToken.key)
                     If aDownload.task IsNot Nothing Then
@@ -254,6 +255,7 @@ Public Class FrmDownloadAoiMenu
 
             Dim success As BA_ReturnCode = GenerateToken()
             If success = BA_ReturnCode.Success Then
+                BtnSignIn.Text = "Sign out"
                 'Set reference to HruExtension
                 Dim hruExt As HruExtension = HruExtension.GetExtension
                 'Set the user name if it is a user name search
@@ -309,6 +311,7 @@ Public Class FrmDownloadAoiMenu
 
         If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
+        BtnSignIn.Text = "Sign out"
         Dim fileName As String = Path.GetFileNameWithoutExtension(TxtUploadPath.Text)
         If String.IsNullOrEmpty(fileName) Then
             MessageBox.Show("No file selected to upload", "No file selected", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -443,6 +446,7 @@ Public Class FrmDownloadAoiMenu
             If success = BA_ReturnCode.Success Then
                 If GenerateToken() = BA_ReturnCode.Success Then
                     Dim aoiName As String = BA_GetBareName(DataPath)
+                    BtnSignIn.Text = "Sign out"
                     'Set reference to HruExtension
                     Dim hruExt As HruExtension = HruExtension.GetExtension
                     Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, hruExt.EbagisToken.key, aoiName)
@@ -684,6 +688,7 @@ Public Class FrmDownloadAoiMenu
                         Dim success As BA_ReturnCode = BA_ZipHrus(TxtUploadPath.Text, archive)
                         archive.CloseArchive()
                         If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
+                        BtnSignIn.Text = "Sign out"
                         UploadAoi(parentFolder & zipName)
                     End If
                 End If
@@ -1035,6 +1040,7 @@ Public Class FrmDownloadAoiMenu
             If m_settings Is Nothing Then m_settings = New BagisHSettings()
             m_settings.basinsDb = TxtBasinsDb.Text
             'Set reference to HruExtension
+            BtnSignIn.Text = "Sign out"
             Dim hruExt As HruExtension = HruExtension.GetExtension
             Dim success As BA_ReturnCode = SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)
             If success = BA_ReturnCode.Success Then
@@ -1314,6 +1320,20 @@ Public Class FrmDownloadAoiMenu
                 BtnDelete.Enabled = aoiSelected
                 AoiGrid.Invalidate()
             End If
+        End If
+    End Sub
+
+    Private Sub BtnSignIn_Click(sender As System.Object, e As System.EventArgs) Handles BtnSignIn.Click
+        Dim hruExt As HruExtension = HruExtension.GetExtension
+        Dim bToken As BagisToken = hruExt.EbagisToken
+        If bToken Is Nothing Then
+            'Try to sign in
+            Dim success As BA_ReturnCode = GenerateToken()
+            If success = BA_ReturnCode.Success Then
+                BtnSignIn.Text = "Sign out"
+            End If
+        Else
+            'Try to sign out
         End If
     End Sub
 End Class

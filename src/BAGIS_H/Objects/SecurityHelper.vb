@@ -115,6 +115,7 @@ Public Class SecurityHelper
             strToken = SecurityHelper.BA_GetStoredToken() '2. if not, check to see if token is stored
         End If
         If Not String.IsNullOrEmpty(strToken) Then
+            'Returns a UserData object containing groups
             Dim userData As UserData = SecurityHelper.IsTokenValid(validateUrl, strToken)
             If userData.username IsNot Nothing Then      '3. If stored token valid, store in extension
                 Dim newToken As BagisToken = New BagisToken
