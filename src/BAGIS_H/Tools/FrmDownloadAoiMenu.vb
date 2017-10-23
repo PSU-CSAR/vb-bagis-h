@@ -121,8 +121,6 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub BtnDownloadAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnDownloadAoi.Click
         Try
-            'TestWebClient()
-            'Exit Sub
             'Is a destination folder selected
             If String.IsNullOrEmpty(TxtDownloadPath.Text) Then
                 MessageBox.Show("You must select a destination folder to download an AOI", "No folder selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -175,9 +173,6 @@ Public Class FrmDownloadAoiMenu
                     Exit Sub
                 End If
             End If
-
-            'Check token
-            If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
 
             'BtnDownloadAoi.Enabled = False
             For Each pRow As DataGridViewRow In AoiGrid.Rows
@@ -253,21 +248,15 @@ Public Class FrmDownloadAoiMenu
             progressDialog2 = BA_GetAnimationProgressor(My.ArcMap.Application.hWnd, "Retrieving list of AOIs", "List AOIs")
             progressDialog2.ShowDialog()
 
-            Dim success As BA_ReturnCode = GenerateToken()
-            If success = BA_ReturnCode.Success Then
-                BtnSignIn.Text = "Sign out"
-                'Set reference to HruExtension
-                Dim hruExt As HruExtension = HruExtension.GetExtension
-                'Set the user name if it is a user name search
-                If RdoCurrentUser.Checked = True Then m_aoiSearchFilter.UserName = hruExt.EBagisUserName
-                Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.key, m_aoiSearchFilter)
-                Debug.Print(SecurityHelper.Groups.NWCC_ADMIN.ToString)
-                If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
-                    RefreshGrid(storedAois)
-                Else
-                    AoiGrid.Rows.Clear()
-                    MessageBox.Show("No stored AOIs were found on this server")
-                End If
+            Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, m_aoiSearchFilter)
+            If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
+                RefreshGrid(storedAois)
+            Else
+                AoiGrid.Rows.Clear()
+                Dim errMessage As String = "No stored AOIs were found on this server!"
+                If m_aoiSearchFilter IsNot Nothing Then _
+                    errMessage = "No stored AOIs met the conditions of your search filter!"
+                MessageBox.Show(errMessage, "BAGIS-H", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
         Catch ex As Exception
             Debug.Print("BtnList_Click Exception: " & ex.Message)
@@ -448,9 +437,7 @@ Public Class FrmDownloadAoiMenu
                 If GenerateToken() = BA_ReturnCode.Success Then
                     Dim aoiName As String = BA_GetBareName(DataPath)
                     BtnSignIn.Text = "Sign out"
-                    'Set reference to HruExtension
-                    Dim hruExt As HruExtension = HruExtension.GetExtension
-                    Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, hruExt.EbagisToken.key, aoiName)
+                    Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, aoiName)
                     If inArchive = False Then
                         TxtUploadPath.Text = DataPath
                     Else
@@ -493,6 +480,13 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnSelectDownloadFolder_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectDownloadFolder.Click
+        'Check permissions before we let them start; If they can login, they can download
+        If GenerateToken() <> BA_ReturnCode.Success Then
+            MessageBox.Show("Unable to sign in to Basins database. You cannot download an AOI!", "BAGIS-H", _
+                             MessageBoxButtons.OK, MessageBoxIcon.Hand)
+            Exit Sub
+        End If
+
         Dim bObjectSelected As Boolean
         Dim pGxDialog As IGxDialog = New GxDialog
         Dim pGxObject As IEnumGxObject = Nothing
@@ -1153,13 +1147,37 @@ Public Class FrmDownloadAoiMenu
 
     Private Sub RdoCurrentUser_CheckedChanged(sender As System.Object, e As System.EventArgs) Handles RdoCurrentUser.CheckedChanged
         If RdoCurrentUser.Checked = True Then
+            'Set reference to HruExtension
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            If String.IsNullOrEmpty(hruExt.EBagisUserName) Then
+                MessageBox.Show("You cannot filter on your AOI uploads until you have signed in!", "BAGIS-H",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                RdoCurrentUser.Checked = False
+                Exit Sub
+            End If
+
+            'Set the user name if it is a user name search
             m_aoiSearchFilter.Clear()
-            'We set the user name right before searching because we may not have the token yet
+            m_aoiSearchFilter.UserName = hruExt.EBagisUserName
             m_txtFilterDescr = RdoCurrentUser.Text.Substring(FILTER_PREFIX_LENGTH)
         End If
     End Sub
 
     Private Sub BtnApplyFilter_Click(sender As System.Object, e As System.EventArgs) Handles BtnApplyFilter.Click
+        TxtFilterDescr.Text = "None"
+        ' Validate search string if this is a textual search
+        If RdoSearch.Checked = True Then
+            Dim errorMsg As String = Nothing
+            If Not ValidSearchString(errorMsg) Then
+                ' Select the text to be corrected by the user.
+                TxtSearch.Select(0, TxtSearch.Text.Length)
+                MessageBox.Show(errorMsg, "BAGIS-H", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Exit Sub
+            Else
+                m_aoiSearchFilter.StringSearch = Trim(TxtSearch.Text)
+                m_txtFilterDescr = RdoSearch.Text.Substring(FILTER_PREFIX_LENGTH) + " '" + m_aoiSearchFilter.StringSearch + "'"
+            End If
+        End If
         Me.BtnList.PerformClick()
         TxtFilterDescr.Text = m_txtFilterDescr
         PnlFilter.Hide()
@@ -1216,22 +1234,31 @@ Public Class FrmDownloadAoiMenu
         Return True
     End Function
 
-    Private Sub TxtSearch_Validating(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles TxtSearch.Validating
-        Dim errorMsg As String = Nothing
-        If Not ValidSearchString(errorMsg) Then
-            ' Cancel the event and select the text to be corrected by the user.
-            e.Cancel = True
-            TxtSearch.Select(0, TxtSearch.Text.Length)
-
-            ' Set the ErrorProvider error with the text to display. 
-            MessageBox.Show(errorMsg, "Filter error", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Else
-            m_aoiSearchFilter.StringSearch = Trim(TxtSearch.Text)
-            m_txtFilterDescr = RdoSearch.Text.Substring(FILTER_PREFIX_LENGTH) + " '" + m_aoiSearchFilter.StringSearch + "'"
-        End If
-    End Sub
-
     Private Sub BtnDelete_Click(sender As System.Object, e As System.EventArgs) Handles BtnDelete.Click
+        'Check permissions before we let them start; If they can login, they can download
+        If GenerateToken() <> BA_ReturnCode.Success Then
+            MessageBox.Show("Unable to sign in to Basins database. You cannot delete an AOI!", "BAGIS-H", _
+                             MessageBoxButtons.OK, MessageBoxIcon.Hand)
+            Exit Sub
+        Else
+            Dim canDelete As Boolean = False
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            Dim lstGroups As IList(Of String) = hruExt.EbagisGroups
+            If lstGroups IsNot Nothing AndAlso lstGroups.Count > 0 Then
+                For Each strGroup As String In lstGroups
+                    If strGroup.ToUpper.Trim.Equals(SecurityHelper.Groups.NWCC_ADMIN) Then
+                        canDelete = True
+                        Exit For
+                    End If
+                Next
+            End If
+            If canDelete = False Then
+                MessageBox.Show("You do not have permissions to delete AOIs from the Basins database!", "BAGIS-H", _
+                               MessageBoxButtons.OK, MessageBoxIcon.Hand)
+                Exit Sub
+            End If
+        End If
+
         'Is at least one aoi selected ?
         'Dictionary with aoiName as key and url as value
         Dim dDict As IDictionary(Of String, String) = New Dictionary(Of String, String)

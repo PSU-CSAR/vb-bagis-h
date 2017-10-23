@@ -519,7 +519,7 @@ Public Module WebservicesModule
         Next
     End Sub
 
-    Public Function BA_List_Aoi(ByVal url As String, ByVal strToken As String, ByVal filter As AOISearchFilter) As Dictionary(Of String, StoredAoi)
+    Public Function BA_List_Aoi(ByVal url As String, ByVal filter As AOISearchFilter) As Dictionary(Of String, StoredAoi)
         Dim aoiDictionary As Dictionary(Of String, StoredAoi) = New Dictionary(Of String, StoredAoi)
 
         'The end point for getting a token for the web service
@@ -539,10 +539,6 @@ Public Module WebservicesModule
         'This is a GET request
         reqT.Method = "GET"
 
-        'Retrieve the token and format it for the header; Token comes from caller
-        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
-        'Put token in header
-        reqT.Headers(HttpRequestHeader.Authorization) = cred
         'Set the accept header to request the current version of the api
         reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
 
@@ -643,9 +639,8 @@ Public Module WebservicesModule
         End Try
     End Function
 
-    Public Function BA_AoiInArchive(ByVal url As String, ByVal strToken As String, _
-                                    ByVal aoiName As String) As Boolean
-        Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(url, strToken, Nothing)
+    Public Function BA_AoiInArchive(ByVal url As String, ByVal aoiName As String) As Boolean
+        Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(url, Nothing)
         For Each kvp As KeyValuePair(Of String, StoredAoi) In storedAois
             If kvp.Value.name.ToUpper = aoiName.ToUpper Then
                 Return True
