@@ -5,6 +5,12 @@ Imports BAGIS_ClassLibrary
 
 Public Class SecurityHelper
 
+    Public Enum Groups
+        GUEST
+        NWCC_STAFF
+        NWCC_ADMIN
+    End Enum
+
     Public Shared Function BA_GetStoredToken() As String
         Return My.Settings.GoldenTicket
     End Function
@@ -122,7 +128,7 @@ Public Class SecurityHelper
                 newToken.key = strToken
                 hruExt.EbagisToken = newToken
                 hruExt.EBagisUserName = userData.username
-                hruExt.EbagisGroups = userData.roleList
+                hruExt.EbagisGroups = userData.groupList
                 Return BA_ReturnCode.Success
             End If
         End If
@@ -135,5 +141,10 @@ Public Class SecurityHelper
             Return BA_ReturnCode.Success
         End If
     End Function
+
+    Public Shared Sub DeleteToken()
+        My.Settings.GoldenTicket = Nothing
+        My.Settings.Save()
+    End Sub
 
 End Class

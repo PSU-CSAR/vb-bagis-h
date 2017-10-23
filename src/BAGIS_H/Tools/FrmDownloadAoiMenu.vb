@@ -261,6 +261,7 @@ Public Class FrmDownloadAoiMenu
                 'Set the user name if it is a user name search
                 If RdoCurrentUser.Checked = True Then m_aoiSearchFilter.UserName = hruExt.EBagisUserName
                 Dim storedAois As Dictionary(Of String, StoredAoi) = BA_List_Aoi(TxtBasinsDb.Text, hruExt.EbagisToken.key, m_aoiSearchFilter)
+                Debug.Print(SecurityHelper.Groups.NWCC_ADMIN.ToString)
                 If storedAois IsNot Nothing AndAlso storedAois.Count > 0 Then
                     RefreshGrid(storedAois)
                 Else
@@ -1333,7 +1334,12 @@ Public Class FrmDownloadAoiMenu
                 BtnSignIn.Text = "Sign out"
             End If
         Else
-            'Try to sign out
+            'Sign out
+            'Remove token from extension
+            hruExt.EbagisToken = Nothing
+            'Remove token from application settings
+            SecurityHelper.DeleteToken()
+            BtnSignIn.Text = "Sign in"
         End If
     End Sub
 End Class

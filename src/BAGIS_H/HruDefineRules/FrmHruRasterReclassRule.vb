@@ -560,11 +560,11 @@ Public Class FrmHruRasterReclassRule
             pData.Cursor = pCursor
             pEnumVar = pData.UniqueValues
             Dim valueCount As Integer = pData.UniqueValueCount
-            Dim maxValues As Integer = 300
-            If valueCount > maxValues Then
-                MessageBox.Show("Cannot reclassify this raster. Number of unique values exceeds " & CStr(maxValues) & ".")
-                Exit Sub
-            End If
+            'Dim maxValues As Integer = 300
+            'If valueCount > maxValues Then
+            '    MessageBox.Show("Cannot reclassify this raster. Number of unique values exceeds " & CStr(maxValues) & ".")
+            '    Exit Sub
+            'End If
             pEnumVar.MoveNext()
             Dim pObj As Object = pEnumVar.Current
             While pObj IsNot Nothing
