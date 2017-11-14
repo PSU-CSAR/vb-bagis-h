@@ -485,15 +485,15 @@ Public Module WebservicesModule
             Return anUpload
         Catch w As WebException
             Dim sb As StringBuilder = New StringBuilder
-            sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
+                sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
             If w.Response IsNot Nothing Then
                 Using SReader As System.IO.StreamReader = New System.IO.StreamReader(w.Response.GetResponseStream())
-                    sb.Append(SReader.ReadToEnd)
-                End Using
+                        sb.Append(SReader.ReadToEnd)
+                    End Using
             Else
                 sb.Append(w.Message & vbCrLf)
                 sb.Append(w.StackTrace)
-            End If
+                End If
 
             Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
             'May dump the error to a local file
@@ -1020,6 +1020,21 @@ Public Module WebservicesModule
             Debug.Print("BA_Delete_Aoi Exception: " & ex.Message)
             Return BA_ReturnCode.UnknownError
         End Try
+    End Function
+
+    Public Function BA_GetBareNameImageService(ByVal imageUrl As String) As String
+        Dim pArray As String() = imageUrl.Split("/")
+        Dim strName As String = Nothing
+        If pArray IsNot Nothing AndAlso pArray.Length > 0 Then
+            For i As Integer = pArray.Count - 1 To 0 Step -1
+                strName = pArray(i)
+                If strName.Equals(BA_Url_ImageServer) Then
+                    strName = pArray(i - 1) 'Return the element immediately before ImageServer
+                    Exit For
+                End If
+            Next i
+        End If
+        Return strName
     End Function
 
 End Module
