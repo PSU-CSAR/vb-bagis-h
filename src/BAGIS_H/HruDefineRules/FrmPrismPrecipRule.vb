@@ -650,7 +650,7 @@ Handles DataGridView1.CellValidating
             For Each pInnerText As String In tagsList
                 'This is our BAGIS tag
                 If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
-                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
+                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG, ";")
                     If strUnits IsNot Nothing Then
                         pUnits = BA_GetMeasurementUnit(strUnits)
                         Return pUnits

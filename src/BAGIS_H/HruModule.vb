@@ -1338,7 +1338,7 @@ Module HruModule
             For Each pInnerText As String In tagsList
                 'This is our BAGIS tag
                 If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
-                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
+                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG, ";")
                     If strUnits IsNot Nothing Then
                         slopeUnit = BA_GetSlopeUnit(strUnits)
                     End If
@@ -1355,7 +1355,7 @@ Module HruModule
             For Each pInnerText As String In tagsList
                 'This is our BAGIS tag
                 If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
-                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
+                    Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG, ";")
                     If strUnits IsNot Nothing Then
                         elevUnit = BA_GetMeasurementUnit(strUnits)
                     End If
@@ -1375,7 +1375,7 @@ Module HruModule
                 For Each pInnerText As String In tagsList
                     'This is our BAGIS tag
                     If pInnerText.IndexOf(BA_BAGIS_TAG_PREFIX) = 0 Then
-                        Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG)
+                        Dim strUnits As String = BA_GetValueForKey(pInnerText, BA_ZUNIT_VALUE_TAG, ";")
                         If strUnits IsNot Nothing Then
                             depthUnit = BA_GetMeasurementUnit(strUnits)
                         End If
