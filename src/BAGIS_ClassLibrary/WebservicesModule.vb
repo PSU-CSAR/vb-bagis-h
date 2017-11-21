@@ -447,6 +447,8 @@ Public Module WebservicesModule
         reqT.ContentType = "multipart/form-data; boundary=" & boundary
         reqT.KeepAlive = True
         reqT.Timeout = 300000
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
 
         'Retrieve the token and format it for the header; Token comes from caller
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
@@ -485,15 +487,17 @@ Public Module WebservicesModule
             Return anUpload
         Catch w As WebException
             Dim sb As StringBuilder = New StringBuilder
-                sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
+            sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
+            Dim exDetail As WebExceptionDetail = New WebExceptionDetail()
             If w.Response IsNot Nothing Then
-                Using SReader As System.IO.StreamReader = New System.IO.StreamReader(w.Response.GetResponseStream())
-                        sb.Append(SReader.ReadToEnd)
-                    End Using
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(exDetail.[GetType]())
+                'Put JSON payload into WebExceptionDetail object
+                exDetail = CType(ser.ReadObject(w.Response.GetResponseStream), WebExceptionDetail)
+                sb.Append(exDetail.detail & vbCrLf)
             Else
                 sb.Append(w.Message & vbCrLf)
                 sb.Append(w.StackTrace)
-                End If
+            End If
 
             Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
             'May dump the error to a local file
@@ -588,6 +592,8 @@ Public Module WebservicesModule
         reqT = WebRequest.Create(url)
         'This is a GET request
         reqT.Method = "GET"
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
 
         'Retrieve the token and format it for the header; Token comes from caller
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
@@ -607,7 +613,7 @@ Public Module WebservicesModule
             '    End Using
             'End Using
 
-            'If we didn't get an exception, the upload was successful
+            'If we didn't get an exception, the download was successful
             Return aDownload
         Catch webEx As WebException
             Debug.Print("BA_Download_Aoi WebException: " & webEx.Message)
@@ -629,6 +635,9 @@ Public Module WebservicesModule
             Dim contentType As String = Nothing
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
+            'Set the accept header to request a lower version of the api
+            reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
+
             Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
                 contentType = resT.ContentType
             End Using
@@ -855,6 +864,8 @@ Public Module WebservicesModule
         reqT.Method = "POST"
         'Add explicit content length to avoid 411 error
         reqT.ContentLength = 0
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
 
         'Retrieve the token and format it for the header; Token comes from caller
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
@@ -1014,6 +1025,13 @@ Public Module WebservicesModule
             'If we didn't get an exception, the upload was successful
             Return BA_ReturnCode.Success
         Catch webEx As WebException
+            Dim exDetail As WebExceptionDetail = New WebExceptionDetail()
+            If webEx.Response IsNot Nothing Then
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(exDetail.[GetType]())
+                'Put JSON payload into WebExceptionDetail object
+                exDetail = CType(ser.ReadObject(webEx.Response.GetResponseStream), WebExceptionDetail)
+                MessageBox.Show(exDetail.detail, "BAGIS-H", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
             Debug.Print("BA_Delete_Aoi WebException: " & webEx.Message)
             Return BA_ReturnCode.UnknownError
         Catch ex As Exception

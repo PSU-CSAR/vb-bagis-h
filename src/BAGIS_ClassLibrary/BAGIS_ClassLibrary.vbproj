@@ -242,6 +242,7 @@
     <Compile Include="Objects\Aoi.vb" />
     <Compile Include="Objects\AOISearchFilter.vb" />
     <Compile Include="Objects\AoiTask.vb" />
+    <Compile Include="Objects\WebExceptionDetail.vb" />
     <Compile Include="Objects\ContributingAreasRule.vb" />
     <Compile Include="Objects\CookieCutProcess.vb" />
     <Compile Include="Objects\DAFlowTypeZonesRule.vb" />

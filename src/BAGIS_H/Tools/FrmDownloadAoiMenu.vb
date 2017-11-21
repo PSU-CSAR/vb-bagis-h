@@ -407,36 +407,53 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnSelectAoi_Click(sender As System.Object, e As System.EventArgs) Handles BtnSelectAoi.Click
-        Dim bObjectSelected As Boolean
-        Dim pGxDialog As IGxDialog = New GxDialog
-        Dim pGxObject As IEnumGxObject = Nothing
-        Dim DataPath As String
-        Dim pFilter As IGxObjectFilter = New GxFilterContainers
+        If GenerateToken() = BA_ReturnCode.Success Then
+            BtnSignIn.Text = "Sign out"
+            Dim canUpload As Boolean = False
+            Dim hruExt As HruExtension = HruExtension.GetExtension
+            Dim lstGroups As IList(Of String) = hruExt.EbagisGroups
+            If lstGroups IsNot Nothing AndAlso lstGroups.Count > 0 Then
+                For Each strGroup As String In lstGroups
+                    If strGroup.ToUpper.Trim.Equals(SecurityHelper.Groups.NWCC_ADMIN.ToString) Or _
+                       strGroup.ToUpper.Trim.Equals(SecurityHelper.Groups.NWCC_STAFF.ToString) Then
+                        canUpload = True
+                        Exit For
+                    End If
+                Next
+            End If
+            If canUpload = False Then
+                MessageBox.Show("You do not have permissions to upload AOIs to the Basins database!", "BAGIS-H", _
+                                MessageBoxButtons.OK, MessageBoxIcon.Hand)
+                Exit Sub
+            End If
+            Dim bObjectSelected As Boolean
+            Dim pGxDialog As IGxDialog = New GxDialog
+            Dim pGxObject As IEnumGxObject = Nothing
+            Dim DataPath As String
+            Dim pFilter As IGxObjectFilter = New GxFilterContainers
 
-        Try
-            'initialize and open mini browser
-            With pGxDialog
-                .AllowMultiSelect = False
-                .ButtonCaption = "Select"
-                .Title = "Select AOI Folder"
-                .ObjectFilter = pFilter
-                bObjectSelected = .DoModalOpen(My.ArcMap.Application.hWnd, pGxObject)
-            End With
+            Try
+                'initialize and open mini browser
+                With pGxDialog
+                    .AllowMultiSelect = False
+                    .ButtonCaption = "Select"
+                    .Title = "Select AOI Folder"
+                    .ObjectFilter = pFilter
+                    bObjectSelected = .DoModalOpen(My.ArcMap.Application.hWnd, pGxObject)
+                End With
 
-            If bObjectSelected = False Then Exit Sub
+                If bObjectSelected = False Then Exit Sub
 
-            'get the name of the selected folder
-            Dim pGxDataFolder As IGxFile
-            pGxDataFolder = pGxObject.Next
-            DataPath = pGxDataFolder.Path
-            If String.IsNullOrEmpty(DataPath) Then Exit Sub 'user cancelled the action
+                'get the name of the selected folder
+                Dim pGxDataFolder As IGxFile
+                pGxDataFolder = pGxObject.Next
+                DataPath = pGxDataFolder.Path
+                If String.IsNullOrEmpty(DataPath) Then Exit Sub 'user cancelled the action
 
-            'check AOI/BASIN status
-            Dim success As BA_ReturnCode = BA_CheckAoiStatus(DataPath, My.ArcMap.Application.hWnd, My.ArcMap.Document)
-            If success = BA_ReturnCode.Success Then
-                If GenerateToken() = BA_ReturnCode.Success Then
+                'check AOI/BASIN status
+                Dim success As BA_ReturnCode = BA_CheckAoiStatus(DataPath, My.ArcMap.Application.hWnd, My.ArcMap.Document)
+                If success = BA_ReturnCode.Success Then
                     Dim aoiName As String = BA_GetBareName(DataPath)
-                    BtnSignIn.Text = "Sign out"
                     Dim inArchive As Boolean = BA_AoiInArchive(TxtBasinsDb.Text, aoiName)
                     If inArchive = False Then
                         TxtUploadPath.Text = DataPath
@@ -448,10 +465,14 @@ Public Class FrmDownloadAoiMenu
                         Exit Sub
                     End If
                 End If
-            End If
-        Catch ex As Exception
-            Debug.Print("BtnSelectAoi_Click Exception: " & ex.Message)
-        End Try
+            Catch ex As Exception
+                Debug.Print("BtnSelectAoi_Click Exception: " & ex.Message)
+            End Try
+        Else
+            MessageBox.Show("Unable to sign in to Basins database. You cannot upload an AOI!", "BAGIS-H", _
+                 MessageBoxButtons.OK, MessageBoxIcon.Hand)
+            BtnSignIn.Text = "Sign in"
+        End If
     End Sub
 
     Private Sub TxtUploadPath_TextChanged(sender As System.Object, e As System.EventArgs) Handles TxtUploadPath.TextChanged
@@ -819,6 +840,8 @@ Public Class FrmDownloadAoiMenu
             Dim cred As String = String.Format("{0} {1}", "Token", hruExt.EbagisToken.key)
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
+            'Set the accept header to request a lower version of the api
+            reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
             Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
                 'Serialize the response so we can check the status
                 Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(aoiUpload.[GetType]())
@@ -1246,16 +1269,25 @@ Public Class FrmDownloadAoiMenu
             Dim lstGroups As IList(Of String) = hruExt.EbagisGroups
             If lstGroups IsNot Nothing AndAlso lstGroups.Count > 0 Then
                 For Each strGroup As String In lstGroups
-                    If strGroup.ToUpper.Trim.Equals(SecurityHelper.Groups.NWCC_ADMIN) Then
+                    If strGroup.ToUpper.Trim.Equals(SecurityHelper.Groups.NWCC_ADMIN.ToString) Then
                         canDelete = True
                         Exit For
                     End If
                 Next
             End If
             If canDelete = False Then
-                MessageBox.Show("You do not have permissions to delete AOIs from the Basins database!", "BAGIS-H", _
-                               MessageBoxButtons.OK, MessageBoxIcon.Hand)
-                Exit Sub
+                For Each pRow As DataGridViewRow In AoiGrid.Rows
+                    Dim ckDelete As Boolean = pRow.Cells(idxSelectAoi).Value
+                    If ckDelete = True Then
+                        Dim strOwner As String = Convert.ToString(pRow.Cells(idxAuthor).Value).Trim
+                        If Not hruExt.EBagisUserName.Equals(strOwner) Then
+                            pRow.Cells(idxSelectAoi).Value = False
+                        End If
+                    End If
+                Next
+                MessageBox.Show("You only have permissions to delete your own AOIs from the Basins database. Any AOIs " + _
+                                "that you did not upload have been unselected! ", "BAGIS-H", _
+                                MessageBoxButtons.OK, MessageBoxIcon.Hand)
             End If
         End If
 
@@ -1270,7 +1302,7 @@ Public Class FrmDownloadAoiMenu
             End If
         Next
         If dDict.Keys.Count < 1 Then
-            MessageBox.Show("You must select at least one AOI to download", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show("You must select at least one AOI to delete!", "BAGIS-P", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Exit Sub
         Else
             'Make sure user wants to delete
