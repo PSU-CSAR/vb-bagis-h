@@ -326,13 +326,16 @@ Public Class FrmDownloadAoiMenu
                 If url = aoiUpload.url Then
                     row.Cells(idxTaskStatus).Value = aoiUpload.task.status
                     row.Cells(idxTaskMessage).Value = shortMessage
-                    If Not strMessage.Equals(shortMessage) Then
-                        Dim sb As StringBuilder = New StringBuilder
-                        Dim aoiName As String = row.Cells(idxAoiName).Value
-                        Dim taskType As String = row.Cells(idxTaskType).Value
-                        sb.Append(aoiName & " " & taskType & " error!" & vbCrLf & vbCrLf)
-                        sb.Append(strMessage)
-                        MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    ' Pop a messageBox if error message is too long to be displayed in grid
+                    If Not String.IsNullOrEmpty(strMessage) Then
+                        If Not strMessage.Equals(shortMessage) Then
+                            Dim sb As StringBuilder = New StringBuilder
+                            Dim aoiName As String = row.Cells(idxAoiName).Value
+                            Dim taskType As String = row.Cells(idxTaskType).Value
+                            sb.Append(aoiName & " " & taskType & " error!" & vbCrLf & vbCrLf)
+                            sb.Append(strMessage)
+                            MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        End If
                     End If
                     Exit For
                 End If

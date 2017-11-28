@@ -488,12 +488,8 @@ Public Module WebservicesModule
         Catch w As WebException
             Dim sb As StringBuilder = New StringBuilder
             sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
-            Dim exDetail As WebExceptionDetail = New WebExceptionDetail()
             If w.Response IsNot Nothing Then
-                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(exDetail.[GetType]())
-                'Put JSON payload into WebExceptionDetail object
-                exDetail = CType(ser.ReadObject(w.Response.GetResponseStream), WebExceptionDetail)
-                sb.Append(exDetail.detail & vbCrLf)
+                sb.Append(BA_ExtractWebExceptionDetails(w))
             Else
                 sb.Append(w.Message & vbCrLf)
                 sb.Append(w.StackTrace)
@@ -1025,12 +1021,8 @@ Public Module WebservicesModule
             'If we didn't get an exception, the upload was successful
             Return BA_ReturnCode.Success
         Catch webEx As WebException
-            Dim exDetail As WebExceptionDetail = New WebExceptionDetail()
             If webEx.Response IsNot Nothing Then
-                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(exDetail.[GetType]())
-                'Put JSON payload into WebExceptionDetail object
-                exDetail = CType(ser.ReadObject(webEx.Response.GetResponseStream), WebExceptionDetail)
-                MessageBox.Show(exDetail.detail, "BAGIS-H", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show(BA_ExtractWebExceptionDetails(webEx), "BAGIS-H", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End If
             Debug.Print("BA_Delete_Aoi WebException: " & webEx.Message)
             Return BA_ReturnCode.UnknownError
@@ -1053,6 +1045,46 @@ Public Module WebservicesModule
             Next i
         End If
         Return strName
+    End Function
+
+    Public Function BA_ExtractWebExceptionDetails(ByVal pWebException As WebException) As String
+        Dim strException As String = "A WebException occurred"
+        Try
+            If pWebException.Response IsNot Nothing Then
+                Dim webExResponse As HttpWebResponse = CType(pWebException.Response, HttpWebResponse)
+                Dim objHttpStatusCode As HttpStatusCode = webExResponse.StatusCode
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer
+                Select Case objHttpStatusCode
+                    Case HttpStatusCode.BadRequest
+                        Dim exBadRequest As BadRequestException = New BadRequestException()
+                        ser = New System.Runtime.Serialization.Json.DataContractJsonSerializer(exBadRequest.[GetType]())
+                        exBadRequest = CType(ser.ReadObject(webExResponse.GetResponseStream), BadRequestException)
+                        Dim allDetails As List(Of String) = exBadRequest.detail.__all__
+                        If allDetails IsNot Nothing Then
+                            Dim sb As StringBuilder = New StringBuilder()
+                            For Each strDetail As String In allDetails
+                                Dim arrTokenized As String() = strDetail.Split(New Char() {"'"c})
+                                If arrTokenized.Length > 2 Then
+                                    sb.Append(arrTokenized(1) + vbCrLf)
+                                End If
+                            Next
+                            If Not String.IsNullOrEmpty(sb.ToString) Then _
+                                strException = sb.ToString
+                        End If
+                    Case HttpStatusCode.Forbidden
+                        Dim exDetail As ForbiddenRequestException = New ForbiddenRequestException()
+                        ser = New System.Runtime.Serialization.Json.DataContractJsonSerializer(exDetail.[GetType]())
+                        exDetail = CType(ser.ReadObject(webExResponse.GetResponseStream), ForbiddenRequestException)
+                        If exDetail IsNot Nothing Then _
+                            strException = exDetail.detail
+                    Case Else
+                        '@ToDo: What should default response be
+                End Select
+            End If
+        Catch ex As Exception
+            Debug.Print("BA_ExtractWebExceptionDetails Exception: " & ex.Message)
+        End Try
+        Return strException
     End Function
 
 End Module
