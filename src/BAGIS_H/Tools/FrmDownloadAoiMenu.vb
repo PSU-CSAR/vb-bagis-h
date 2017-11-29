@@ -42,72 +42,51 @@ Public Class FrmDownloadAoiMenu
         'Set reference to HruExtension
         Dim hruExt As HruExtension = HruExtension.GetExtension
 
-        'Set the user name and password from a text file that is NOT in source countrol
-        'Note: Developers will have to change this to a path valid on their machine
-        'Dim filePath As String = BA_GetSettingsPath() & "\BAGIS\GoldenTicket.txt"
-        'Try
-        '    ' Create an instance of StreamReader to read from a file.
-        '    ' The using statement also closes the StreamReader.
-        '    Using sr As New StreamReader(filePath)
-        '        hruExt.EBagisUserName = sr.ReadLine()
-        '        hruExt.EBagisPassword = sr.ReadLine()
-        '    End Using
-        'Catch e As Exception
-        '    ' Let the user know what went wrong.
-        '    Console.WriteLine("The file could not be read:")
-        '    Console.WriteLine(e.Message)
-        'End Try
-
         ' Add any initialization after the InitializeComponent() call.
-        '---create a row---
-        Dim item As New DataGridViewRow
-        item.CreateCells(AoiGrid)
-        With item
-            .Cells(0).Value = "Price_R_at_Woodside_01232014"
-            .Cells(1).Value = "23-JAN-2014"
-            .Cells(2).Value = "G. Duh"
-            .Cells(3).Value = False
-            .Cells(4).Value = "Updated AOI with new gauge station"
-        End With
-        Dim item2 As New DataGridViewRow
-        item2.CreateCells(AoiGrid)
-        With item2
-            .Cells(0).Value = "Santa_Fe_R_nr_Santa_Fe_11302012"
-            .Cells(1).Value = "11-NOV-2012"
-            .Cells(2).Value = "D. Garen"
-            .Cells(3).Value = False
-            .Cells(4).Value = "Initial upload of AOI; Includes HRU definition"
-        End With
-        '---add the row---
-        '@ToDo: Temporarily stop populating form
-        'AoiGrid.Rows.Add(item)
-        'AoiGrid.Rows.Add(item2)
+        Dim pStepProg As IStepProgressor = BA_GetStepProgressor(My.ArcMap.Application.hWnd, 1)
+        Dim progressDialog2 As IProgressDialog2 = Nothing
+        Try
+            progressDialog2 = BA_GetProgressDialog(pStepProg, "Validating eBAGIS user account", "Validating")
+            progressDialog2.Animation = esriProgressAnimationTypes.esriProgressSpiral
+            pStepProg.Hide()    'Don't use step progressor
+            progressDialog2.ShowDialog()
 
-        'Look for location of basins server in local config file
-        Dim localSettingsPath As String = hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings)
-        If Not BA_File_ExistsWindowsIO(localSettingsPath) Then
-            'Make sure the BAGIS folder is there
-            Dim parentPath As String = "PleaseReturn"
-            Dim bagisFolder As String = BA_GetBareName(localSettingsPath, parentPath)
-            If Not BA_Folder_ExistsWindowsIO(parentPath) Then
-                Dim existingFolder As String = "PleaseReturn"
-                bagisFolder = BA_GetBareName(parentPath, existingFolder)
-                Dim newFolder As String = BA_CreateFolder(existingFolder, bagisFolder)
+            'Look for location of basins server in local config file
+            Dim localSettingsPath As String = hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings)
+            If Not BA_File_ExistsWindowsIO(localSettingsPath) Then
+                'Make sure the BAGIS folder is there
+                Dim parentPath As String = "PleaseReturn"
+                Dim bagisFolder As String = BA_GetBareName(localSettingsPath, parentPath)
+                If Not BA_Folder_ExistsWindowsIO(parentPath) Then
+                    Dim existingFolder As String = "PleaseReturn"
+                    bagisFolder = BA_GetBareName(parentPath, existingFolder)
+                    Dim newFolder As String = BA_CreateFolder(existingFolder, bagisFolder)
+                End If
+                Dim jsonFile As String = BA_GetBareName(BA_EnumDescription(PublicPath.BagisHSettings))
+                Dim copyPath As String = BA_GetAddInDirectory() & "\" & jsonFile
+                File.Copy(copyPath, localSettingsPath)
             End If
-            Dim jsonFile As String = BA_GetBareName(BA_EnumDescription(PublicPath.BagisHSettings))
-            Dim copyPath As String = BA_GetAddInDirectory() & "\" & jsonFile
-            File.Copy(copyPath, localSettingsPath)
-        End If
-        m_settings = ReadSettingsFromJson(localSettingsPath)
-        If m_settings IsNot Nothing Then
-            If Not String.IsNullOrEmpty(m_settings.basinsDb) Then
-                TxtBasinsDb.Text = m_settings.basinsDb
+            m_settings = ReadSettingsFromJson(localSettingsPath)
+            If m_settings IsNot Nothing Then
+                If Not String.IsNullOrEmpty(m_settings.basinsDb) Then
+                    TxtBasinsDb.Text = m_settings.basinsDb
+                End If
             End If
-        End If
-        m_loading = False   'turn off loading flag to turn on validation of server name
-        If String.IsNullOrEmpty(TxtBasinsDb.Text) Then
-            MessageBox.Show("The host name for the basins database could not be loaded. Please contact your system administrator")
-        End If
+            m_loading = False   'turn off loading flag to turn on validation of server name
+            If String.IsNullOrEmpty(TxtBasinsDb.Text) Then
+                MessageBox.Show("The host name for the basins database could not be loaded. Please contact your system administrator")
+            Else
+                If GenerateToken() = BA_ReturnCode.Success Then
+                    BtnSignIn.Text = "Sign out"
+                End If
+            End If
+        Catch ex As Exception
+            Debug.Print("frmDownloadAoiMenu_New Exception: " & ex.Message)
+        Finally
+            pStepProg = Nothing
+            progressDialog2.HideDialog()
+            progressDialog2 = Nothing
+        End Try
 
         AoiGrid.ClearSelection()
         AoiGrid.CurrentCell = Nothing
