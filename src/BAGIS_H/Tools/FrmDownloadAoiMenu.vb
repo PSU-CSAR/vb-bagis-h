@@ -1257,20 +1257,6 @@ Public Class FrmDownloadAoiMenu
                     End If
                 Next
             End If
-            If canDelete = False Then
-                For Each pRow As DataGridViewRow In AoiGrid.Rows
-                    Dim ckDelete As Boolean = pRow.Cells(idxSelectAoi).Value
-                    If ckDelete = True Then
-                        Dim strOwner As String = Convert.ToString(pRow.Cells(idxAuthor).Value).Trim
-                        If Not hruExt.EBagisUserName.Equals(strOwner) Then
-                            pRow.Cells(idxSelectAoi).Value = False
-                        End If
-                    End If
-                Next
-                MessageBox.Show("You only have permissions to delete your own AOIs from the Basins database. Any AOIs " + _
-                                "that you did not upload have been unselected! ", "BAGIS-H", _
-                                MessageBoxButtons.OK, MessageBoxIcon.Hand)
-            End If
         End If
 
         'Is at least one aoi selected ?
@@ -1317,6 +1303,8 @@ Public Class FrmDownloadAoiMenu
                     For Each dName As String In failedToDelete
                         sb.Append(dName & vbCrLf)
                     Next
+                    sb.Append(vbCrLf)
+                    sb.Append("Please contact an Administrator for assistance deleting AOI(s)." & vbCrLf)
                     MessageBox.Show(sb.ToString, "Failed to delete AOI", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Else
                     MessageBox.Show("The selected AOI(s) have been deleted", "Delete AOI(s)", MessageBoxButtons.OK, MessageBoxIcon.Information)
