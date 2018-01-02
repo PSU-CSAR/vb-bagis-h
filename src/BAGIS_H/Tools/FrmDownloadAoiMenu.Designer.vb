@@ -88,6 +88,7 @@ Partial Class FrmDownloadAoiMenu
         Me.TxtFilterDescr = New System.Windows.Forms.TextBox()
         Me.BtnDelete = New System.Windows.Forms.Button()
         Me.BtnSignIn = New System.Windows.Forms.Button()
+        Me.BtnChunk = New System.Windows.Forms.Button()
         CType(Me.AoiGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.GrdTasks, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PnlFilter.SuspendLayout()
@@ -643,11 +644,21 @@ Partial Class FrmDownloadAoiMenu
         Me.BtnSignIn.Text = "Sign in"
         Me.BtnSignIn.UseVisualStyleBackColor = True
         '
+        'BtnChunk
+        '
+        Me.BtnChunk.Location = New System.Drawing.Point(822, 64)
+        Me.BtnChunk.Name = "BtnChunk"
+        Me.BtnChunk.Size = New System.Drawing.Size(75, 23)
+        Me.BtnChunk.TabIndex = 98
+        Me.BtnChunk.Text = "Chunked"
+        Me.BtnChunk.UseVisualStyleBackColor = True
+        '
         'FrmDownloadAoiMenu
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(928, 652)
+        Me.Controls.Add(Me.BtnChunk)
         Me.Controls.Add(Me.BtnSignIn)
         Me.Controls.Add(Me.BtnDelete)
         Me.Controls.Add(Me.TxtFilterDescr)
@@ -741,4 +752,5 @@ Partial Class FrmDownloadAoiMenu
     Friend WithEvents Comment As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents DownloadUrl As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents BtnSignIn As System.Windows.Forms.Button
+    Friend WithEvents BtnChunk As System.Windows.Forms.Button
 End Class

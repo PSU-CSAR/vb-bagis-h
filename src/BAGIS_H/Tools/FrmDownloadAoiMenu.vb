@@ -1371,4 +1371,14 @@ Public Class FrmDownloadAoiMenu
             BtnSignIn.Text = "Sign in"
         End If
     End Sub
+
+    Private Sub BtnChunk_Click(sender As System.Object, e As System.EventArgs) Handles BtnChunk.Click
+        Dim uploadUrl = TxtBasinsDb.Text & "aois/"
+        'Set reference to HruExtension
+        Dim hruExt As HruExtension = HruExtension.GetExtension
+        Dim aoiTask As AoiTask = BA_TestChunkedUpload(uploadUrl, hruExt.EbagisToken.key, "aoi1_01022018_5.zip", "C:\Docs\Lesley", "")
+        If aoiTask IsNot Nothing Then
+            Dim success As BA_ReturnCode = BA_FinishChunkedUpload(aoiTask, hruExt.EbagisToken.key)
+        End If
+    End Sub
 End Class

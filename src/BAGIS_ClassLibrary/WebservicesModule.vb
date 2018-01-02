@@ -891,79 +891,87 @@ Public Module WebservicesModule
         End Try
     End Function
 
-    Public Sub BA_TestChunkedUpload(ByVal webserviceUrl As String, ByVal strToken As String, _
+    Public Function BA_TestChunkedUpload(ByVal webserviceUrl As String, ByVal strToken As String, _
                                     ByVal fileName As String, ByVal filePath As String, _
-                                    ByVal comment As String)
-        Dim reqT As HttpWebRequest
-        Dim anUpload As AoiTask = New AoiTask
-        'The end point for getting a token for the web service
-        reqT = WebRequest.Create(webserviceUrl)
-        'This is a POST request
-        reqT.Method = "PUT"
-        'We are sending a form
-        Dim boundary As String = MultipartFormHelper.CreateFormDataBoundary()
-        reqT.ContentType = "multipart/form-data; boundary=" & boundary
-        reqT.KeepAlive = True
+                                    ByVal comment As String) As AoiTask
+        'Information about the file
+        Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath + "\" + fileName)
+        If fileInfo IsNot Nothing Then
+            Dim md5Hash As String = MultipartFormHelper.GenerateMD5Hash(fileInfo)
 
-        'Retrieve the token and format it for the header; Token comes from caller
-        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
-        'Put token in header
-        reqT.Headers(HttpRequestHeader.Authorization) = cred
+            Dim reqT As HttpWebRequest
+            Dim anUpload As AoiTask = New AoiTask
+            'The end point for getting a token for the web service
+            reqT = WebRequest.Create(webserviceUrl)
+            'This is a POST request
+            reqT.Method = "PUT"
+            'We are sending a form
+            Dim boundary As String = MultipartFormHelper.CreateFormDataBoundary()
+            reqT.ContentType = "multipart/form-data; boundary=" & boundary
+            'reqT.KeepAlive = True
 
-        Dim lngRange As Long = 0
-        Try
-            Using requestStream As System.IO.Stream = reqT.GetRequestStream
-                Dim postData As Dictionary(Of String, String) = New Dictionary(Of String, String)
-                postData.Add("filename", fileName)
-                If Not String.IsNullOrEmpty(comment) Then postData.Add("comment", Trim(comment))
+            'Retrieve the token and format it for the header; Token comes from caller
+            Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+            'Put token in header
+            reqT.Headers(HttpRequestHeader.Authorization) = cred
+            reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes 0-{0}/{0}",
+                                Convert.ToString(fileInfo.Length))
 
-                Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath)
-                'postData.Add("md5", MultipartFormHelper.GenerateMD5Hash(fileInfo))
-                postData.Add("placeholder", "123")
-                MultipartFormHelper.WriteMultipartFormData(postData, requestStream, boundary)
+            Dim lngRange As Long = 0
+            Try
+                Using requestStream As System.IO.Stream = reqT.GetRequestStream
+                    Dim postData As Dictionary(Of String, String) = New Dictionary(Of String, String)
+                    postData.Add("filename", fileName)
+                    If Not String.IsNullOrEmpty(comment) Then postData.Add("comment", Trim(comment))
 
-                If fileInfo IsNot Nothing Then
-                    '@ToDo: Remove hard-coding; write a dynamic function to determine mime type
-                    'Dim fileMimeType As String = "text/plain"
-                    Dim fileMimeType As String = BA_Mime_Zip
-                    Dim fileFormKey As String = "file"
-                    lngRange = MultipartFormHelper.WriteMultipartFormData(fileInfo, requestStream, boundary, fileMimeType, fileFormKey)
-                End If
-                Dim endBytes() As Byte = Encoding.UTF8.GetBytes("--" + boundary + "--")
-                requestStream.Write(endBytes, 0, endBytes.Length)
-            End Using
+                    MultipartFormHelper.WriteMultipartFormData(postData, requestStream, boundary)
 
-            reqT.AddRange(0, lngRange)
-            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
-                'Convert the JSON response to a Task object
-                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
-                'Put JSON payload into AOI object
-                anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
-            End Using
-        Catch w As WebException
-            Dim sb As StringBuilder = New StringBuilder
-            Using exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)
-                'The response is a long html page
-                'The exception is indicated with this line: <pre class="exception_value">An AOI of the same name already exists.</pre>
-                '@ToDo: Figure out how to parse the response and pull out this exception_value
-                sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
-                If exceptResp IsNot Nothing Then
-                    Using SReader As System.IO.StreamReader = New System.IO.StreamReader(exceptResp.GetResponseStream)
-                        sb.Append(SReader.ReadToEnd)
-                    End Using
-                End If
-            End Using
-            'Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
-            'May dump the error to a local file
-            'Dim tempDir As String = System.IO.Path.GetTempPath
-            'System.IO.File.WriteAllText(tempDir + "\upload_error.txt", sb.ToString)
-            MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        Catch ex As Exception
-            Debug.Print("BA_UploadMultiPart: " & ex.Message)
-        End Try
+                    If fileInfo IsNot Nothing Then
+                        '@ToDo: Remove hard-coding; write a dynamic function to determine mime type
+                        'Dim fileMimeType As String = "text/plain"
+                        Dim fileMimeType As String = BA_Mime_Zip
+                        Dim fileFormKey As String = "file"
+                        lngRange = MultipartFormHelper.WriteMultipartFormData(fileInfo, requestStream, boundary, fileMimeType, fileFormKey)
+                    End If
+                    Dim endBytes() As Byte = Encoding.UTF8.GetBytes("--" + boundary + "--")
+                    requestStream.Write(endBytes, 0, endBytes.Length)
+                End Using
 
-
-    End Sub
+                reqT.AddRange(0, lngRange)
+                Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                    'Convert the JSON response to a Task object
+                    Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
+                    'Put JSON payload into AOI object
+                    anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+                    If anUpload IsNot Nothing Then
+                        anUpload.md5 = md5Hash
+                    End If
+                End Using
+                Return anUpload
+            Catch w As WebException
+                Dim sb As StringBuilder = New StringBuilder
+                Using exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)
+                    'The response is a long html page
+                    'The exception is indicated with this line: <pre class="exception_value">An AOI of the same name already exists.</pre>
+                    '@ToDo: Figure out how to parse the response and pull out this exception_value
+                    sb.Append(fileName & " " & BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
+                    If exceptResp IsNot Nothing Then
+                        Using SReader As System.IO.StreamReader = New System.IO.StreamReader(exceptResp.GetResponseStream)
+                            sb.Append(SReader.ReadToEnd)
+                        End Using
+                    End If
+                End Using
+                'Debug.Print("BA_UploadMultiPart WebException: " & sb.ToString)
+                'May dump the error to a local file
+                'Dim tempDir As String = System.IO.Path.GetTempPath
+                'System.IO.File.WriteAllText(tempDir + "\upload_error.txt", sb.ToString)
+                MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Catch ex As Exception
+                Debug.Print("BA_UploadMultiPart: " & ex.Message)
+            End Try
+        End If
+        Return Nothing
+    End Function
 
     Public Function BA_VersionTest(ByVal serverUrl As String) As BA_ReturnCode
         Dim reqT As HttpWebRequest
@@ -1085,6 +1093,48 @@ Public Module WebservicesModule
             Debug.Print("BA_ExtractWebExceptionDetails Exception: " & ex.Message)
         End Try
         Return strException
+    End Function
+
+    Public Function BA_FinishChunkedUpload(ByVal inputTask As AoiTask, ByVal strToken As String) As BA_ReturnCode
+        Dim reqT As HttpWebRequest
+        'The end point returned by the original PUT request
+        reqT = WebRequest.Create(inputTask.url)
+        'This is a PUT request
+        reqT.Method = "POST"
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
+
+        'Retrieve the token and format it for the header; Token comes from caller
+        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+        'Put token in header
+        reqT.Headers(HttpRequestHeader.Authorization) = cred
+
+        'These are the field/value pairs that would be on an html form
+        Dim Data As String = "md5=" & inputTask.md5
+        'Encode them to Byte format to include with the request
+        Dim credArray As Byte() = Encoding.UTF8.GetBytes(Data)
+        'We are sending a form
+        reqT.ContentType = "application/x-www-form-urlencoded"
+        reqT.ContentLength = credArray.Length
+        'Intercept the httpRequest so we can add the form fields
+        Using dataStreamT As System.IO.Stream = reqT.GetRequestStream()
+            dataStreamT.Write(credArray, 0, credArray.Length)
+        End Using
+        Dim anUpload As AoiTask = New AoiTask
+        Try
+            Dim retMessage As String = ""
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                'Convert the JSON response to a Task object
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
+                'Put JSON payload into AOI object
+                anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+                Dim status As String = anUpload.task.status
+            End Using
+            Return BA_ReturnCode.Success
+        Catch ex As Exception
+            Debug.Print("BA_FinishChunkedUpload Exception: " & ex.Message)
+            Return BA_ReturnCode.UnknownError
+        End Try
     End Function
 
 End Module
