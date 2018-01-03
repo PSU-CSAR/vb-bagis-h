@@ -897,6 +897,21 @@ Public Module WebservicesModule
         'Information about the file
         Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath + "\" + fileName)
         If fileInfo IsNot Nothing Then
+            Dim chunkList As IList(Of Byte()) = New List(Of Byte())
+            Dim chunkSize As Integer = 4 * 1024.0F    '4 MB
+            'Read the file into an arrayList of bytes
+            Using fileStream As New System.IO.FileStream(fileInfo.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read)
+                Dim buffer() As Byte = New Byte(chunkSize) {}
+                Dim bytesRead As Integer = 0
+                bytesRead = fileStream.Read(buffer, 0, buffer.Length)
+                chunkList.Add(buffer)
+                While bytesRead > 0
+                    bytesRead = fileStream.Read(buffer, 0, buffer.Length)
+                    chunkList.Add(buffer)
+                End While
+                fileStream.Close()
+            End Using
+            Dim idxChunk As Integer = 0
             Dim md5Hash As String = MultipartFormHelper.GenerateMD5Hash(fileInfo)
 
             Dim reqT As HttpWebRequest
@@ -914,10 +929,10 @@ Public Module WebservicesModule
             Dim cred As String = String.Format("{0} {1}", "Token", strToken)
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
-            reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes 0-{0}/{0}",
-                                Convert.ToString(fileInfo.Length))
+            Dim idxEnd As Integer = chunkList(idxChunk).Length
+            reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes 0-{0}/{1}",
+                         Convert.ToString(idxEnd), Convert.ToString(fileInfo.Length))
 
-            Dim lngRange As Long = 0
             Try
                 Using requestStream As System.IO.Stream = reqT.GetRequestStream
                     Dim postData As Dictionary(Of String, String) = New Dictionary(Of String, String)
@@ -931,19 +946,27 @@ Public Module WebservicesModule
                         'Dim fileMimeType As String = "text/plain"
                         Dim fileMimeType As String = BA_Mime_Zip
                         Dim fileFormKey As String = "file"
-                        lngRange = MultipartFormHelper.WriteMultipartFormData(fileInfo, requestStream, boundary, fileMimeType, fileFormKey)
+                        Dim success As BA_ReturnCode = MultipartFormHelper.WriteAChunk(chunkList(idxChunk), fileInfo.Name, _
+                                                                                           requestStream, boundary, fileMimeType, fileFormKey)
                     End If
                     Dim endBytes() As Byte = Encoding.UTF8.GetBytes("--" + boundary + "--")
                     requestStream.Write(endBytes, 0, endBytes.Length)
                 End Using
 
-                reqT.AddRange(0, lngRange)
                 Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
                     'Convert the JSON response to a Task object
                     Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
                     'Put JSON payload into AOI object
                     anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
                     If anUpload IsNot Nothing Then
+                        idxChunk = idxChunk + 1
+                        Do While idxChunk < chunkList.Count
+                            Dim idxStart As Integer = idxEnd + 1
+                            idxEnd = idxStart + chunkList(idxChunk).Length
+                            anUpload = BA_WriteBodyChunk(anUpload.url, strToken, chunkList(idxChunk), idxStart, _
+                                                         idxEnd, fileInfo.Length, fileInfo.Name)
+                            idxChunk = idxChunk + 1
+                        Loop
                         anUpload.md5 = md5Hash
                     End If
                 End Using
@@ -971,6 +994,59 @@ Public Module WebservicesModule
             End Try
         End If
         Return Nothing
+    End Function
+
+    Public Function BA_WriteBodyChunk(ByVal webserviceUrl As String, ByVal strToken As String, ByVal nextChunk As Byte(), _
+                                      ByVal idxStart As Integer, ByVal idxEnd As Integer, ByVal fileSize As Integer, _
+                                      ByVal fileName As String) As AoiTask
+        Dim anUpload As AoiTask = New AoiTask
+        Dim reqT As HttpWebRequest
+        'The end point for getting a token for the web service
+        reqT = WebRequest.Create(webserviceUrl)
+        'This is a PUT request
+        reqT.Method = "PUT"
+        'We are sending a form
+        Dim boundary As String = MultipartFormHelper.CreateFormDataBoundary()
+        reqT.ContentType = "multipart/form-data; boundary=" & boundary
+
+        'Retrieve the token and format it for the header; Token comes from caller
+        Dim cred As String = String.Format("{0} {1}", "Token", strToken)
+        'Put token in header
+        reqT.Headers(HttpRequestHeader.Authorization) = cred
+        reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes {0}-{1}/{2}",
+                     Convert.ToString(idxStart), Convert.ToString(idxEnd), Convert.ToString(fileSize))
+        Try
+            Using requestStream As System.IO.Stream = reqT.GetRequestStream
+                Dim fileMimeType As String = BA_Mime_Zip
+                Dim fileFormKey As String = "file"
+                Dim success As BA_ReturnCode = MultipartFormHelper.WriteAChunk(nextChunk, fileName, _
+                                                                               requestStream, boundary, fileMimeType, fileFormKey)
+                Dim endBytes() As Byte = Encoding.UTF8.GetBytes("--" + boundary + "--")
+                requestStream.Write(endBytes, 0, endBytes.Length)
+            End Using
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                'Convert the JSON response to a Task object
+                Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
+                'Put JSON payload into AOI object
+                anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+            End Using
+            Return anUpload
+        Catch w As WebException
+            Dim sb As StringBuilder = New StringBuilder
+            Using exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)
+                sb.Append(BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
+                If exceptResp IsNot Nothing Then
+                    Using SReader As System.IO.StreamReader = New System.IO.StreamReader(exceptResp.GetResponseStream)
+                        sb.Append(SReader.ReadToEnd)
+                    End Using
+                End If
+            End Using
+            MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return Nothing
+        Catch ex As Exception
+            Debug.Print("BA_WriteBodyChunk: " & ex.Message)
+            Return Nothing
+        End Try
     End Function
 
     Public Function BA_VersionTest(ByVal serverUrl As String) As BA_ReturnCode
