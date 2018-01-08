@@ -1373,10 +1373,44 @@ Public Class FrmDownloadAoiMenu
     End Sub
 
     Private Sub BtnChunk_Click(sender As System.Object, e As System.EventArgs) Handles BtnChunk.Click
+        'Dim fileInfo As System.IO.FileInfo = New FileInfo("C:\Users\lesleyb\AppData\Roaming\BAGIS\settings.xml")
+        'Dim md5Hash As String = MultipartFormHelper.GenerateMD5Hash(fileInfo)
+        'Dim chunkList As IList(Of Byte()) = New List(Of Byte())
+        'Dim chunkSize As Integer = 1000
+        'Dim maxNumberChunks As Integer = fileInfo.Length / chunkSize     'Last full chunk 
+        'Dim bytesWritten As Integer = 0     'Running total of bytes saved to the List in memory
+        'Using fileStream As New System.IO.FileStream(fileInfo.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read)
+        '    Dim bytesRead As Integer = 0
+        '    While bytesWritten < fileInfo.Length
+        '        Dim bytes = New Byte(chunkSize - 1) {}  'Must re-initialize array every pass or it overwrites entry in List
+        '        If chunkList.Count = maxNumberChunks Then
+        '            ReDim bytes(fileInfo.Length - bytesWritten - 1) 'subtract 1 to avoid empty space at end
+        '        End If
+        '        bytesRead = fileStream.Read(bytes, 0, bytes.Length)
+        '        chunkList.Add(bytes)
+        '        bytesWritten = bytesWritten + bytesRead
+        '    End While
+        '    fileStream.Close()
+        'End Using
+        'Using oFileStream As System.IO.FileStream = New System.IO.FileStream("C:\Users\lesleyb\AppData\Roaming\BAGIS\test.xml", System.IO.FileMode.Create)
+        '    Dim offset As Integer = 0
+        '    For Each arrByte As Byte() In chunkList
+        '        oFileStream.Write(arrByte, 0, arrByte.Length)
+        '    Next
+        '    oFileStream.Close()
+        'End Using
+        'Dim copyInfo As System.IO.FileInfo = New FileInfo("C:\Users\lesleyb\AppData\Roaming\BAGIS\test.xml")
+        'Dim md5HashCopy As String = MultipartFormHelper.GenerateMD5Hash(copyInfo)
+        'If md5Hash.Equals(md5HashCopy) Then
+        '    Windows.Forms.MessageBox.Show("success!")
+        'Else
+        '    Windows.Forms.MessageBox.Show("failure ...")
+        'End If
+
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         'Set reference to HruExtension
         Dim hruExt As HruExtension = HruExtension.GetExtension
-        Dim aoiTask As AoiTask = BA_TestChunkedUpload(uploadUrl, hruExt.EbagisToken.key, "yampa_AOI_4.zip", "C:\Docs\Lesley", "")
+        Dim aoiTask As AoiTask = BA_TestChunkedUpload(uploadUrl, hruExt.EbagisToken.key, "yampa_AOI_5.zip", "C:\Docs\Lesley", "")
         If aoiTask IsNot Nothing Then
             Dim success As BA_ReturnCode = BA_FinishChunkedUpload(aoiTask, hruExt.EbagisToken.key)
         End If

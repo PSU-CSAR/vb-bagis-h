@@ -898,20 +898,24 @@ Public Module WebservicesModule
         Dim fileInfo As System.IO.FileInfo = New System.IO.FileInfo(filePath + "\" + fileName)
         If fileInfo IsNot Nothing Then
             Dim chunkList As IList(Of Byte()) = New List(Of Byte())
-            Dim chunkSize As Integer = 4 * 1024.0F    '4 MB
-            'Read the file into an arrayList of bytes
+            Dim chunkSize As Integer = 4 * 1024.0F * 1024.0F   '4 MB
+            Dim maxNumberChunks As Integer = fileInfo.Length / chunkSize     'Last full chunk
+            Dim bytesWritten As Integer = 0     'Running total of bytes saved to the List in memory
+            'Read the file into an List of bytes
             Using fileStream As New System.IO.FileStream(fileInfo.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read)
-                Dim buffer() As Byte = New Byte(chunkSize) {}
                 Dim bytesRead As Integer = 0
-                bytesRead = fileStream.Read(buffer, 0, buffer.Length)
-                chunkList.Add(buffer)
-                While bytesRead > 0
-                    bytesRead = fileStream.Read(buffer, 0, buffer.Length)
-                    chunkList.Add(buffer)
+                While bytesWritten < fileInfo.Length
+                    Dim bytes() As Byte = New Byte(chunkSize - 1) {}   'Must re-initialize array every pass or it overwrites entry in List
+                    If chunkList.Count = maxNumberChunks Then
+                        ReDim bytes(fileInfo.Length - bytesWritten - 1) 'subtract 1 to avoid empty space at end
+                    End If
+                    bytesRead = fileStream.Read(bytes, 0, bytes.Length)
+                    chunkList.Add(bytes)
+                    bytesWritten = bytesWritten + bytesRead
                 End While
                 fileStream.Close()
             End Using
-            Dim idxChunk As Integer = 0
+            Dim idxChunk As Integer = 0     'Keep track of which chunk we are working with
             Dim md5Hash As String = MultipartFormHelper.GenerateMD5Hash(fileInfo)
 
             Dim reqT As HttpWebRequest
@@ -923,13 +927,11 @@ Public Module WebservicesModule
             'We are sending a form
             Dim boundary As String = MultipartFormHelper.CreateFormDataBoundary()
             reqT.ContentType = "multipart/form-data; boundary=" & boundary
-            'reqT.KeepAlive = True
-
             'Retrieve the token and format it for the header; Token comes from caller
             Dim cred As String = String.Format("{0} {1}", "Token", strToken)
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
-            Dim idxEnd As Integer = chunkList(idxChunk).Length
+            Dim idxEnd As Integer = chunkList(idxChunk).Length      'Not sure about this? Subtract 1?
             reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes 0-{0}/{1}",
                          Convert.ToString(idxEnd), Convert.ToString(fileInfo.Length))
 
@@ -947,7 +949,7 @@ Public Module WebservicesModule
                         Dim fileMimeType As String = BA_Mime_Zip
                         Dim fileFormKey As String = "file"
                         Dim success As BA_ReturnCode = MultipartFormHelper.WriteAChunk(chunkList(idxChunk), fileInfo.Name, _
-                                                                                           requestStream, boundary, fileMimeType, fileFormKey)
+                                                                                       requestStream, boundary, fileMimeType, fileFormKey)
                     End If
                     Dim endBytes() As Byte = Encoding.UTF8.GetBytes("--" + boundary + "--")
                     requestStream.Write(endBytes, 0, endBytes.Length)
@@ -961,7 +963,7 @@ Public Module WebservicesModule
                     If anUpload IsNot Nothing Then
                         idxChunk = idxChunk + 1
                         Do While idxChunk < chunkList.Count
-                            Dim idxStart As Integer = idxEnd + 1
+                            Dim idxStart As Integer = idxEnd + 1    'Add one to move onto the next byte
                             idxEnd = idxStart + chunkList(idxChunk).Length
                             anUpload = BA_WriteBodyChunk(anUpload.url, strToken, chunkList(idxChunk), idxStart, _
                                                          idxEnd, fileInfo.Length, fileInfo.Name)
@@ -1207,6 +1209,21 @@ Public Module WebservicesModule
                 Dim status As String = anUpload.task.status
             End Using
             Return BA_ReturnCode.Success
+        Catch w As WebException
+            Dim sb As StringBuilder = New StringBuilder
+            Using exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)
+                'The response is a long html page
+                'The exception is indicated with this line: <pre class="exception_value">An AOI of the same name already exists.</pre>
+                '@ToDo: Figure out how to parse the response and pull out this exception_value
+                sb.Append(BA_TASK_UPLOAD & " error!" & vbCrLf & vbCrLf)
+                If exceptResp IsNot Nothing Then
+                    Using SReader As System.IO.StreamReader = New System.IO.StreamReader(exceptResp.GetResponseStream)
+                        sb.Append(SReader.ReadToEnd)
+                    End Using
+                End If
+            End Using
+            MessageBox.Show(sb.ToString, "Error message", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return BA_ReturnCode.UnknownError
         Catch ex As Exception
             Debug.Print("BA_FinishChunkedUpload Exception: " & ex.Message)
             Return BA_ReturnCode.UnknownError
