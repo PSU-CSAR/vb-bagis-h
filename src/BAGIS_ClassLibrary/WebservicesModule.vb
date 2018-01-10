@@ -891,7 +891,7 @@ Public Module WebservicesModule
         End Try
     End Function
 
-    Public Function BA_TestChunkedUpload(ByVal webserviceUrl As String, ByVal strToken As String, _
+    Public Function BA_UploadChunks(ByVal webserviceUrl As String, ByVal strToken As String, _
                                     ByVal fileName As String, ByVal filePath As String, _
                                     ByVal comment As String) As AoiTask
         'Information about the file
@@ -915,37 +915,38 @@ Public Module WebservicesModule
                 End While
                 fileStream.Close()
             End Using
-            Dim idxChunk As Integer = 0     'Keep track of which chunk we are working with
-            Dim md5Hash As String = MultipartFormHelper.GenerateMD5Hash(fileInfo)
+            Dim idxChunk As Integer = 0     'Keep track of which chunk we are sending; 0 is the first
 
             Dim reqT As HttpWebRequest
-            Dim anUpload As AoiTask = New AoiTask
+            Dim anAoiTask As AoiTask = New AoiTask
             'The end point for getting a token for the web service
             reqT = WebRequest.Create(webserviceUrl)
-            'This is a POST request
+            'This is a PUT request
             reqT.Method = "PUT"
-            'We are sending a form
+            'We are sending a multipart form
             Dim boundary As String = MultipartFormHelper.CreateFormDataBoundary()
             reqT.ContentType = "multipart/form-data; boundary=" & boundary
             'Retrieve the token and format it for the header; Token comes from caller
             Dim cred As String = String.Format("{0} {1}", "Token", strToken)
             'Put token in header
             reqT.Headers(HttpRequestHeader.Authorization) = cred
-            Dim idxEnd As Integer = chunkList(idxChunk).Length      'Not sure about this? Subtract 1?
+            'Set content-range in header for first chunk
+            Dim idxEnd As Integer = chunkList(idxChunk).Length
             reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes 0-{0}/{1}",
                          Convert.ToString(idxEnd), Convert.ToString(fileInfo.Length))
 
             Try
+                'Preparing the request for the first chunk
                 Using requestStream As System.IO.Stream = reqT.GetRequestStream
                     Dim postData As Dictionary(Of String, String) = New Dictionary(Of String, String)
                     postData.Add("filename", fileName)
                     If Not String.IsNullOrEmpty(comment) Then postData.Add("comment", Trim(comment))
 
+                    'Write postData to multipart form
                     MultipartFormHelper.WriteMultipartFormData(postData, requestStream, boundary)
 
                     If fileInfo IsNot Nothing Then
                         '@ToDo: Remove hard-coding; write a dynamic function to determine mime type
-                        'Dim fileMimeType As String = "text/plain"
                         Dim fileMimeType As String = BA_Mime_Zip
                         Dim fileFormKey As String = "file"
                         Dim success As BA_ReturnCode = MultipartFormHelper.WriteAChunk(chunkList(idxChunk), fileInfo.Name, _
@@ -955,24 +956,23 @@ Public Module WebservicesModule
                     requestStream.Write(endBytes, 0, endBytes.Length)
                 End Using
 
+                'Send first chunk
                 Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
-                    'Convert the JSON response to a Task object
-                    Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anUpload.[GetType]())
-                    'Put JSON payload into AOI object
-                    anUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
-                    If anUpload IsNot Nothing Then
+                    'Convert the JSON response to a AoiTask object
+                    Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anAoiTask.[GetType]())
+                    anAoiTask = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
+                    idxChunk = idxChunk + 1
+                    Do While anAoiTask IsNot Nothing AndAlso idxChunk < chunkList.Count
+                        Dim idxStart As Integer = idxEnd + 1    'Add one to move onto the next byte
+                        idxEnd = idxStart + chunkList(idxChunk).Length
+                        anAoiTask = BA_WriteBodyChunk(anAoiTask.url, strToken, chunkList(idxChunk), idxStart, _
+                                                     idxEnd, fileInfo.Length, fileInfo.Name)
                         idxChunk = idxChunk + 1
-                        Do While idxChunk < chunkList.Count
-                            Dim idxStart As Integer = idxEnd + 1    'Add one to move onto the next byte
-                            idxEnd = idxStart + chunkList(idxChunk).Length
-                            anUpload = BA_WriteBodyChunk(anUpload.url, strToken, chunkList(idxChunk), idxStart, _
-                                                         idxEnd, fileInfo.Length, fileInfo.Name)
-                            idxChunk = idxChunk + 1
-                        Loop
-                        anUpload.md5 = md5Hash
-                    End If
+                    Loop
+                    'Set the checksum after sending the last chunk
+                    anAoiTask.md5 = MultipartFormHelper.GenerateMD5Hash(fileInfo)
                 End Using
-                Return anUpload
+                Return anAoiTask
             Catch w As WebException
                 Dim sb As StringBuilder = New StringBuilder
                 Using exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)

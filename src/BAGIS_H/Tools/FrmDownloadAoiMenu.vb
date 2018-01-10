@@ -1409,10 +1409,22 @@ Public Class FrmDownloadAoiMenu
 
         Dim uploadUrl = TxtBasinsDb.Text & "aois/"
         'Set reference to HruExtension
-        Dim hruExt As HruExtension = HruExtension.GetExtension
-        Dim aoiTask As AoiTask = BA_TestChunkedUpload(uploadUrl, hruExt.EbagisToken.key, "yampa_AOI_5.zip", "C:\Docs\Lesley", "")
+        Dim hruExt As HruExtension = HruExtension.GetExtension        '---create a row---
+        Dim item As New DataGridViewRow
+        item.CreateCells(GrdTasks)
+        With item
+            .Cells(idxTaskAoi).Value = "yampa_AOI_5"
+            .Cells(idxTaskType).Value = BA_TASK_UPLOAD
+            .Cells(idxTaskStatus).Value = BA_Task_Staging
+            .Cells(idxTaskTime).Value = "N/A"
+        End With
+        GrdTasks.Rows.Add(item)
+        Application.DoEvents()
+        Dim aoiTask As AoiTask = BA_UploadChunks(uploadUrl, hruExt.EbagisToken.key, "yampa_AOI_5.zip", "C:\Docs\Lesley", "")
         If aoiTask IsNot Nothing Then
             Dim success As BA_ReturnCode = BA_FinishChunkedUpload(aoiTask, hruExt.EbagisToken.key)
+        Else
+            MessageBox.Show("An error occurred while trying to upload the file!", "eBAGIS")
         End If
     End Sub
 End Class
