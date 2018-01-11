@@ -1446,8 +1446,8 @@ Public Class FrmDownloadAoiMenu
         'Information about the file
         If fileInfo IsNot Nothing Then
             Dim chunkList As IList(Of Byte()) = New List(Of Byte())
-            Dim maxNumberChunks As Integer = fileInfo.Length / chunkSize     'Last full chunk
-            Dim bytesWritten As Integer = 0     'Running total of bytes saved to the List in memory
+            Dim maxNumberChunks As Long = Math.Floor(fileInfo.Length / chunkSize)     'Last full chunk
+            Dim bytesWritten As Long = 0     'Running total of bytes saved to the List in memory
             'Read the file into an List of bytes
             Using fileStream As New System.IO.FileStream(fileInfo.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read)
                 Dim bytesRead As Integer = 0
@@ -1462,8 +1462,8 @@ Public Class FrmDownloadAoiMenu
                 End While
                 fileStream.Close()
             End Using
-            Dim idxChunk As Integer = 0     'Keep track of which chunk we are sending; 0 is the first
-            Dim idxEnd As Integer = -1      'Keep track of end of each packet
+            Dim idxChunk As Long = 0     'Keep track of which chunk we are sending; 0 is the first
+            Dim idxEnd As Long = -1      'Keep track of end of each packet
             Dim uploadUrl = TxtBasinsDb.Text & "aois/"
             Dim anUpload As AoiTask = BA_WriteFirstChunk(uploadUrl, strToken, fileInfo, _
                                                          chunkList(idxChunk), TxtComment.Text, idxEnd)

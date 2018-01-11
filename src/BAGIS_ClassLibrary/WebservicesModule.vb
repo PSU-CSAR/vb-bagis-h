@@ -892,7 +892,7 @@ Public Module WebservicesModule
     End Function
 
     Public Function BA_WriteBodyChunk(ByVal webserviceUrl As String, ByVal strToken As String, ByVal nextChunk As Byte(), _
-                                      ByVal idxStart As Integer, ByVal idxEnd As Integer, ByVal fileSize As Integer, _
+                                      ByVal idxStart As Long, ByVal idxEnd As Long, ByVal fileSize As Long, _
                                       ByVal fileName As String) As AoiTask
         Dim anUpload As AoiTask = New AoiTask
         Dim reqT As HttpWebRequest
@@ -908,6 +908,8 @@ Public Module WebservicesModule
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
         'Put token in header
         reqT.Headers(HttpRequestHeader.Authorization) = cred
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
         reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes {0}-{1}/{2}",
                      Convert.ToString(idxStart), Convert.ToString(idxEnd), Convert.ToString(fileSize))
         Try
@@ -946,7 +948,7 @@ Public Module WebservicesModule
 
     Public Function BA_WriteFirstChunk(ByVal webserviceUrl As String, ByVal strToken As String, _
                                        ByVal fileInfo As System.IO.FileInfo, ByVal firstChunk As Byte(), _
-                                       ByVal strComment As String, ByRef idxEnd As Integer) As AoiTask
+                                       ByVal strComment As String, ByRef idxEnd As Long) As AoiTask
         Dim reqT As HttpWebRequest
         Dim anAoiTask As AoiTask = New AoiTask
         'The end point for a chunked upload
@@ -960,6 +962,8 @@ Public Module WebservicesModule
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
         'Put token in header
         reqT.Headers(HttpRequestHeader.Authorization) = cred
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
         'Set content-range in header for first chunk
         idxEnd = firstChunk.GetUpperBound(0)
         reqT.Headers(HttpRequestHeader.ContentRange) = String.Format("bytes 0-{0}/{1}",
@@ -1149,7 +1153,8 @@ Public Module WebservicesModule
         Dim cred As String = String.Format("{0} {1}", "Token", strToken)
         'Put token in header
         reqT.Headers(HttpRequestHeader.Authorization) = cred
-
+        'Set the accept header to request a lower version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
         'These are the field/value pairs that would be on an html form
         Dim Data As String = "md5=" & inputTask.md5
         'Encode them to Byte format to include with the request
