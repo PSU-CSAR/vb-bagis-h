@@ -681,16 +681,29 @@ Public Class FrmDownloadAoiMenu
                 End If
                 'archive api requires file at the root to correctly set relative paths within archive
                 archive.AddFile(TxtUploadPath.Text & tempFile)
+                Dim success As BA_ReturnCode = BA_ReturnCode.UnknownError
                 If BA_ZipGeodatabases(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
                     If BA_ZipMiscFiles(TxtUploadPath.Text, archive) = BA_ReturnCode.Success Then
-                        Dim success As BA_ReturnCode = BA_ZipHrus(TxtUploadPath.Text, archive)
+                        success = BA_ZipHrus(TxtUploadPath.Text, archive)
                         archive.CloseArchive()
                         If GenerateToken() <> BA_ReturnCode.Success Then Exit Sub
+                        progressDialog2.HideDialog()
                         BtnSignIn.Text = "Sign out"
-                        UploadAoi(parentFolder & zipName)
+                        'Set reference to HruExtension
+                        Dim hruExt As HruExtension = HruExtension.GetExtension
+                        Dim zipFileInfo As System.IO.FileInfo = New FileInfo(parentFolder & zipName)
+                        Const CHUNK_SIZE As Integer = 4 * 1024.0F * 1024.0F   '4 MB
+                        If zipFileInfo.Length > CHUNK_SIZE Then
+                            Dim anUpload As AoiTask = UploadAoiChunked(zipFileInfo, hruExt.EbagisToken.key, CHUNK_SIZE)
+                            If anUpload IsNot Nothing Then
+                                success = BA_FinishChunkedUpload(anUpload, hruExt.EbagisToken.key)
+                            End If
+                        Else
+                            UploadAoi(parentFolder & zipName)
+                        End If
                     End If
                 End If
-                BA_Remove_File(TxtUploadPath.Text & tempFile)
+                success = BA_Remove_File(parentFolder & zipName)
             Else
                 MessageBox.Show("You must select an AOI to upload", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
@@ -830,7 +843,12 @@ Public Class FrmDownloadAoiMenu
                 aoiUpload = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
             End Using
 
-            Dim uploadStatus As String = Trim(aoiUpload.task.status).ToUpper
+            Dim uploadStatus As String = Nothing
+            If aoiUpload.task IsNot Nothing Then
+                uploadStatus = Trim(aoiUpload.task.status).ToUpper
+            Else
+                uploadStatus = Trim(aoiUpload.status).ToUpper
+            End If
 
             Dim strMessage As String = Nothing
             Select Case uploadStatus
@@ -1372,59 +1390,123 @@ Public Class FrmDownloadAoiMenu
         End If
     End Sub
 
-    Private Sub BtnChunk_Click(sender As System.Object, e As System.EventArgs) Handles BtnChunk.Click
-        'Dim fileInfo As System.IO.FileInfo = New FileInfo("C:\Users\lesleyb\AppData\Roaming\BAGIS\settings.xml")
-        'Dim md5Hash As String = MultipartFormHelper.GenerateMD5Hash(fileInfo)
-        'Dim chunkList As IList(Of Byte()) = New List(Of Byte())
-        'Dim chunkSize As Integer = 1000
-        'Dim maxNumberChunks As Integer = fileInfo.Length / chunkSize     'Last full chunk 
-        'Dim bytesWritten As Integer = 0     'Running total of bytes saved to the List in memory
-        'Using fileStream As New System.IO.FileStream(fileInfo.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read)
-        '    Dim bytesRead As Integer = 0
-        '    While bytesWritten < fileInfo.Length
-        '        Dim bytes = New Byte(chunkSize - 1) {}  'Must re-initialize array every pass or it overwrites entry in List
-        '        If chunkList.Count = maxNumberChunks Then
-        '            ReDim bytes(fileInfo.Length - bytesWritten - 1) 'subtract 1 to avoid empty space at end
-        '        End If
-        '        bytesRead = fileStream.Read(bytes, 0, bytes.Length)
-        '        chunkList.Add(bytes)
-        '        bytesWritten = bytesWritten + bytesRead
-        '    End While
-        '    fileStream.Close()
-        'End Using
-        'Using oFileStream As System.IO.FileStream = New System.IO.FileStream("C:\Users\lesleyb\AppData\Roaming\BAGIS\test.xml", System.IO.FileMode.Create)
-        '    Dim offset As Integer = 0
-        '    For Each arrByte As Byte() In chunkList
-        '        oFileStream.Write(arrByte, 0, arrByte.Length)
-        '    Next
-        '    oFileStream.Close()
-        'End Using
-        'Dim copyInfo As System.IO.FileInfo = New FileInfo("C:\Users\lesleyb\AppData\Roaming\BAGIS\test.xml")
-        'Dim md5HashCopy As String = MultipartFormHelper.GenerateMD5Hash(copyInfo)
-        'If md5Hash.Equals(md5HashCopy) Then
-        '    Windows.Forms.MessageBox.Show("success!")
-        'Else
-        '    Windows.Forms.MessageBox.Show("failure ...")
-        'End If
+    'Private Sub BtnChunk_Click(sender As System.Object, e As System.EventArgs) Handles BtnChunk.Click
+    'Dim fileInfo As System.IO.FileInfo = New FileInfo("C:\Users\lesleyb\AppData\Roaming\BAGIS\settings.xml")
+    'Dim md5Hash As String = MultipartFormHelper.GenerateMD5Hash(fileInfo)
+    'Dim chunkList As IList(Of Byte()) = New List(Of Byte())
+    'Dim chunkSize As Integer = 1000
+    'Dim maxNumberChunks As Integer = fileInfo.Length / chunkSize     'Last full chunk 
+    'Dim bytesWritten As Integer = 0     'Running total of bytes saved to the List in memory
+    'Using fileStream As New System.IO.FileStream(fileInfo.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read)
+    '    Dim bytesRead As Integer = 0
+    '    While bytesWritten < fileInfo.Length
+    '        Dim bytes = New Byte(chunkSize - 1) {}  'Must re-initialize array every pass or it overwrites entry in List
+    '        If chunkList.Count = maxNumberChunks Then
+    '            ReDim bytes(fileInfo.Length - bytesWritten - 1) 'subtract 1 to avoid empty space at end
+    '        End If
+    '        bytesRead = fileStream.Read(bytes, 0, bytes.Length)
+    '        chunkList.Add(bytes)
+    '        bytesWritten = bytesWritten + bytesRead
+    '    End While
+    '    fileStream.Close()
+    'End Using
+    'Using oFileStream As System.IO.FileStream = New System.IO.FileStream("C:\Users\lesleyb\AppData\Roaming\BAGIS\test.xml", System.IO.FileMode.Create)
+    '    Dim offset As Integer = 0
+    '    For Each arrByte As Byte() In chunkList
+    '        oFileStream.Write(arrByte, 0, arrByte.Length)
+    '    Next
+    '    oFileStream.Close()
+    'End Using
+    'Dim copyInfo As System.IO.FileInfo = New FileInfo("C:\Users\lesleyb\AppData\Roaming\BAGIS\test.xml")
+    'Dim md5HashCopy As String = MultipartFormHelper.GenerateMD5Hash(copyInfo)
+    'If md5Hash.Equals(md5HashCopy) Then
+    '    Windows.Forms.MessageBox.Show("success!")
+    'Else
+    '    Windows.Forms.MessageBox.Show("failure ...")
+    'End If
 
-        Dim uploadUrl = TxtBasinsDb.Text & "aois/"
-        'Set reference to HruExtension
-        Dim hruExt As HruExtension = HruExtension.GetExtension        '---create a row---
+    'Set reference to HruExtension
+    'End Sub
+
+    Private Function UploadAoiChunked(ByVal fileInfo As System.IO.FileInfo, ByVal strToken As String, ByVal chunkSize As Integer) As AoiTask
+
+        Dim aoiName As String = Path.GetFileNameWithoutExtension(fileInfo.FullName)
+        '---create a row---
         Dim item As New DataGridViewRow
         item.CreateCells(GrdTasks)
         With item
-            .Cells(idxTaskAoi).Value = "yampa_AOI_5"
+            .Cells(idxTaskAoi).Value = aoiName
             .Cells(idxTaskType).Value = BA_TASK_UPLOAD
             .Cells(idxTaskStatus).Value = BA_Task_Staging
             .Cells(idxTaskTime).Value = "N/A"
         End With
         GrdTasks.Rows.Add(item)
         Application.DoEvents()
-        Dim aoiTask As AoiTask = BA_UploadChunks(uploadUrl, hruExt.EbagisToken.key, "yampa_AOI_5.zip", "C:\Docs\Lesley", "")
-        If aoiTask IsNot Nothing Then
-            Dim success As BA_ReturnCode = BA_FinishChunkedUpload(aoiTask, hruExt.EbagisToken.key)
-        Else
-            MessageBox.Show("An error occurred while trying to upload the file!", "eBAGIS")
+
+        'Information about the file
+        If fileInfo IsNot Nothing Then
+            Dim chunkList As IList(Of Byte()) = New List(Of Byte())
+            Dim maxNumberChunks As Integer = fileInfo.Length / chunkSize     'Last full chunk
+            Dim bytesWritten As Integer = 0     'Running total of bytes saved to the List in memory
+            'Read the file into an List of bytes
+            Using fileStream As New System.IO.FileStream(fileInfo.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read)
+                Dim bytesRead As Integer = 0
+                While bytesWritten < fileInfo.Length
+                    Dim bytes() As Byte = New Byte(chunkSize - 1) {}   'Must re-initialize array every pass or it overwrites entry in List
+                    If chunkList.Count = maxNumberChunks Then
+                        ReDim bytes(fileInfo.Length - bytesWritten - 1) 'subtract 1 to avoid empty space at end
+                    End If
+                    bytesRead = fileStream.Read(bytes, 0, bytes.Length)
+                    chunkList.Add(bytes)
+                    bytesWritten = bytesWritten + bytesRead
+                End While
+                fileStream.Close()
+            End Using
+            Dim idxChunk As Integer = 0     'Keep track of which chunk we are sending; 0 is the first
+            Dim idxEnd As Integer = -1      'Keep track of end of each packet
+            Dim uploadUrl = TxtBasinsDb.Text & "aois/"
+            Dim anUpload As AoiTask = BA_WriteFirstChunk(uploadUrl, strToken, fileInfo, _
+                                                         chunkList(idxChunk), TxtComment.Text, idxEnd)
+            If Not String.IsNullOrEmpty(anUpload.url) Then
+                With item
+                    .Cells(idxTaskStatus).Value = anUpload.status
+                    .Cells(idxTaskUrl).Value = anUpload.url
+                    .Cells(idxTaskTime).Value = DateTime.Now.ToString("MM/dd/yy H:mm")
+                    .Cells(idxTaskId).Value = anUpload.id
+                    .Cells(idxTaskLocalPath).Value = TxtUploadPath.Text
+                End With
+                Application.DoEvents()
+                'Clear out upload file name
+                TxtUploadPath.Text = Nothing
+                'Clear out comments field
+                TxtComment.Text = Nothing
+                idxChunk = idxChunk + 1
+                Do While anUpload IsNot Nothing AndAlso idxChunk < chunkList.Count
+                    Dim idxStart As Integer = idxEnd + 1    'Add one to move onto the next byte
+                    idxEnd = idxStart + chunkList(idxChunk).GetUpperBound(0)
+                    anUpload = BA_WriteBodyChunk(anUpload.url, strToken, chunkList(idxChunk), _
+                                                 idxStart, idxEnd, fileInfo.Length, fileInfo.Name)
+                    idxChunk = idxChunk + 1
+                Loop
+                If anUpload IsNot Nothing Then
+                    'Set the checksum after sending the last chunk
+                    anUpload.md5 = MultipartFormHelper.GenerateMD5Hash(fileInfo)
+                    Return anUpload
+                Else
+                    With item
+                        .Cells(idxTaskStatus).Value = BA_Task_Failure
+                        .Cells(idxTaskTime).Value = "N/A"
+                        .Cells(idxTaskMessage).Value = "An error occurred while trying to upload the AOI"
+                    End With
+                End If
+            Else
+                With item
+                    .Cells(idxTaskStatus).Value = BA_Task_Failure
+                    .Cells(idxTaskTime).Value = "N/A"
+                    .Cells(idxTaskMessage).Value = "An error occurred while trying to upload the AOI"
+                End With
+            End If
         End If
-    End Sub
+        Return Nothing
+    End Function
 End Class
