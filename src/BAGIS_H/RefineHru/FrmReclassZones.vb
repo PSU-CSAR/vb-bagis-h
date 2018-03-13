@@ -225,10 +225,14 @@ Public Class FrmReclassZones
             Dim vectorName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False)
             Dim success As BA_ReturnCode = BA_AddExtentLayer(My.ArcMap.Document, parentPath & vectorName, _
                                                              Nothing, True, vectorName, actionCode, 1.0)
-            BtnSelectZones.Enabled = True
-            TxtSelZone.Enabled = True
+            If success = BA_ReturnCode.Success Then
+                BtnSelectZones.Enabled = True
+                BtnAddAll.Enabled = True
+                TxtSelZone.Enabled = True
+            End If
         Else
             BtnSelectZones.Enabled = False
+            BtnAddAll.Enabled = False
             TxtSelZone.Enabled = False
         End If
     End Sub
@@ -681,6 +685,64 @@ Public Class FrmReclassZones
             e.Cancel = True
             ' Select the offending text.
             TxtSelZone.Select(0, TxtSelZone.Text.Length)
+        End If
+    End Sub
+
+    Private Sub BtnAddAll_Click(sender As System.Object, e As System.EventArgs) Handles BtnAddAll.Click
+        If DataGridView1.RowCount > 0 Then
+            Dim res As DialogResult = MessageBox.Show("Adding all values will overwrite your existing entries. Do you wish to continue ?", _
+                                                      "BAGIS-H", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If res <> DialogResult.Yes Then
+                Exit Sub
+            End If
+        End If
+        DataGridView1.Rows.Clear()
+
+        Dim pGeodataset As IGeoDataset = Nothing
+        Dim pRasterBandCollection As IRasterBandCollection = Nothing
+        Dim pRasterBand As IRasterBand = Nothing
+        Dim pAttribTable As ITable = Nothing
+        Dim pCursor As ICursor = Nothing
+        Dim pGridRow As IRow = Nothing
+        Dim pFields As IFields = Nothing
+        If CboParentHru.SelectedIndex > -1 Then
+            Try
+                Dim item As LayerListItem = CboParentHru.SelectedItem
+                Dim i As Int16 = 0
+                Dim filePath As String = ""
+                Dim fileName As String = BA_GetBareName(item.Value, filePath)
+                pGeodataset = BA_OpenRasterFromGDB(filePath, fileName)
+                If pGeodataset IsNot Nothing Then
+                    pRasterBandCollection = CType(pGeodataset, IRasterBandCollection)
+                    pRasterBand = pRasterBandCollection.Item(0)
+                    pAttribTable = pRasterBand.AttributeTable
+                    If pAttribTable IsNot Nothing Then
+                        Dim idxValue As Integer = pAttribTable.Fields.FindField(BA_FIELD_VALUE)
+                        pCursor = pAttribTable.Search(Nothing, False)
+                        pGridRow = pCursor.NextRow
+                        Do While pGridRow IsNot Nothing
+                            Dim oldVal As String = CStr(pGridRow.Value(idxValue))
+                            Dim pRow As New DataGridViewRow
+                            pRow.CreateCells(DataGridView1)
+                            pRow.Cells(0).Value = oldVal
+                            pRow.Cells(1).Value = oldVal
+                            DataGridView1.Rows.Add(pRow)
+                            pGridRow = pCursor.NextRow
+                        Loop
+                    End If
+                End If
+            Catch ex As Exception
+                Debug.Print("BtnAddAll_Click Exception: " & ex.Message)
+                pFields = Nothing
+                pCursor = Nothing
+                pGridRow = Nothing
+                pGeodataset = Nothing
+                pRasterBandCollection = Nothing
+                pRasterBand = Nothing
+                pAttribTable = Nothing
+                GC.WaitForPendingFinalizers()
+                GC.Collect()
+            End Try
         End If
     End Sub
 End Class

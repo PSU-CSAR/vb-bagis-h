@@ -19,7 +19,7 @@ Partial Class FrmReclassZones
   'Do not modify it using the code editor.
   <System.Diagnostics.DebuggerStepThrough()> _
   Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.BtnAbout = New System.Windows.Forms.Button()
         Me.LblToolTip = New System.Windows.Forms.Label()
         Me.TxtAoiPath = New System.Windows.Forms.TextBox()
@@ -49,6 +49,8 @@ Partial Class FrmReclassZones
         Me.TxtParentNonContig = New System.Windows.Forms.TextBox()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.CkNonContiguous = New System.Windows.Forms.CheckBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.BtnAddAll = New System.Windows.Forms.Button()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -56,7 +58,7 @@ Partial Class FrmReclassZones
         '
         Me.BtnAbout.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnAbout.Location = New System.Drawing.Point(387, 5)
-        Me.BtnAbout.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnAbout.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnAbout.Name = "BtnAbout"
         Me.BtnAbout.Size = New System.Drawing.Size(99, 23)
         Me.BtnAbout.TabIndex = 62
@@ -80,7 +82,7 @@ Partial Class FrmReclassZones
         Me.TxtAoiPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtAoiPath.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.TxtAoiPath.Location = New System.Drawing.Point(179, 35)
-        Me.TxtAoiPath.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.TxtAoiPath.Margin = New System.Windows.Forms.Padding(2)
         Me.TxtAoiPath.Name = "TxtAoiPath"
         Me.TxtAoiPath.ReadOnly = True
         Me.TxtAoiPath.Size = New System.Drawing.Size(272, 22)
@@ -103,7 +105,7 @@ Partial Class FrmReclassZones
         '
         Me.LblOutputHruName.AutoSize = True
         Me.LblOutputHruName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LblOutputHruName.Location = New System.Drawing.Point(8, 253)
+        Me.LblOutputHruName.Location = New System.Drawing.Point(8, 304)
         Me.LblOutputHruName.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.LblOutputHruName.Name = "LblOutputHruName"
         Me.LblOutputHruName.Size = New System.Drawing.Size(138, 16)
@@ -114,8 +116,8 @@ Partial Class FrmReclassZones
         '
         Me.TxtNewHruName.Enabled = False
         Me.TxtNewHruName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtNewHruName.Location = New System.Drawing.Point(140, 251)
-        Me.TxtNewHruName.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.TxtNewHruName.Location = New System.Drawing.Point(140, 302)
+        Me.TxtNewHruName.Margin = New System.Windows.Forms.Padding(2)
         Me.TxtNewHruName.Name = "TxtNewHruName"
         Me.TxtNewHruName.Size = New System.Drawing.Size(107, 22)
         Me.TxtNewHruName.TabIndex = 52
@@ -125,8 +127,8 @@ Partial Class FrmReclassZones
         Me.TxtHruPath.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtHruPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtHruPath.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.TxtHruPath.Location = New System.Drawing.Point(74, 335)
-        Me.TxtHruPath.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.TxtHruPath.Location = New System.Drawing.Point(74, 386)
+        Me.TxtHruPath.Margin = New System.Windows.Forms.Padding(2)
         Me.TxtHruPath.Name = "TxtHruPath"
         Me.TxtHruPath.ReadOnly = True
         Me.TxtHruPath.Size = New System.Drawing.Size(377, 22)
@@ -138,7 +140,7 @@ Partial Class FrmReclassZones
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(6, 336)
+        Me.Label3.Location = New System.Drawing.Point(6, 387)
         Me.Label3.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(71, 16)
@@ -151,7 +153,7 @@ Partial Class FrmReclassZones
         Me.CboParentHru.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.CboParentHru.FormattingEnabled = True
         Me.CboParentHru.Location = New System.Drawing.Point(8, 78)
-        Me.CboParentHru.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.CboParentHru.Margin = New System.Windows.Forms.Padding(2)
         Me.CboParentHru.Name = "CboParentHru"
         Me.CboParentHru.Size = New System.Drawing.Size(123, 24)
         Me.CboParentHru.TabIndex = 51
@@ -159,8 +161,8 @@ Partial Class FrmReclassZones
         'BtnCancel
         '
         Me.BtnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnCancel.Location = New System.Drawing.Point(332, 372)
-        Me.BtnCancel.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnCancel.Location = New System.Drawing.Point(332, 423)
+        Me.BtnCancel.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnCancel.Name = "BtnCancel"
         Me.BtnCancel.Size = New System.Drawing.Size(65, 23)
         Me.BtnCancel.TabIndex = 55
@@ -171,8 +173,8 @@ Partial Class FrmReclassZones
         '
         Me.BtnGenerateHru.Enabled = False
         Me.BtnGenerateHru.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnGenerateHru.Location = New System.Drawing.Point(401, 372)
-        Me.BtnGenerateHru.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnGenerateHru.Location = New System.Drawing.Point(401, 423)
+        Me.BtnGenerateHru.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnGenerateHru.Name = "BtnGenerateHru"
         Me.BtnGenerateHru.Size = New System.Drawing.Size(114, 23)
         Me.BtnGenerateHru.TabIndex = 53
@@ -183,7 +185,7 @@ Partial Class FrmReclassZones
         '
         Me.BtnSelectAoi.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnSelectAoi.Location = New System.Drawing.Point(8, 31)
-        Me.BtnSelectAoi.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnSelectAoi.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnSelectAoi.Name = "BtnSelectAoi"
         Me.BtnSelectAoi.Size = New System.Drawing.Size(89, 23)
         Me.BtnSelectAoi.TabIndex = 50
@@ -206,7 +208,7 @@ Partial Class FrmReclassZones
         Me.BtnViewLayer.Enabled = False
         Me.BtnViewLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnViewLayer.Location = New System.Drawing.Point(134, 78)
-        Me.BtnViewLayer.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnViewLayer.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnViewLayer.Name = "BtnViewLayer"
         Me.BtnViewLayer.Size = New System.Drawing.Size(129, 23)
         Me.BtnViewLayer.TabIndex = 63
@@ -217,8 +219,8 @@ Partial Class FrmReclassZones
         '
         Me.BtnDelete.Enabled = False
         Me.BtnDelete.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnDelete.Location = New System.Drawing.Point(225, 221)
-        Me.BtnDelete.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnDelete.Location = New System.Drawing.Point(225, 270)
+        Me.BtnDelete.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnDelete.Name = "BtnDelete"
         Me.BtnDelete.Size = New System.Drawing.Size(120, 23)
         Me.BtnDelete.TabIndex = 67
@@ -230,7 +232,7 @@ Partial Class FrmReclassZones
         Me.TxtSelZone.Enabled = False
         Me.TxtSelZone.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TxtSelZone.Location = New System.Drawing.Point(303, 95)
-        Me.TxtSelZone.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.TxtSelZone.Margin = New System.Windows.Forms.Padding(2)
         Me.TxtSelZone.Name = "TxtSelZone"
         Me.TxtSelZone.Size = New System.Drawing.Size(77, 22)
         Me.TxtSelZone.TabIndex = 68
@@ -251,7 +253,7 @@ Partial Class FrmReclassZones
         Me.BtnAdd.Enabled = False
         Me.BtnAdd.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnAdd.Location = New System.Drawing.Point(225, 122)
-        Me.BtnAdd.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnAdd.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnAdd.Name = "BtnAdd"
         Me.BtnAdd.Size = New System.Drawing.Size(120, 23)
         Me.BtnAdd.TabIndex = 71
@@ -262,8 +264,8 @@ Partial Class FrmReclassZones
         '
         Me.BtnUpdate.Enabled = False
         Me.BtnUpdate.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BtnUpdate.Location = New System.Drawing.Point(225, 166)
-        Me.BtnUpdate.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnUpdate.Location = New System.Drawing.Point(225, 212)
+        Me.BtnUpdate.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnUpdate.Name = "BtnUpdate"
         Me.BtnUpdate.Size = New System.Drawing.Size(120, 23)
         Me.BtnUpdate.TabIndex = 72
@@ -277,16 +279,16 @@ Partial Class FrmReclassZones
         Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridView1.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.OldValue, Me.NewValues})
         Me.DataGridView1.Location = New System.Drawing.Point(8, 108)
-        Me.DataGridView1.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.DataGridView1.Margin = New System.Windows.Forms.Padding(2)
         Me.DataGridView1.Name = "DataGridView1"
         Me.DataGridView1.Size = New System.Drawing.Size(200, 131)
         Me.DataGridView1.TabIndex = 73
         '
         'OldValue
         '
-        DataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.OldValue.DefaultCellStyle = DataGridViewCellStyle4
+        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.OldValue.DefaultCellStyle = DataGridViewCellStyle2
         Me.OldValue.HeaderText = "Old Values"
         Me.OldValue.Name = "OldValue"
         Me.OldValue.ReadOnly = True
@@ -304,7 +306,7 @@ Partial Class FrmReclassZones
         Me.BtnSelectZones.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtnSelectZones.Image = Global.BAGIS_H.My.Resources.Resources.IdentifyTool16
         Me.BtnSelectZones.Location = New System.Drawing.Point(282, 95)
-        Me.BtnSelectZones.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.BtnSelectZones.Margin = New System.Windows.Forms.Padding(2)
         Me.BtnSelectZones.Name = "BtnSelectZones"
         Me.BtnSelectZones.Size = New System.Drawing.Size(17, 19)
         Me.BtnSelectZones.TabIndex = 64
@@ -316,8 +318,8 @@ Partial Class FrmReclassZones
         Me.CkRetainAttributes.Checked = True
         Me.CkRetainAttributes.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CkRetainAttributes.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkRetainAttributes.Location = New System.Drawing.Point(250, 301)
-        Me.CkRetainAttributes.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.CkRetainAttributes.Location = New System.Drawing.Point(250, 352)
+        Me.CkRetainAttributes.Margin = New System.Windows.Forms.Padding(2)
         Me.CkRetainAttributes.Name = "CkRetainAttributes"
         Me.CkRetainAttributes.Size = New System.Drawing.Size(191, 20)
         Me.CkRetainAttributes.TabIndex = 74
@@ -329,7 +331,7 @@ Partial Class FrmReclassZones
         Me.Label4.AutoSize = True
         Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label4.ForeColor = System.Drawing.Color.Blue
-        Me.Label4.Location = New System.Drawing.Point(231, 189)
+        Me.Label4.Location = New System.Drawing.Point(231, 235)
         Me.Label4.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(231, 30)
@@ -353,8 +355,8 @@ Partial Class FrmReclassZones
         '
         Me.TxtParentNonContig.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.TxtParentNonContig.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TxtParentNonContig.Location = New System.Drawing.Point(476, 251)
-        Me.TxtParentNonContig.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.TxtParentNonContig.Location = New System.Drawing.Point(476, 302)
+        Me.TxtParentNonContig.Margin = New System.Windows.Forms.Padding(2)
         Me.TxtParentNonContig.Name = "TxtParentNonContig"
         Me.TxtParentNonContig.Size = New System.Drawing.Size(51, 22)
         Me.TxtParentNonContig.TabIndex = 78
@@ -363,7 +365,7 @@ Partial Class FrmReclassZones
         '
         Me.Label6.AutoSize = True
         Me.Label6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(247, 253)
+        Me.Label6.Location = New System.Drawing.Point(247, 304)
         Me.Label6.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(232, 16)
@@ -374,7 +376,7 @@ Partial Class FrmReclassZones
         '
         Me.CkNonContiguous.AutoSize = True
         Me.CkNonContiguous.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CkNonContiguous.Location = New System.Drawing.Point(250, 277)
+        Me.CkNonContiguous.Location = New System.Drawing.Point(250, 328)
         Me.CkNonContiguous.Margin = New System.Windows.Forms.Padding(2)
         Me.CkNonContiguous.Name = "CkNonContiguous"
         Me.CkNonContiguous.Size = New System.Drawing.Size(210, 20)
@@ -382,12 +384,38 @@ Partial Class FrmReclassZones
         Me.CkNonContiguous.Text = "Allow non-contiguous HRU"
         Me.CkNonContiguous.UseVisualStyleBackColor = True
         '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label7.ForeColor = System.Drawing.Color.Blue
+        Me.Label7.Location = New System.Drawing.Point(231, 192)
+        Me.Label7.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(204, 15)
+        Me.Label7.TabIndex = 81
+        Me.Label7.Text = "Add all Old Values to be reclassified."
+        '
+        'BtnAddAll
+        '
+        Me.BtnAddAll.Enabled = False
+        Me.BtnAddAll.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtnAddAll.Location = New System.Drawing.Point(225, 167)
+        Me.BtnAddAll.Margin = New System.Windows.Forms.Padding(2)
+        Me.BtnAddAll.Name = "BtnAddAll"
+        Me.BtnAddAll.Size = New System.Drawing.Size(120, 23)
+        Me.BtnAddAll.TabIndex = 80
+        Me.BtnAddAll.Text = "Add All Values"
+        Me.BtnAddAll.UseVisualStyleBackColor = True
+        '
         'FrmReclassZones
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.Controls.Add(Me.Label7)
+        Me.Controls.Add(Me.BtnAddAll)
         Me.Controls.Add(Me.CkNonContiguous)
         Me.Controls.Add(Me.TxtParentNonContig)
         Me.Controls.Add(Me.Label6)
@@ -415,9 +443,9 @@ Partial Class FrmReclassZones
         Me.Controls.Add(Me.BtnGenerateHru)
         Me.Controls.Add(Me.BtnSelectAoi)
         Me.Controls.Add(Me.LblHruLayers)
-        Me.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "FrmReclassZones"
-        Me.Size = New System.Drawing.Size(529, 397)
+        Me.Size = New System.Drawing.Size(529, 448)
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
@@ -452,5 +480,7 @@ Partial Class FrmReclassZones
     Friend WithEvents TxtParentNonContig As System.Windows.Forms.TextBox
     Friend WithEvents Label6 As System.Windows.Forms.Label
     Friend WithEvents CkNonContiguous As System.Windows.Forms.CheckBox
+    Friend WithEvents Label7 As System.Windows.Forms.Label
+    Friend WithEvents BtnAddAll As System.Windows.Forms.Button
 
 End Class
