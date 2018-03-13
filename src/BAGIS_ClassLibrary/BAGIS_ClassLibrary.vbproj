@@ -212,6 +212,7 @@
     <Compile Include="enumerations\PrismServiceNames.vb" />
     <Compile Include="enumerations\ProfileClass.vb" />
     <Compile Include="enumerations\PublicPath.vb" />
+    <Compile Include="enumerations\SiteType.vb" />
     <Compile Include="enumerations\SlopeUnit.vb" />
     <Compile Include="enumerations\StatisticsFieldName.vb" />
     <Compile Include="enumerations\StatisticsTypeString.vb" />
@@ -242,6 +243,7 @@
     <Compile Include="Objects\Aoi.vb" />
     <Compile Include="Objects\AOISearchFilter.vb" />
     <Compile Include="Objects\AoiTask.vb" />
+    <Compile Include="Objects\Site.vb" />
     <Compile Include="Objects\WebExceptionDetail.vb" />
     <Compile Include="Objects\ContributingAreasRule.vb" />
     <Compile Include="Objects\CookieCutProcess.vb" />
