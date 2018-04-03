@@ -161,16 +161,14 @@ Module ArchiveModule
         Try
             'Check to see if the outputPath exists; If so, delete folder and contents so we don't mix old/new
             If BA_Folder_ExistsWindowsIO(outputPath) Then BA_Remove_Folder(outputPath)
-            'Create new aoi folder to receive contents
             Dim parentPath As String = "PleaseReturn"
             Dim aoiFolder As String = BA_GetBareName(outputPath, parentPath)
-            Dim folder As String = BA_CreateFolder(parentPath, aoiFolder)
-            If Not String.IsNullOrEmpty(folder) Then
+            If Not String.IsNullOrEmpty(parentPath) Then
                 archive.OpenArchive(zipFilePath)
                 Dim contents As IEnumBSTR = archive.GetFileNames
                 Dim filePath As String = contents.Next
                 Do While Not String.IsNullOrEmpty(filePath)
-                    archive.ExtractFile(filePath, outputPath)
+                    archive.ExtractFile(filePath, parentPath)
                     filePath = contents.Next()
                 Loop
                 Return BA_ReturnCode.Success

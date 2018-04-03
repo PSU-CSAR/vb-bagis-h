@@ -1050,15 +1050,14 @@ Public Class FrmDownloadAoiMenu
                 errorMessage = "The url for the basins database you provided is not well-formed."
                 Return False
             End If
-            'Check token
-            If GenerateToken() <> BA_ReturnCode.Success Then
-                errorMessage = "Unable to generate token and connect to the basins database you provided"
+            'Check server
+            If SecurityHelper.BA_IsEBagisAvailable(TxtBasinsDb.Text) <> True Then
+                errorMessage = "Unable to connect to the basins database you provided"
                 Return False
             End If
             If m_settings Is Nothing Then m_settings = New BagisHSettings()
             m_settings.basinsDb = TxtBasinsDb.Text
             'Set reference to HruExtension
-            BtnSignIn.Text = "Sign out"
             Dim hruExt As HruExtension = HruExtension.GetExtension
             Dim success As BA_ReturnCode = SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)
             If success = BA_ReturnCode.Success Then

@@ -147,4 +147,31 @@ Public Class SecurityHelper
         My.Settings.Save()
     End Sub
 
+    Public Shared Function BA_IsEBagisAvailable(ByVal serverUrl As String) As Boolean
+        'The end point for getting testing the web service
+        serverUrl = serverUrl + "/api-version/"
+        Dim reqT As HttpWebRequest = WebRequest.Create(serverUrl)
+        'This is a GET request
+        reqT.Method = "GET"
+
+        'Set the accept header to request the current version of the api
+        reqT.Accept = "application/json; version=" + BA_EbagisApiVersion
+        Try
+            Using resT As HttpWebResponse = CType(reqT.GetResponse(), HttpWebResponse)
+                Dim statusCode As Integer = Convert.ToInt16(resT.StatusCode)
+                If resT.StatusCode = HttpStatusCode.OK Then
+                    Return True
+                Else
+                    Return False
+                End If
+            End Using
+        Catch ex As WebException
+            'Catch exception and return false; Server is not responding correctly
+            Return False
+        End Try
+
+
+
+    End Function
+
 End Class
