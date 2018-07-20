@@ -51,10 +51,14 @@ Public Class FrmToolsDataUnits
             DataPath = pGxDataFolder.Path
             If String.IsNullOrEmpty(DataPath) Then Exit Sub 'user cancelled the action
 
+            Dim success = BA_SetDefaultProjection(My.ArcMap.Application)
+            If success <> BA_ReturnCode.Success Then
+                Exit Sub
+            End If
+
             'check FGDB AOI/BASIN status
             Dim fgdbType As FolderType = BA_GetFGDBFolderType(DataPath)
             If fgdbType <> FolderType.FOLDER Then
-                BA_SetDefaultProjection(My.ArcMap.Application)
                 Dim aoiName As String = BA_GetBareName(DataPath)
                 m_aoi = New Aoi(aoiName, DataPath, Nothing, m_version)
                 TxtAoiPath.Text = m_aoi.FilePath

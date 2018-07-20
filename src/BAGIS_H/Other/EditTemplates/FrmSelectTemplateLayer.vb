@@ -64,7 +64,11 @@ Public Class FrmSelectTemplateLayer
                 MessageBox.Show("The selected folder does not contain a valid AOI!")
                 Exit Sub
             Else
-                BA_SetDefaultProjection(My.ArcMap.Application)
+                'reproject current layout to Albers 
+                Dim success As BA_ReturnCode = BA_SetDefaultProjection(My.ArcMap.Application)
+                If success <> BA_ReturnCode.Success Then
+                    Exit Sub
+                End If
                 Dim ReturnPath As String = "PleaseReturn"
                 'Choose to use supplied DataPath here rather than ReturnString generated from source.weasel
                 Dim aoiName As String = BA_GetBareName(DataPath, ReturnPath)

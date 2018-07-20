@@ -62,6 +62,11 @@ Public Class FrmSlopeConverter
             DataPath = pGxDataFolder.Path
             If String.IsNullOrEmpty(DataPath) Then Exit Sub 'user cancelled the action
 
+            Dim success As BA_ReturnCode = BA_SetDefaultProjection(My.ArcMap.Application)
+            If success <> BA_ReturnCode.Success Then
+                Exit Sub
+            End If
+
             'Re-initialize form
             TxtAoiPath.Text = ""
             TxtSlopePath.Text = ""
@@ -75,7 +80,6 @@ Public Class FrmSlopeConverter
             'check FGDB AOI/BASIN status
             Dim fgdbType As FolderType = BA_GetFGDBFolderType(DataPath)
             If fgdbType <> FolderType.FOLDER Then
-                BA_SetDefaultProjection(My.ArcMap.Application)
                 Dim aoiName As String = BA_GetBareName(DataPath)
                 m_aoi = New Aoi(aoiName, DataPath, Nothing, m_version)
                 m_fgdbAoi = True
@@ -96,7 +100,6 @@ Public Class FrmSlopeConverter
                 m_weaselAoi = True
                 'There was no fgdb found in the selected folder
                 If m_fgdbAoi = False Then
-                    BA_SetDefaultProjection(My.ArcMap.Application)
                     Dim aoiName As String = BA_GetBareName(DataPath)
                     m_aoi = New Aoi(aoiName, DataPath, Nothing, m_version)
                     TxtAoiPath.Text = m_aoi.FilePath
