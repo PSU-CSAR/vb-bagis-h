@@ -702,7 +702,11 @@ Public Class FrmDownloadAoiMenu
                             UploadAoi(parentFolder & zipName)
                         End If
                     End If
+                Else
+                    MessageBox.Show("Unable to add the AOI geodatabases to the .zip file for upload! " + _
+                                    "Restart ArcMap and try again. ", "eBAGIS", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
+                archive.CloseArchive()
                 success = BA_Remove_File(parentFolder & zipName)
             Else
                 MessageBox.Show("You must select an AOI to upload", "No AOI selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
