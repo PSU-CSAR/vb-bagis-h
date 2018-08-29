@@ -8,9 +8,9 @@
   <Company>Portland State University</Company>
   <Date>4/3/2018</Date>
   <Targets>
-    <Target name="Desktop" version="10.2" />
+    <Target name="Desktop" version="10.5" />
   </Targets>
-  <AddIn language="CLR4.0" library="BAGIS_H.dll" namespace="BAGIS_H">
+  <AddIn language="CLR" library="BAGIS_H.dll" namespace="BAGIS_H">
     <ArcMap>
       <Commands>
         <!-- <Button id="ClassLibraryAddin_BtnHruZone" class="BtnHruZone" message="Define HRU zones from an AOI using this toolset" caption="HRU Zone Delineation" tip="Define HRU zones from an AOI using this toolset" category="BAGIS-HD" image="Images\BtnHruZone.png" /> -->
