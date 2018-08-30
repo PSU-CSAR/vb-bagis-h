@@ -443,6 +443,10 @@ Public Class FrmEliminatePoly
             'Get the area threshold using the selected percent
             m_area = BA_GetPercentileValueFromFeatureClass(m_featureName, m_featurePath, BA_FIELD_AREA_SQKM, pAreaPrcnt)
             Change_TxtPolyArea(m_area)
+            If m_area <= 0 Then
+                MessageBox.Show("Unable to calculate percentage of zones to be eliminated!", "BAGIS-H")
+                Exit Sub
+            End If
             'Get the actual count based on the area threshold, this may exceed the desired count if the data has a large number
             'of small zones
             Dim actualCount As Integer = BA_CountFeaturesSmallerThanOrEqualTo(m_featureName, m_featurePath, BA_FIELD_AREA_SQKM, m_area)
