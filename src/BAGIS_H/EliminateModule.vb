@@ -202,15 +202,16 @@ Module EliminateModule
         End If
 
         If pFeatureClass Is Nothing Then
-            MessageBox.Show("Can't find Feature Class")
+            MessageBox.Show("Can't find Feature Class!", "BAGIS-H")
             Return 0
             Exit Function
         End If
 
+        Dim pTable As ITable = CType(pFeatureClass, ITable)
         Dim tblSort As ITableSort = New TableSort()
         Try
-            numberFeatures = pFeatureClass.FeatureCount(Nothing)
-            tblSort.Table = pFeatureClass
+            numberFeatures = pTable.RowCount(Nothing)
+            tblSort.Table = pTable
             tblSort.Fields = fieldName
             tblSort.Ascending(fieldName) = True
             tblSort.Sort(Nothing)
@@ -218,24 +219,26 @@ Module EliminateModule
             'fieldValue is in percentile without decimal point. ie: 20% = 20
             'find the row id at the percentile selected
             Dim valueIdx As Integer = Math.Round((fieldValue / 100) * numberFeatures + 0.5)
-            Dim areaIdx As Integer = pFeatureClass.FindField(BA_FIELD_AREA_SQKM)
+            Dim areaIdx As Integer = pTable.FindField(BA_FIELD_AREA_SQKM)
 
+            ' Get an enumerator of ObjectIDs for the sorted rows. MUST call this before
+            ' calling IDByIndex effective with AGS 10.5
+            Dim enumIDs As IEnumIDs = tblSort.IDs
             'get the id of the item in the valueId position
             Dim id As Integer = tblSort.IDByIndex(valueIdx)
             'get the area of that item to populate the form
-            returnValue = pFeatureClass.GetFeature(id).Value(areaIdx)
+            returnValue = CType(pTable.GetRow(id).Value(areaIdx), Double)
 
         Catch ex As Exception
-            MessageBox.Show("Exception: " + ex.Message)
-            Return 0
-
+            MessageBox.Show("BA_GetPercentileValueFromFeatureClass Exception: " + ex.Message)
+            returnValue = -1
         Finally
             tblSort = Nothing
             pFeatureClass = Nothing
+            pTable = Nothing
             GC.Collect()
             GC.WaitForPendingFinalizers()
         End Try
-
         Return returnValue
     End Function
 End Module
