@@ -17,6 +17,10 @@ Public Module WebservicesModule
     Public Const BA_WebServerName = "https://test.ebagis.geog.pdx.edu"
     Public Const BA_EbagisApiVersion = "0.1"
 
+    'return values
+    ' BA_ReturnCode.ReadError: No features were found in the clip envelope; BA_ClipAOISnoWebServices
+    ' silently ignores this return code. Not an error, just no features found
+    ' BA_ReturnCode.Success: Success!
     Public Function BA_ClipFeatureService(ByVal clipFilePath As String, ByVal webServiceUrl As String, _
                                           ByVal newFilePath As String, ByVal aoiFolder As String) As BA_ReturnCode
         Dim wType As WorkspaceType = BA_GetWorkspaceTypeFromPath(newFilePath)
@@ -99,14 +103,16 @@ Public Module WebservicesModule
                 recordSet2.SaveAsTable(workspace, tempFile)
                 'Clip queried layer to aoi
                 Dim retVal As Short = BA_ClipAOIVector(aoiFolder, outputFolder & "\" & tempFile, outputFile, outputFolder, True)
+                'Delete temporary query file
+                'Re-initialize workspace to resolve separated RCW error
+                workspace = workspaceFactory.OpenFromFile(outputFolder, 0)
+                deleteFClass = workspace.OpenFeatureClass(tempFile)
+                deleteDataset = CType(deleteFClass, IDataset)
+                deleteDataset.Delete()
                 If retVal = 1 Then
-                    'Delete temporary query file
-                    'Re-initialize workspace to resolve separated RCW error
-                    workspace = workspaceFactory.OpenFromFile(outputFolder, 0)
-                    deleteFClass = workspace.OpenFeatureClass(tempFile)
-                    deleteDataset = CType(deleteFClass, IDataset)
-                    deleteDataset.Delete()
                     Return BA_ReturnCode.Success
+                ElseIf retVal = 0 Then
+                    Return BA_ReturnCode.ReadError
                 End If
                 Return BA_ReturnCode.UnknownError
             Catch ex As Exception
@@ -815,10 +821,22 @@ Public Module WebservicesModule
         Dim checkedUrl As String = inputPath
         Try
             Dim wType As WorkspaceType = BA_GetWorkspaceTypeFromPath(inputPath)
-            If wType = WorkspaceType.FeatureServer Or _
-                wType = WorkspaceType.ImageServer Then
+            If wType = WorkspaceType.ImageServer Then
                 Dim idxServices As Integer = inputPath.IndexOf(BA_Url_Services)
                 checkedUrl = inputPath.Substring(0, idxServices + BA_Url_Services.Length)
+                If checkedUrls.ContainsKey(checkedUrl) Then
+                    Return checkedUrls(checkedUrl)
+                Else
+                    connectionProps.SetProperty("URL", checkedUrl)
+                    AGSConnection = AGSConnectionFactory.Open(connectionProps, 0)
+                    If Not checkedUrls.ContainsKey(checkedUrl) Then
+                        checkedUrls.Add(checkedUrl, True)
+                    End If
+                    Return True
+                End If
+            ElseIf wType = WorkspaceType.FeatureServer Then
+                Dim idxServices As Integer = inputPath.IndexOf(BA_Url_RestServices)
+                checkedUrl = inputPath.Substring(0, idxServices + BA_Url_RestServices.Length)
                 If checkedUrls.ContainsKey(checkedUrl) Then
                     Return checkedUrls(checkedUrl)
                 Else
@@ -1195,6 +1213,36 @@ Public Module WebservicesModule
         Catch ex As Exception
             Debug.Print("BA_FinishChunkedUpload Exception: " & ex.Message)
             Return BA_ReturnCode.UnknownError
+        End Try
+    End Function
+
+    Public Function BA_ImageDatumMatch(ByVal layerPath As String, ByVal datumStr As String) As Boolean
+        Dim pSpRef As ISpatialReference = Nothing
+        Dim isLayer As IImageServerLayer = New ImageServerLayerClass
+        Dim isLayerInfo As IImageServiceInfo2
+        Try
+            'Create an image server layer by passing a URL.
+            isLayer.Initialize(layerPath)
+            'Get the info from the image server layer.
+            isLayerInfo = isLayer.ServiceInfo
+            'Spatial reference for the dataset in question
+            pSpRef = isLayerInfo.SpatialReference
+            'Extract datum string from spatial reference
+            Dim datumStr2 As String = BA_DatumString(pSpRef)
+            If (String.Compare(datumStr, datumStr2) = 0) Then
+                Return True
+            Else
+                Return False
+            End If
+        Catch ex As Exception
+            MessageBox.Show("BA_ImageDatumMatch Exception: " & ex.Message)
+            Return False
+        Finally
+            isLayer = Nothing
+            isLayerInfo = Nothing
+            pSpRef = Nothing
+            GC.WaitForPendingFinalizers()
+            GC.Collect()
         End Try
     End Function
 

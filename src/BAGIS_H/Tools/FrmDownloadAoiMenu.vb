@@ -1154,7 +1154,12 @@ Public Class FrmDownloadAoiMenu
                                                       "but you will be unable to retrieve the status." & vbCrLf & vbCrLf & _
                                                       "Do you still wish to close this window ?", "Window closing", _
                                                       MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-            If res = Windows.Forms.DialogResult.Yes Then e.Cancel = False
+            If res = Windows.Forms.DialogResult.Yes Then
+                e.Cancel = False
+            Else
+                e.Cancel = True
+            End If
+
         End If
     End Sub
 
