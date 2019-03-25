@@ -1262,7 +1262,7 @@ Public Module GeodatabaseModule
 
     'Converts a shapefile to a feature class
     'Copied from ESRI Help: Converting simple data 
-    Public Function BA_ConvertGDBToShapefile(ByVal sourceGDB As String, ByVal sourceFile As String, ByVal targetFolder As String,
+    Public Function BA_ConvertGDBToShapefile(ByVal sourceGDB As String, ByVal sourceFile As String, ByVal targetFolder As String, _
                                              ByVal targetFile As String) As BA_ReturnCode
         Try
 
@@ -1516,8 +1516,8 @@ Public Module GeodatabaseModule
     'Set selected cells to null
     'Uses Raster Calculator SetNull syntax
     Public Function BA_SetNullSelectedCellsGDB(ByVal inputFolder As String, ByVal inputFile As String,
-                                              ByVal outputFolder As String, ByVal outputFile As String,
-                                              ByVal maskFolder As String, ByVal maskFile As String,
+                                              ByVal outputFolder As String, ByVal outputFile As String, _
+                                              ByVal maskFolder As String, ByVal maskFile As String, _
                                               ByVal whereClause As String) As BA_ReturnCode
         Dim mapAlgebraOp As ESRI.ArcGIS.SpatialAnalyst.IMapAlgebraOp = New ESRI.ArcGIS.SpatialAnalyst.RasterMapAlgebraOp
         Dim inputGeodataset As IGeoDataset = Nothing
@@ -1574,7 +1574,7 @@ Public Module GeodatabaseModule
     End Function
 
     'Assumes there is only one row and one value to return
-    Public Function BA_QueryStringFieldFromVector(ByVal filePath As String, ByVal fileName As String,
+    Public Function BA_QueryStringFieldFromVector(ByVal filePath As String, ByVal fileName As String, _
                                                   ByVal fieldName As String) As String
         Dim fClass As IFeatureClass = Nothing
         Dim pFeature As IFeature = Nothing
@@ -1667,8 +1667,8 @@ Public Module GeodatabaseModule
         Return return_value
     End Function
 
-    Public Sub BA_ShapeFile2RasterGDB(ByVal featClass As IFeatureClass, ByVal gdbPath As String,
-                               ByVal FileName As String, ByVal Cellsize As Object,
+    Public Sub BA_ShapeFile2RasterGDB(ByVal featClass As IFeatureClass, ByVal gdbPath As String, _
+                               ByVal FileName As String, ByVal Cellsize As Object, _
                                ByVal valueField As String, ByVal snapRasterPath As String)
         Dim pWS As IWorkspace = Nothing
         Dim pWSFactory As IWorkspaceFactory = New RasterWorkspaceFactory
@@ -1698,11 +1698,11 @@ Public Module GeodatabaseModule
             If Not String.IsNullOrEmpty(snapRasterPath) Then
                 Dim snapPath As String = "PleaseReturn"
                 Dim workspaceType As WorkspaceType = BA_GetWorkspaceTypeFromPath(snapRasterPath)
-                If workspaceType = WorkspaceType.Geodatabase Then
+                If workspaceType = workspaceType.Geodatabase Then
                     Dim snapName As String = BA_GetBareName(snapRasterPath, snapPath)
                     snapRaster = BA_OpenRasterFromGDB(snapPath, snapName)
                     pEnv.SetExtent(esriRasterEnvSettingEnum.esriRasterEnvValue, object_Envelope, snapRaster)
-                ElseIf workspaceType = WorkspaceType.Raster Then 'input is a GRID
+                ElseIf workspaceType = workspaceType.Raster Then 'input is a GRID
                     Dim snapName As String = BA_GetBareName(snapRasterPath, snapPath)
                     snapRaster = BA_OpenRasterFromFile(snapPath, snapName)
                     pEnv.SetExtent(esriRasterEnvSettingEnum.esriRasterEnvValue, object_Envelope, snapRaster)
@@ -1837,7 +1837,7 @@ Public Module GeodatabaseModule
         End Try
     End Function
 
-    Public Function BA_AddUserFieldToVector(ByVal folderName As String, ByVal fileName As String, ByVal fieldName As String,
+    Public Function BA_AddUserFieldToVector(ByVal folderName As String, ByVal fileName As String, ByVal fieldName As String, _
                                         ByVal fieldType As esriFieldType, ByVal fieldLength As Integer, ByVal fieldValue As String) As BA_ReturnCode
         Dim wType As WorkspaceType = BA_GetWorkspaceTypeFromPath(folderName)
         Dim targetFC As IFeatureClass = Nothing
@@ -1968,6 +1968,7 @@ Public Module GeodatabaseModule
                 pBandCol = CType(pRDataset, IRasterBandCollection)
                 pRasterBand = pBandCol.Item(0)
                 pTable = pRasterBand.AttributeTable
+                If pTable Is Nothing Then Return True
                 Dim rCount As Integer = pTable.RowCount(Nothing)
                 If rCount > 0 Then
                     Return False
