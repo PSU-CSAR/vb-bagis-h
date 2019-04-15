@@ -1019,7 +1019,6 @@ Public Module WebservicesModule
                 Dim ser As System.Runtime.Serialization.Json.DataContractJsonSerializer = New System.Runtime.Serialization.Json.DataContractJsonSerializer(anAoiTask.[GetType]())
                 anAoiTask = CType(ser.ReadObject(resT.GetResponseStream), AoiTask)
             End Using
-            Return anAoiTask
         Catch w As WebException
             Dim sb As StringBuilder = New StringBuilder
             Using exceptResp As HttpWebResponse = TryCast(w.Response, HttpWebResponse)
@@ -1038,6 +1037,7 @@ Public Module WebservicesModule
         Catch ex As Exception
             Debug.Print("BA_WriteFirstChunk: " & ex.Message)
         End Try
+        Return anAoiTask
 
     End Function
 
