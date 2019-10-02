@@ -418,7 +418,7 @@ Public Class FrmSequentialId
 
     Private Function CreateStreamOrderTable(ByVal hruName As String) As Hashtable
         Dim tempTableName As String = "streamOrderTbl"
-        Dim snapRasterPath As String = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Aoi, True) & BA_EnumDescription(AOIClipFile.AOIExtentCoverage)
+        Dim snapRasterPath As String = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Aoi, False) & BA_EnumDescription(PublicPath.AoiGrid)
         Dim flowAccumPath As String = BA_GeodatabasePath(m_aoi.FilePath, GeodatabaseNames.Surfaces, True) & BA_EnumDescription(MapsFileName.flow_accumulation_gdb)
         Dim hruGdbName As String = BA_GetHruPathGDB(m_aoi.FilePath, PublicPath.HruDirectory, hruName)
         Dim vName As String = BA_StandardizeShapefileName(BA_EnumDescription(PublicPath.HruVector), False)
