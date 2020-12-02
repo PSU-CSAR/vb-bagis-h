@@ -6,8 +6,8 @@ Imports System.Windows.Forms
 Imports ESRI.ArcGIS.GeoAnalyst
 Imports ESRI.ArcGIS.DataSourcesRaster
 Imports ESRI.ArcGIS.Geometry
-Imports System.Windows.Forms.ListBox
 Imports ESRI.ArcGIS.DataManagementTools
+Imports ESRI.ArcGIS.ConversionTools
 Imports ESRI.ArcGIS.ArcMapUI
 Imports System.ComponentModel
 Imports System.Text
@@ -711,7 +711,7 @@ Public Module GeodatabaseModule
     Public Function BA_CopyVectorsToGDB(ByVal vectorTable As Hashtable, ByVal stepProgressor As IStepProgressor) As BA_ReturnCode
         Dim GP As ESRI.ArcGIS.Geoprocessor.Geoprocessor = New ESRI.ArcGIS.Geoprocessor.Geoprocessor()
         Dim pResult As ESRI.ArcGIS.Geoprocessing.IGeoProcessorResult = Nothing
-        Dim copyFeatures As CopyFeatures = New CopyFeatures
+        Dim converter As FeatureClassToFeatureClass = New FeatureClassToFeatureClass
         Try
             Dim vectorCount As Integer = vectorTable.Count
             If vectorCount > 0 Then
@@ -721,8 +721,11 @@ Public Module GeodatabaseModule
                     Dim inVectorPath As String = TryCast(de.Key, String)
                     Dim outVectorPath As String = TryCast(de.Value, String)
                     If Not String.IsNullOrEmpty(inVectorPath) AndAlso Not String.IsNullOrEmpty(outVectorPath) Then
-                        copyFeatures.in_features = inVectorPath
-                        copyFeatures.out_feature_class = outVectorPath
+                        Dim parent_path As String = "PleaseReturn"
+                        Dim out_name As String = BA_GetBareName(outVectorPath, parent_path)
+                        converter.in_features = inVectorPath
+                        converter.out_path = parent_path
+                        converter.out_name = out_name
                         Dim progressMessage As String = m_messagePrefix & inVectorPath
                         If progressMessage.Length > MAX_PROGRESSOR_MSG_PATH_LENGTH Then
                             Dim messageSuffixLength As Int16 = MAX_PROGRESSOR_MSG_PATH_LENGTH - m_messagePrefix.Length
@@ -731,7 +734,7 @@ Public Module GeodatabaseModule
                         End If
                         stepProgressor.Message = progressMessage
                         stepProgressor.Step()
-                        pResult = GP.Execute(copyFeatures, Nothing)
+                        pResult = GP.Execute(converter, Nothing)
                     End If
                 Next
             End If
@@ -740,7 +743,7 @@ Public Module GeodatabaseModule
             MessageBox.Show("BA_CopyVectorsToGDB Exception: " & ex.Message)
             Return BA_ReturnCode.UnknownError
         Finally
-            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(copyFeatures)
+            ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(converter)
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(pResult)
             ESRI.ArcGIS.ADF.ComReleaser.ReleaseCOMObject(GP)
         End Try
