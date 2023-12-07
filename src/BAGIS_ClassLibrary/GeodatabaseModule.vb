@@ -82,8 +82,8 @@ Public Module GeodatabaseModule
     End Function
 
     'Workaround because can't save output from pNeighborhoodOp directly to .gdb
-    Public Function BA_SaveRasterDatasetGDB2(ByVal rasterDataset As IGeoDataset, ByVal aoiPath As String, _
-                                             ByRef strPath As String, ByVal sFormat As String, _
+    Public Function BA_SaveRasterDatasetGDB2(ByVal rasterDataset As IGeoDataset, ByVal aoiPath As String,
+                                             ByRef strPath As String, ByVal sFormat As String,
                                              ByVal sName As String) As Short
 
         Dim tmpGDS As IGeoDataset = Nothing
@@ -105,8 +105,8 @@ Public Module GeodatabaseModule
     End Function
 
     'Saves a file from workspace format to file gdb
-    Public Function BA_SaveFileRasterToGDB(ByVal inputPath As String, ByVal inputFile As String, _
-                                           ByVal outputPath As String, ByVal outputFile As String, _
+    Public Function BA_SaveFileRasterToGDB(ByVal inputPath As String, ByVal inputFile As String,
+                                           ByVal outputPath As String, ByVal outputFile As String,
                                            ByVal sFormat As String) As BA_ReturnCode
         Dim inputGDS As IGeoDataset = Nothing
         Try
@@ -127,7 +127,7 @@ Public Module GeodatabaseModule
     End Function
 
     'Uses IRasterWorkspace to check if a file exists; Parses full path into file path and name before starting
-    Public Function BA_File_Exists(ByVal fullPath As String, ByVal wksType As WorkspaceType, _
+    Public Function BA_File_Exists(ByVal fullPath As String, ByVal wksType As WorkspaceType,
                                     ByVal datasetType As esriDatasetType) As Boolean
         If String.IsNullOrEmpty(fullPath) Then
             Return False
@@ -284,8 +284,8 @@ Public Module GeodatabaseModule
         End Try
     End Function
 
-    Public Sub BA_Feature2RasterGDB(ByVal featClassDescr As IFeatureClassDescriptor, ByVal gdbPath As String, _
-                                    ByVal FileName As String, ByVal Cellsize As Object, _
+    Public Sub BA_Feature2RasterGDB(ByVal featClassDescr As IFeatureClassDescriptor, ByVal gdbPath As String,
+                                    ByVal FileName As String, ByVal Cellsize As Object,
                                     ByVal valueField As String, ByVal snapRasterPath As String)
         Dim pWS As IWorkspace = Nothing
         Dim pWSFactory As IWorkspaceFactory = New RasterWorkspaceFactory
@@ -309,9 +309,9 @@ Public Module GeodatabaseModule
                 Dim snapName As String = BA_GetBareName(snapRasterPath, snapPath)
 
                 Dim workspaceType As WorkspaceType = BA_GetWorkspaceTypeFromPath(snapPath)
-                If workspaceType = workspaceType.Geodatabase Then
+                If workspaceType = WorkspaceType.Geodatabase Then
                     snapGDS = BA_OpenRasterFromGDB(snapPath, snapName)
-                ElseIf workspaceType = workspaceType.Raster Then 'input is a GRID
+                ElseIf workspaceType = WorkspaceType.Raster Then 'input is a GRID
                     snapGDS = BA_OpenRasterFromFile(snapPath, snapName)
                 End If
 
@@ -386,9 +386,9 @@ Public Module GeodatabaseModule
 
     ' Generates a new raster replacing NoData cells with a selected value. The replacement
     ' extent may be masked if a mask file path is provided
-    Public Function BA_ReplaceNoDataCellsGDB(ByVal inputFolder As String, ByVal inputFile As String, _
-                                          ByVal outputFolder As String, ByVal outputFile As String, _
-                                          ByVal replaceValue As Integer, ByVal maskFolder As String, _
+    Public Function BA_ReplaceNoDataCellsGDB(ByVal inputFolder As String, ByVal inputFile As String,
+                                          ByVal outputFolder As String, ByVal outputFile As String,
+                                          ByVal replaceValue As Integer, ByVal maskFolder As String,
                                           ByVal maskFile As String) As BA_ReturnCode
         Dim mapAlgebraOp As ESRI.ArcGIS.SpatialAnalyst.IMapAlgebraOp = New ESRI.ArcGIS.SpatialAnalyst.RasterMapAlgebraOp
         Dim inputGeodataset As IGeoDataset = Nothing
@@ -531,7 +531,7 @@ Public Module GeodatabaseModule
         End Try
     End Function
 
-    Public Function BA_RenameFilesByPrefix(ByVal workspaceName As String, ByVal oldPrefix As String, _
+    Public Function BA_RenameFilesByPrefix(ByVal workspaceName As String, ByVal oldPrefix As String,
                                            ByVal newPrefix As String) As BA_ReturnCode
         Dim pWSF As IWorkspaceFactory = New FileGDBWorkspaceFactory()
         Dim pWorkspace As IWorkspace = Nothing
@@ -617,7 +617,7 @@ Public Module GeodatabaseModule
         End If
     End Function
 
-    Public Function BA_RenameRasterInGDB(ByVal inputFolder As String, ByVal inputFile As String, _
+    Public Function BA_RenameRasterInGDB(ByVal inputFolder As String, ByVal inputFile As String,
                                          ByVal outputFile As String) As BA_ReturnCode
         Dim pInputDataset As IGeoDataset = Nothing
         Dim pDataset As IDataset = Nothing
@@ -642,7 +642,7 @@ Public Module GeodatabaseModule
 
     End Function
 
-    Public Function BA_RenameFeatureClassInGDB(ByVal inputFolder As String, ByVal inputFile As String, _
+    Public Function BA_RenameFeatureClassInGDB(ByVal inputFolder As String, ByVal inputFile As String,
                                                ByVal outputFile As String) As BA_ReturnCode
         Dim pInputDataset As IGeoDataset = Nothing
         Dim pDataset As IDataset = Nothing
