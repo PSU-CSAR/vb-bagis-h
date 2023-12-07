@@ -47,8 +47,9 @@
         <!-- ToDo: This is a test button for running the Snodas export tool
         <Button id="Portland_State_University_BAGIS_H_BtnSnodas" class="BtnSnodas" message="Snodas Clip Tool (test mode)" caption="Snodas Clip Tool (test mode)" tip="Snodas Clip Tool (test mode)" category="BAGIS Tools" image="Images\BtnSnodas.png" /> -->
         <!-- ToDo: This is a test button for updating the date on a file
-        <Button id="Portland_State_University_BAGIS_H_BtnFileModify" class="BtnFileModify" message="Modify Date Test (test mode)" caption="Modify Date Test" tip="Modify Date Test" category="BAGIS Tools" image="Images\BtnFileModify.png" /> -->
-        <Button id="Portland_State_University_BAGIS_H_BtnDownloadAoi" class="BtnDownloadAoi" message="eBAGIS AOI Menu" caption="eBAGIS AOI Menu" tip="eBAGIS AOI Menu" category="BAGIS Tools" image="Images\BtnDownloadAoi.png" />
+        <Button id="Portland_State_University_BAGIS_H_BtnFileModify" class="BtnFileModify" message="Modify Date Test (test mode)" caption="Modify Date Test" tip="Modify Date Test" category="BAGIS Tools" image="Images\BtnFileModify.png" /> 
+        // Hiding eBAGIS AOI Menu. As of November 2023, eBAGIS is no more
+        <Button id="Portland_State_University_BAGIS_H_BtnDownloadAoi" class="BtnDownloadAoi" message="eBAGIS AOI Menu" caption="eBAGIS AOI Menu" tip="eBAGIS AOI Menu" category="BAGIS Tools" image="Images\BtnDownloadAoi.png" /> -->
       </Commands>
       <DockableWindows>
         <DockableWindow id="ClassLibraryAddin_frmHruZone" class="frmHruZone+AddinImpl" caption="Current AOI: (Not selected)" image="Images\frmHruZone.png">
@@ -82,7 +83,8 @@
             <Button refID="Portland_State_University_BAGIS_H_BtnFileLocator" />
             <Button refID="Portland_State_University_BAGIS_H_BtnToolsDataUnits" />
             <Button refID="Portland_State_University_BAGIS_H_BtnSlopeConverter" />
-            <Button refID="Portland_State_University_BAGIS_H_BtnDownloadAoi" />
+            <!--Hiding eBAGIS AOI Menu. As of November 2023, eBAGIS is no more
+            <Button refID="Portland_State_University_BAGIS_H_BtnDownloadAoi" /> -->
           </Items>
         </Toolbar>
       </Toolbars>

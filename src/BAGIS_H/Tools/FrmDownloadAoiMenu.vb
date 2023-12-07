@@ -68,9 +68,6 @@ Public Class FrmDownloadAoiMenu
             End If
             m_settings = ReadSettingsFromJson(localSettingsPath)
             If m_settings IsNot Nothing Then
-                If Not String.IsNullOrEmpty(m_settings.basinsDb) Then
-                    TxtBasinsDb.Text = m_settings.basinsDb
-                End If
             End If
             m_loading = False   'turn off loading flag to turn on validation of server name
             If String.IsNullOrEmpty(TxtBasinsDb.Text) Then
@@ -1059,8 +1056,6 @@ Public Class FrmDownloadAoiMenu
                 errorMessage = "Unable to connect to the basins database you provided"
                 Return False
             End If
-            If m_settings Is Nothing Then m_settings = New BagisHSettings()
-            m_settings.basinsDb = TxtBasinsDb.Text
             'Set reference to HruExtension
             Dim hruExt As HruExtension = HruExtension.GetExtension
             Dim success As BA_ReturnCode = SaveSettings(hruExt.SettingsPath & BA_EnumDescription(PublicPath.BagisHSettings), m_settings)

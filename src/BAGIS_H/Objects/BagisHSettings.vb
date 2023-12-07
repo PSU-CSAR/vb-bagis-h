@@ -1,5 +1,5 @@
 ﻿Public Class BagisHSettings
 
-    Public basinsDb As String
+    'As of December 2023, there are no BAGIS-H Settings
 
 End Class
